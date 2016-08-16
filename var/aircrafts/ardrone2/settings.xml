@@ -90,15 +90,13 @@
       <dl_setting var="imu.body_to_imu.eulers_f.psi" unit="rad" type="float" step="0.5" shortname="b2i psi" persistent="true" param="IMU_BODY_TO_IMU_PSI" module="subsystems/imu" min="-180" max="180" handler="SetBodyToImuPsi" alt_unit="deg"/>
       <dl_setting var="imu.b2i_set_current" values="FALSE|TRUE" step="1" shortname="b2i cur roll/pitch" module="subsystems/imu" min="0" max="1" handler="SetBodyToImuCurrent"/>
     </dl_settings>
-    <dl_settings name="Sim">
-      <dl_setting var="nps_bypass_ahrs" values="No|Yes" step="1" shortname="bypass_ahrs" module="nps/nps_autopilot" min="0" max="1"/>
-      <dl_setting var="nps_bypass_ins" values="No|Yes" step="1" shortname="bypass_ins" module="nps/nps_autopilot" min="0" max="1"/>
-      <dl_setting var="gps_has_fix" values="No|Yes" step="1" shortname="gps_fix" module="subsystems/gps/gps_sim_nps" min="0" max="1"/>
-      <dl_setting var="datalink_enabled" values="OFF|ON" step="1" shortname="datalink" module="subsystems/datalink/datalink" min="0" max="1"/>
-      <dl_setting var="nps_electrical.supply_voltage" unit="V" step="0.1" shortname="bat_voltage" module="nps/nps_electrical" min="0" max="24"/>
-      <dl_setting var="nps_atmosphere.wind_speed" unit="m/s" step="0.1" shortname="wind_speed" module="nps/nps_atmosphere" min="0" max="25" handler="set_wind_speed"/>
-      <dl_setting var="nps_atmosphere.wind_dir" unit="rad" step="1" shortname="wind_dir" module="nps/nps_atmosphere" min="0" max="360" handler="set_wind_dir" alt_unit="deg"/>
-      <dl_setting var="nps_atmosphere.turbulence_severity" step="1" shortname="turbulence" module="nps/nps_atmosphere" min="0" max="7"/>
+    <dl_settings name="ucenter">
+      <dl_setting var="gps_ubx_ucenter.sw_ver_h" step="1" shortname="sw_h" module="gps/gps_ubx_ucenter" min="0" max="255"/>
+      <dl_setting var="gps_ubx_ucenter.sw_ver_l" step="1" shortname="sw_l" module="gps/gps_ubx_ucenter" min="0" max="255"/>
+      <dl_setting var="gps_ubx_ucenter.hw_ver_h" step="1" shortname="hw_h" module="gps/gps_ubx_ucenter" min="0" max="255"/>
+      <dl_setting var="gps_ubx_ucenter.hw_ver_l" step="1" shortname="hw_l" module="gps/gps_ubx_ucenter" min="0" max="255"/>
+      <dl_setting var="gps_ubx_ucenter.baud_init" step="100" shortname="inibaud" module="gps/gps_ubx_ucenter" min="4800" max="115200"/>
+      <dl_setting var="gps_ubx_ucenter.baud_run" step="100" shortname="baud" module="gps/gps_ubx_ucenter" min="4800" max="115200"/>
     </dl_settings>
     <dl_settings name="air_data">
       <dl_setting var="air_data.qnh" step="1" shortname="QNH" module="air_data/air_data" min="800" max="1200"/>
@@ -112,6 +110,7 @@
       <dl_setting var="geo_mag.calc_once" values="OFF|CALC" step="1" shortname="calcNow" module="geo_mag/geo_mag" min="0" max="1"/>
     </dl_settings>
     <dl_settings name="Modules">
+      <dl_setting min="2" max="3" step="1" var="gps_ubx_gps_ubx_ucenter_periodic_status" shortname="gps_ubx_ucenter_periodic" values="START|STOP"/>
       <dl_setting min="2" max="3" step="1" var="calibration_send_imu_mag_current_status" shortname="send_imu_mag_current" values="START|STOP"/>
     </dl_settings>
   </dl_settings>

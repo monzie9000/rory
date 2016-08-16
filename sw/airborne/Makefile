@@ -21,7 +21,7 @@
 #
 
 # Quiet compilation
-Q=@
+#Q=@ -rcrichlow
 
 
 # main directory where the generated files and compilation results for an aircraft are stored
@@ -57,9 +57,8 @@ ifneq ($(MAKECMDGOALS),clean)
   $(TARGET).CFLAGS += -DPPRZ_VER_MAJOR=$(PPRZ_VER_MAJOR)
   $(TARGET).CFLAGS += -DPPRZ_VER_MINOR=$(PPRZ_VER_MINOR)
   $(TARGET).CFLAGS += -DPPRZ_VER_PATCH=$(PPRZ_VER_PATCH)
-  ifdef PRINT_CONFIG
-    $(TARGET).CFLAGS += -DPRINT_CONFIG
-  endif
+  $(TARGET).CFLAGS += -DPRINT_CONFIG
+
 
   # sort cflags and sources to throw out duplicates
   #
@@ -69,6 +68,9 @@ endif
 
 
 $(TARGET).install : warn_conf
+
+DEBUG_VARS:
+	@echo CC=$(CC)
 
 warn_conf :
 	@echo
