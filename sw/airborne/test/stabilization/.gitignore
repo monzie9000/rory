@@ -1,6 +1,0 @@
-*.so
-algebra_int.c
-algebra_float.c
-ref_quat_float.c
-ref_quat_int.c
-build

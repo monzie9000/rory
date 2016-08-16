@@ -145,3 +145,5 @@ tests/results/*
 # K-develop
 *.kate-swp
 
+# conf files like var/conf/16_08_15__17_46_01_859e6990bfef1e587a5b1be9bd99eab5_ardrone2.conf
+var/conf/16_*

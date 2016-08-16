@@ -1,6 +1,6 @@
-(* Automatically generated from /tmp/tmp.pGuYKTdfrK by lablgladecc *)
+(* Automatically generated from /tmp/tmp.T6BNgkvnJk by lablgladecc *)
 
-class export ?(file="/tmp/tmp.pGuYKTdfrK") ?domain ?autoconnect(*=true*) () =
+class export ?(file="/tmp/tmp.T6BNgkvnJk") ?domain ?autoconnect(*=true*) () =
   let xmldata = Glade.create ~file  ~root:"export" ?domain () in
   object (self)
     inherit Glade.xml ?autoconnect xmldata

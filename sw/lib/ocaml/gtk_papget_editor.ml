@@ -1,6 +1,6 @@
-(* Automatically generated from /tmp/tmp.eiREt4oQsW by lablgladecc *)
+(* Automatically generated from /tmp/tmp.m7rv8vvnRB by lablgladecc *)
 
-class papget_editor ?(file="/tmp/tmp.eiREt4oQsW") ?domain ?autoconnect(*=true*) () =
+class papget_editor ?(file="/tmp/tmp.m7rv8vvnRB") ?domain ?autoconnect(*=true*) () =
   let xmldata = Glade.create ~file  ~root:"papget_editor" ?domain () in
   object (self)
     inherit Glade.xml ?autoconnect xmldata

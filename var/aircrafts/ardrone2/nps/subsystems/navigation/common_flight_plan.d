@@ -1,0 +1,33 @@
+/home/rc/papa/var/aircrafts/ardrone2/nps/subsystems/navigation/common_flight_plan.o: \
+ subsystems/navigation/common_flight_plan.c \
+ /home/rc/papa/sw/airborne/subsystems/navigation/common_flight_plan.h \
+ /home/rc/papa/sw/include/std.h \
+ /home/rc/papa/sw/include/message_pragmas.h \
+ /home/rc/papa/var/aircrafts/ardrone2/nps/generated/flight_plan.h \
+ /home/rc/papa/var/aircrafts/ardrone2/nps/generated/modules.h \
+ modules/calibration/send_imu_mag_current.h modules/air_data/air_data.h \
+ modules/geo_mag/geo_mag.h \
+ /home/rc/papa/sw/airborne/math/pprz_algebra_double.h \
+ /home/rc/papa/sw/airborne/math/pprz_algebra.h \
+ /home/rc/papa/sw/airborne/math/pprz_algebra_float.h \
+ firmwares/rotorcraft/autopilot.h \
+ /home/rc/papa/var/aircrafts/ardrone2/nps/generated/airframe.h \
+ /home/rc/papa/sw/airborne/subsystems/actuators/actuators_default.h \
+ /home/rc/papa/sw/airborne/boards/pc_sim.h \
+ /home/rc/papa/sw/airborne/subsystems/actuators/actuators_4017.h \
+ /home/rc/papa/sw/airborne/arch/sim/subsystems/actuators/servos_4017_hw.h \
+ /home/rc/papa/sw/airborne/state.h \
+ /home/rc/papa/sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/papa/sw/airborne/math/pprz_algebra.h \
+ /home/rc/papa/sw/airborne/math/pprz_trig_int.h \
+ /home/rc/papa/sw/airborne/math/pprz_algebra_float.h \
+ /home/rc/papa/sw/airborne/math/pprz_geodetic_int.h \
+ /home/rc/papa/sw/airborne/math/pprz_geodetic.h \
+ /home/rc/papa/sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/papa/sw/airborne/math/pprz_geodetic_float.h \
+ /home/rc/papa/sw/airborne/math/pprz_orientation_conversion.h \
+ /home/rc/papa/sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/papa/sw/airborne/math/pprz_algebra_float.h \
+ /home/rc/papa/sw/airborne/subsystems/settings.h \
+ /home/rc/papa/sw/airborne/subsystems/datalink/transport.h \
+ /home/rc/papa/sw/airborne/mcu_periph/link_device.h
