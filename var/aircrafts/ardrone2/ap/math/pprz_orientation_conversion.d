@@ -1,0 +1,9 @@
+/home/ray/rory/var/aircrafts/ardrone2/ap/math/pprz_orientation_conversion.o: \
+ math/pprz_orientation_conversion.c math/pprz_orientation_conversion.h \
+ /home/ray/rory/sw/airborne/math/pprz_algebra_int.h \
+ /home/ray/rory/sw/include/std.h \
+ /home/ray/rory/sw/include/message_pragmas.h \
+ /home/ray/rory/sw/airborne/math/pprz_algebra.h \
+ /home/ray/rory/sw/airborne/math/pprz_trig_int.h \
+ /home/ray/rory/sw/airborne/math/pprz_algebra_float.h \
+ /home/ray/rory/sw/airborne/math/pprz_algebra.h
