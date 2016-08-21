@@ -58,6 +58,7 @@ ifneq ($(MAKECMDGOALS),clean)
   $(TARGET).CFLAGS += -DPPRZ_VER_MINOR=$(PPRZ_VER_MINOR)
   $(TARGET).CFLAGS += -DPPRZ_VER_PATCH=$(PPRZ_VER_PATCH)
   $(TARGET).CFLAGS += -DPRINT_CONFIG
+  $(TARGET).CFLAGS += -v
 
 
   # sort cflags and sources to throw out duplicates
@@ -71,6 +72,9 @@ $(TARGET).install : warn_conf
 
 DEBUG_VARS:
 	@echo CC=$(CC)
+	@echo INCLUDING $(AIRCRAFT_BUILD_DIR)/Makefile.ac
+	@echo include ../../conf/Makefile.$($(TARGET).MAKEFILE)
+	@echo include ../../conf/Makefile.$($(TARGET).ARCHDIR)
 
 warn_conf :
 	@echo

@@ -30,14 +30,24 @@ ifneq ($(TOOLCHAIN_FOUND),1)
   endif
 endif
 
-CC   = $(PREFIX)-gcc
-LD   = $(PREFIX)-gcc
-AR   = $(PREFIX)-ar
-CP   = $(PREFIX)-objcopy
-DMP  = $(PREFIX)-objdump
-NM   = $(PREFIX)-nm
-SIZE = $(PREFIX)-size
-GDB  = $(PREFIX)-gdb
+#CC   = $(PREFIX)-gcc
+#LD   = $(PREFIX)-gcc
+#AR   = $(PREFIX)-ar
+#CP   = $(PREFIX)-objcopy
+#DMP  = $(PREFIX)-objdump
+#NM   = $(PREFIX)-nm
+#SIZE = $(PREFIX)-size
+#GDB  = $(PREFIX)-gdb
+
+CC   = gcc
+LD   = gcc
+AR   = ar
+CP   = objcopy
+DMP  = objdump
+NM   = nm
+SIZE = size
+GDB  = gdb
+
 
 # some general commands
 RM = rm
