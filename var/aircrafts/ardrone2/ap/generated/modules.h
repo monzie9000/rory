@@ -1,5 +1,5 @@
 /* This file has been generated from /home/ray/rory/conf/airframes/examples/ardrone2.xml */
-/* Version v5.8.2_stable-none-ge6914ad-dirty */
+/* Version v5.8.2_stable-none-g3752b90-dirty */
 /* Please DO NOT EDIT */
 
 #ifndef MODULES_H
