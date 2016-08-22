@@ -1,3 +1,3 @@
-/home/ray/rory/var/aircrafts/ardrone2/ap/arch/linux/mcu_arch.o: \
+/home/rc/papa/var/aircrafts/ardrone2/ap/arch/linux/mcu_arch.o: \
  arch/linux/mcu_arch.c arch/linux/mcu_arch.h \
- /home/ray/rory/sw/include/message_pragmas.h
+ /home/rc/papa/sw/include/message_pragmas.h

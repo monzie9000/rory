@@ -45,5 +45,13 @@ NM   = $(PREFIX)-nm
 SIZE = $(PREFIX)-size
 GDB  = $(PREFIX)-gdb
 
+CC   = gcc
+LD   = gcc
+AR   = ar
+CP   = objcopy
+DMP  = objdump
+NM   = nm
+SIZE = size
+GDB  = gdb
 # some general commands
 RM = rm

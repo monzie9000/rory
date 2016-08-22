@@ -1,4 +1,4 @@
-/home/ray/rory/var/aircrafts/ardrone2/ap/arch/linux/udp_socket.o: \
+/home/rc/papa/var/aircrafts/ardrone2/ap/arch/linux/udp_socket.o: \
  arch/linux/udp_socket.c arch/linux/udp_socket.h \
- /home/ray/rory/sw/include/std.h \
- /home/ray/rory/sw/include/message_pragmas.h
+ /home/rc/papa/sw/include/std.h \
+ /home/rc/papa/sw/include/message_pragmas.h

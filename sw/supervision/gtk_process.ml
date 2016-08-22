@@ -1,6 +1,6 @@
-(* Automatically generated from /tmp/tmp.hnOBefBkaR by lablgladecc *)
+(* Automatically generated from /tmp/tmp.eKJLTDASQz by lablgladecc *)
 
-class hbox_program ?(file="/tmp/tmp.hnOBefBkaR") ?domain ?autoconnect(*=true*) () =
+class hbox_program ?(file="/tmp/tmp.eKJLTDASQz") ?domain ?autoconnect(*=true*) () =
   let xmldata = Glade.create ~file  ~root:"hbox_program" ?domain () in
   object (self)
     inherit Glade.xml ?autoconnect xmldata

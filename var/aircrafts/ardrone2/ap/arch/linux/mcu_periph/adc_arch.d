@@ -1,10 +1,10 @@
-/home/ray/rory/var/aircrafts/ardrone2/ap/arch/linux/mcu_periph/adc_arch.o: \
+/home/rc/papa/var/aircrafts/ardrone2/ap/arch/linux/mcu_periph/adc_arch.o: \
  arch/linux/mcu_periph/adc_arch.c \
- /home/ray/rory/sw/airborne/mcu_periph/adc.h \
- /home/ray/rory/sw/airborne/arch/linux/mcu_periph/adc_arch.h \
- /home/ray/rory/sw/airborne/boards/ardrone2.h \
- /home/ray/rory/sw/airborne/peripherals/video_device.h \
- /home/ray/rory/sw/include/std.h \
- /home/ray/rory/sw/include/message_pragmas.h \
- /home/ray/rory/sw/airborne/modules/computer_vision/lib/v4l/v4l2.h \
- /home/ray/rory/sw/airborne/modules/computer_vision/lib/vision/image.h
+ /home/rc/papa/sw/airborne/mcu_periph/adc.h \
+ /home/rc/papa/sw/airborne/arch/linux/mcu_periph/adc_arch.h \
+ /home/rc/papa/sw/airborne/boards/ardrone2.h \
+ /home/rc/papa/sw/airborne/peripherals/video_device.h \
+ /home/rc/papa/sw/include/std.h \
+ /home/rc/papa/sw/include/message_pragmas.h \
+ /home/rc/papa/sw/airborne/modules/computer_vision/lib/v4l/v4l2.h \
+ /home/rc/papa/sw/airborne/modules/computer_vision/lib/vision/image.h

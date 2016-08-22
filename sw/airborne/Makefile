@@ -75,6 +75,7 @@ DEBUG_VARS:
 	@echo INCLUDING $(AIRCRAFT_BUILD_DIR)/Makefile.ac
 	@echo include ../../conf/Makefile.$($(TARGET).MAKEFILE)
 	@echo include ../../conf/Makefile.$($(TARGET).ARCHDIR)
+	@env
 
 warn_conf :
 	@echo
