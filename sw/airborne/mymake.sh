@@ -1,14 +1,17 @@
 #!/bin/bash
+DIRNAME=`pwd`
+if [[ "$DIRNAME" =~ ([^/]+/+[^/]+)/*$ ]]; then
+        echo "Last two: ${BASH_REMATCH[1]}"
+    else
+            echo "No match"
+        fi
+        exit
 #SELINUX_INIT=YES
 #DESKTOP_SESSION=ubuntu
-export PAPARAZZI_HOME=/home/rc/papa
+export PAPARAZZI_HOME=$HOME/rory
 export PPRZ_VER_PATCH=2
 #UPSTART_INSTANCE=
 export TARGET=ap
-#XAUTHORITY=/home/rc/.Xauthority
-#XMODIFIERS=@im=ibus
-#UPSTART_JOB=unity-settings-daemon
-#VTE_VERSION=3409
 export AIRCRAFT=ardrone2
 #_=./paparazzi
 #XDG_CONFIG_DIRS=/etc/xdg/xdg-ubuntu:/usr/share/upstart/xdg:/etc/xdg
@@ -43,7 +46,7 @@ export PPRZ_VER_MINOR=8
 #GNOME_DESKTOP_SESSION_ID=this-is-deprecated
 #XDG_VTNR=7
 #COLORTERM=gnome-terminal
-export PAPARAZZI_SRC=/home/rc/papa
+export PAPARAZZI_SRC=$HOME/rory
 #QT_IM_MODULE=ibus
 #SHLVL=1
 #MAKEOVERRIDES=${-*-command-variables-*-}
