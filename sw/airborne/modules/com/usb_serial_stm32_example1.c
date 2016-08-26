@@ -43,9 +43,9 @@ uint8_t prompt = '$';
  */
 void init_usb_serial(void)
 {
-  VCOM_init();
-  cmd_idx = 0;
-  cmd_avail = FALSE;
+    VCOM_init();
+    cmd_idx = 0;
+    cmd_avail = FALSE;
 }
 
 
@@ -57,23 +57,29 @@ void init_usb_serial(void)
  */
 void usb_serial_parse_packet(int data)
 {
-  if (data == -1) { return; }
-  char c = (char)data;
+    if (data == -1)
+    {
+        return;
+    }
+    char c = (char)data;
 
-  if (c == '\r' || c == '\n') {
-    // command complete
-    cmd_avail = TRUE;
-    // add termination characters and the prompt into buffer
-    VCOM_putchar('\r');
-    VCOM_putchar('\n');
-    VCOM_putchar(prompt);
-  } else {
-    // buffer command
-    cmd_buf[cmd_idx++] = c;
-    // echo char back and transmit immediately
-    VCOM_putchar((uint8_t)c);
-    VCOM_send_message();
-  }
+    if (c == '\r' || c == '\n')
+    {
+        // command complete
+        cmd_avail = TRUE;
+        // add termination characters and the prompt into buffer
+        VCOM_putchar('\r');
+        VCOM_putchar('\n');
+        VCOM_putchar(prompt);
+    }
+    else
+    {
+        // buffer command
+        cmd_buf[cmd_idx++] = c;
+        // echo char back and transmit immediately
+        VCOM_putchar((uint8_t)c);
+        VCOM_send_message();
+    }
 }
 
 /**
@@ -81,9 +87,10 @@ void usb_serial_parse_packet(int data)
  */
 static inline void ReadUsbBuffer(void)
 {
-  while (UsbSChAvailable() && !cmd_avail) {
-    usb_serial_parse_packet(UsbSGetch());
-  }
+    while (UsbSChAvailable() && !cmd_avail)
+    {
+        usb_serial_parse_packet(UsbSGetch());
+    }
 }
 
 /**
@@ -92,32 +99,38 @@ static inline void ReadUsbBuffer(void)
  */
 void cmd_execute(void)
 {
-  // copy command into tx buffer for user feedback
-  for (int i = 0; i < cmd_idx; i++) {
-    VCOM_putchar(cmd_buf[i]);
-  }
-
-  if (strncmp("help", cmd_buf, cmd_idx) == 0) {
-    uint8_t response[] = " - user asked for help";
-    for (uint16_t i = 0; i < sizeof(response); i++) {
-      VCOM_putchar(response[i]);
+    // copy command into tx buffer for user feedback
+    for (int i = 0; i < cmd_idx; i++)
+    {
+        VCOM_putchar(cmd_buf[i]);
     }
-  } else {
-    uint8_t response[] = " Command not recognized";
-    for (uint16_t i = 0; i < sizeof(response); i++) {
-      VCOM_putchar(response[i]);
+
+    if (strncmp("help", cmd_buf, cmd_idx) == 0)
+    {
+        uint8_t response[] = " - user asked for help";
+        for (uint16_t i = 0; i < sizeof(response); i++)
+        {
+            VCOM_putchar(response[i]);
+        }
     }
-  }
+    else
+    {
+        uint8_t response[] = " Command not recognized";
+        for (uint16_t i = 0; i < sizeof(response); i++)
+        {
+            VCOM_putchar(response[i]);
+        }
+    }
 
-  // add termination characters and the prompt into buffer
-  VCOM_putchar('\r');
-  VCOM_putchar('\n');
-  VCOM_putchar(prompt);
+    // add termination characters and the prompt into buffer
+    VCOM_putchar('\r');
+    VCOM_putchar('\n');
+    VCOM_putchar(prompt);
 
-  // reset counter
-  cmd_idx = 0;
-  // send complete message
-  VCOM_send_message();
+    // reset counter
+    cmd_idx = 0;
+    // send complete message
+    VCOM_send_message();
 }
 
 /**
@@ -125,12 +138,14 @@ void cmd_execute(void)
  */
 void event_usb_serial(void)
 {
-  VCOM_event();
-  if (UsbSChAvailable()) {
-    ReadUsbBuffer();
-  }
-  if (cmd_avail) {
-    cmd_execute();
-    cmd_avail = FALSE;
-  }
+    VCOM_event();
+    if (UsbSChAvailable())
+    {
+        ReadUsbBuffer();
+    }
+    if (cmd_avail)
+    {
+        cmd_execute();
+        cmd_avail = FALSE;
+    }
 }

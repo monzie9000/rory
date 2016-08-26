@@ -33,23 +33,25 @@
 #define DML_BUF_SIZE        128  /**< The read buffer size */
 
 /* The different statusses the Direct Memory Logger is able to be in */
-enum DMLStatus {
-  DML_INIT,                     /**< The DML is initializing */
-  DML_IDLE,                     /**< The DML is idle */
-  DML_ERASE,                    /**< The DML is busy erasing itself */
-  DML_START,                    /**< The DML is starting the logger */
-  DML_LOGGING,                  /**< The DML is busy logging */
-  DML_STOP,                     /**< The DML is busy stopping */
-  DML_READ,                     /**< The DML is busy starting read */
-  DML_READING,                  /**< The DML is busy reading */
+enum DMLStatus
+{
+    DML_INIT,                     /**< The DML is initializing */
+    DML_IDLE,                     /**< The DML is idle */
+    DML_ERASE,                    /**< The DML is busy erasing itself */
+    DML_START,                    /**< The DML is starting the logger */
+    DML_LOGGING,                  /**< The DML is busy logging */
+    DML_STOP,                     /**< The DML is busy stopping */
+    DML_READ,                     /**< The DML is busy starting read */
+    DML_READING,                  /**< The DML is busy reading */
 };
 
 /* Contains all the direct memory information */
-struct DirectMemoryLogger {
-  struct SST25VFxxxx sst;                  /**< The memory chip */
-  volatile enum DMLStatus status;          /**< The status of the Direct Memory Logger */
-  uint8_t buffer[DML_BUF_SIZE];            /**< The buffer for writing and reading */
-  uint32_t write_addr;
+struct DirectMemoryLogger
+{
+    struct SST25VFxxxx sst;                  /**< The memory chip */
+    volatile enum DMLStatus status;          /**< The status of the Direct Memory Logger */
+    uint8_t buffer[DML_BUF_SIZE];            /**< The buffer for writing and reading */
+    uint32_t write_addr;
 };
 
 extern struct DirectMemoryLogger dml;

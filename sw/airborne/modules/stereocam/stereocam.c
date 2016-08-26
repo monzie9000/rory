@@ -61,33 +61,40 @@ uint8array stereocam_data = {.len = 0, .data = msg_buf, .fresh = 0, .matrix_widt
 extern void stereocam_disparity_to_meters(uint8_t *disparity, float *distancesMeters, int lengthArray)
 {
 
-  int indexArray = 0;
-  for (indexArray = 0; indexArray < lengthArray; indexArray++) {
-    if (disparity[indexArray] != 0) {
-      distancesMeters[indexArray] = ((BASELINE_STEREO_MM * BRANDSPUNTSAFSTAND_STEREO / (float)disparity[indexArray] - 18.0)) /
-                                    1000;
-      //  printf("%i, distanceMeters: %f \n",indexArray,distancesMeters[indexArray]);
-    } else {
-      distancesMeters[indexArray] = 1000;
+    int indexArray = 0;
+    for (indexArray = 0; indexArray < lengthArray; indexArray++)
+    {
+        if (disparity[indexArray] != 0)
+        {
+            distancesMeters[indexArray] = ((BASELINE_STEREO_MM * BRANDSPUNTSAFSTAND_STEREO / (float)disparity[indexArray] - 18.0)) /
+                                          1000;
+            //  printf("%i, distanceMeters: %f \n",indexArray,distancesMeters[indexArray]);
+        }
+        else
+        {
+            distancesMeters[indexArray] = 1000;
+        }
     }
-  }
 }
 
 extern void stereocam_start(void)
 {
-  // initialize local variables
-  msgProperties = (MsgProperties) {0, 0, 0};
+    // initialize local variables
+    msgProperties = (MsgProperties)
+    {
+        0, 0, 0
+    };
 
-  insert_loc = 0;
-  extract_loc = 0;
-  msg_start = 0;
+    insert_loc = 0;
+    extract_loc = 0;
+    msg_start = 0;
 
-  //sys_time_init();
-  freq_counter = 0;
-  frequency = 0;
-  previous_time = sys_time.nb_tick;
+    //sys_time_init();
+    freq_counter = 0;
+    frequency = 0;
+    previous_time = sys_time.nb_tick;
 
-  stereocam_data.fresh = 0;
+    stereocam_data.fresh = 0;
 }
 
 extern void stereocam_stop(void)
@@ -96,26 +103,32 @@ extern void stereocam_stop(void)
 
 extern void stereocam_periodic(void)
 {
-  // read all data from the stereo com link, check that don't overtake extract
-  while (linkdev->char_available(linkdev->periph) && stereoprot_add(insert_loc, 1, STEREO_BUF_SIZE) != extract_loc) {
-    if (handleStereoPackage(StereoGetch(), STEREO_BUF_SIZE, &insert_loc, &extract_loc, &msg_start, msg_buf, ser_read_buf,
-                            &stereocam_data.fresh, &stereocam_data.len, &stereocam_data.matrix_width, &stereocam_data.matrix_height)) {
-      freq_counter++;
-      if ((sys_time.nb_tick - previous_time) > sys_time.ticks_per_sec) {  // 1s has past
-        frequency = (uint8_t)((freq_counter * (sys_time.nb_tick - previous_time)) / sys_time.ticks_per_sec);
-        freq_counter = 0;
-        previous_time = sys_time.nb_tick;
-      }
+    // read all data from the stereo com link, check that don't overtake extract
+    while (linkdev->char_available(linkdev->periph) && stereoprot_add(insert_loc, 1, STEREO_BUF_SIZE) != extract_loc)
+    {
+        if (handleStereoPackage(StereoGetch(), STEREO_BUF_SIZE, &insert_loc, &extract_loc, &msg_start, msg_buf, ser_read_buf,
+                                &stereocam_data.fresh, &stereocam_data.len, &stereocam_data.matrix_width, &stereocam_data.matrix_height))
+        {
+            freq_counter++;
+            if ((sys_time.nb_tick - previous_time) > sys_time.ticks_per_sec)    // 1s has past
+            {
+                frequency = (uint8_t)((freq_counter * (sys_time.nb_tick - previous_time)) / sys_time.ticks_per_sec);
+                freq_counter = 0;
+                previous_time = sys_time.nb_tick;
+            }
 #if SEND_STEREO
-      if (stereocam_data.len > 100) {
-        DOWNLINK_SEND_STEREO_IMG(DefaultChannel, DefaultDevice, &frequency, &(stereocam_data.len), 100, stereocam_data.data);
+            if (stereocam_data.len > 100)
+            {
+                DOWNLINK_SEND_STEREO_IMG(DefaultChannel, DefaultDevice, &frequency, &(stereocam_data.len), 100, stereocam_data.data);
 
-      } else {
-        DOWNLINK_SEND_STEREO_IMG(DefaultChannel, DefaultDevice, &frequency, &(stereocam_data.len), stereocam_data.len,
-                                 stereocam_data.data);
+            }
+            else
+            {
+                DOWNLINK_SEND_STEREO_IMG(DefaultChannel, DefaultDevice, &frequency, &(stereocam_data.len), stereocam_data.len,
+                                         stereocam_data.data);
 
-      }
+            }
 #endif
+        }
     }
-  }
 }

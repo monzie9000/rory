@@ -29,14 +29,20 @@
 
 uint8_t drop_zone_nb = 1;
 
-void drop_zone_set(uint8_t dz) {
-  drop_zone_nb = dz;
+void drop_zone_set(uint8_t dz)
+{
+    drop_zone_nb = dz;
 
-  if(dz == 3) {
-    waypoint_copy(WP_DROP, WP_RZ3);
-  } else if(dz == 2) {
-    waypoint_copy(WP_DROP, WP_RZ2);
-  } else {
-    waypoint_copy(WP_DROP, WP_RZ1);
-  }
+    if(dz == 3)
+    {
+        waypoint_copy(WP_DROP, WP_RZ3);
+    }
+    else if(dz == 2)
+    {
+        waypoint_copy(WP_DROP, WP_RZ2);
+    }
+    else
+    {
+        waypoint_copy(WP_DROP, WP_RZ1);
+    }
 }

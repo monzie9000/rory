@@ -20,11 +20,12 @@ extern uint8_t leader_id;
 
 enum slot_status {UNSET, ACTIVE, IDLE, LOST};
 
-struct slot_ {
-  enum slot_status status;
-  float east;
-  float north;
-  float alt;
+struct slot_
+{
+    enum slot_status status;
+    float east;
+    float north;
+    float alt;
 };
 
 extern struct slot_ formation[NB_ACS];

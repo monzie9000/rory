@@ -31,28 +31,30 @@
 /* Include address and register definition */
 #include "peripherals/l3gd20_regs.h"
 
-enum L3gd20ConfStatus {
-  L3G_CONF_UNINIT = 0,
-  L3G_CONF_WHO_AM_I = 1,
-  L3G_CONF_WHO_AM_I_OK = 2,
-  L3G_CONF_REG4   = 3,
-  L3G_CONF_ENABLE = 4,
-  L3G_CONF_DONE   = 5
+enum L3gd20ConfStatus
+{
+    L3G_CONF_UNINIT = 0,
+    L3G_CONF_WHO_AM_I = 1,
+    L3G_CONF_WHO_AM_I_OK = 2,
+    L3G_CONF_REG4   = 3,
+    L3G_CONF_ENABLE = 4,
+    L3G_CONF_DONE   = 5
 };
 
-struct L3gd20Config {
-  bool_t spi_3_wire;        ///< Set 3-wire SPI mode, if FALSE: 4-wire SPI mode
+struct L3gd20Config
+{
+    bool_t spi_3_wire;        ///< Set 3-wire SPI mode, if FALSE: 4-wire SPI mode
 
-  enum L3gd20FullScale full_scale; ///< gyro full scale
-  enum L3gd20DRBW drbw;   ///< Data rate and bandwidth
+    enum L3gd20FullScale full_scale; ///< gyro full scale
+    enum L3gd20DRBW drbw;   ///< Data rate and bandwidth
 };
 
 static inline void l3gd20_set_default_config(struct L3gd20Config *c)
 {
-  c->spi_3_wire = FALSE;
+    c->spi_3_wire = FALSE;
 
-  c->drbw = L3GD20_DRBW_760Hz_100BW;
-  c->full_scale = L3GD20_FS_2000dps2;
+    c->drbw = L3GD20_DRBW_760Hz_100BW;
+    c->full_scale = L3GD20_FS_2000dps2;
 }
 
 #endif /* L3GD20_H */

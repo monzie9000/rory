@@ -96,28 +96,29 @@
 #include "std.h"
 #include "math/pprz_algebra_int.h"
 
-struct NavCube {
-  /** size of the cube.
-   * x: perpendicular to flight dir,
-   * y: in flight dir,
-   * z: height
-   */
-  struct Int32Vect3 size;
+struct NavCube
+{
+    /** size of the cube.
+     * x: perpendicular to flight dir,
+     * y: in flight dir,
+     * z: height
+     */
+    struct Int32Vect3 size;
 
-  /** offset to center.
-   * x: horizontal,
-   * y: in direction,
-   * z: vertical
-   */
-  struct Int32Vect3 offset;
-  int32_t alpha;            ///< angle in degrees of flight direction to north, clockwise
-  int32_t grid_x;           ///< grid distance x (horizontal)
-  int32_t grid_z;           ///< grid distance z (vertical)
-  int32_t sect;             ///< sector to fly in (1..[nsect_x*nsect_z])
-  int32_t nsect_x;          ///< number of sectors horizontal
-  int32_t nsect_z;          ///< number of sectors vertical
-  int32_t nline_x;          ///< number of lines x (horizontal)
-  int32_t nline_z;          ///< number of lines z (vertical)
+    /** offset to center.
+     * x: horizontal,
+     * y: in direction,
+     * z: vertical
+     */
+    struct Int32Vect3 offset;
+    int32_t alpha;            ///< angle in degrees of flight direction to north, clockwise
+    int32_t grid_x;           ///< grid distance x (horizontal)
+    int32_t grid_z;           ///< grid distance z (vertical)
+    int32_t sect;             ///< sector to fly in (1..[nsect_x*nsect_z])
+    int32_t nsect_x;          ///< number of sectors horizontal
+    int32_t nsect_z;          ///< number of sectors vertical
+    int32_t nline_x;          ///< number of lines x (horizontal)
+    int32_t nline_z;          ///< number of lines z (vertical)
 };
 
 extern struct NavCube nav_cube;

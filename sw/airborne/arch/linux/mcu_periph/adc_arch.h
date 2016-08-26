@@ -31,11 +31,12 @@
 #define ADC_ARCH_H
 
 /* Main ADC structure */
-struct adc_t {
-  uint8_t dev_id;         ///< The iio device ID
-  uint8_t *channels;      ///< Channels used in the iio device
-  uint8_t channels_cnt;   ///< Amount of channels
-  uint16_t buf_length;    ///< ADC buffer length
+struct adc_t
+{
+    uint8_t dev_id;         ///< The iio device ID
+    uint8_t *channels;      ///< Channels used in the iio device
+    uint8_t channels_cnt;   ///< Amount of channels
+    uint16_t buf_length;    ///< ADC buffer length
 };
 
 #if USE_ADC0

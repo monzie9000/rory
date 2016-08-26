@@ -37,22 +37,24 @@
 #include "math/pprz_algebra_float.h"
 
 /** Attitude reference model parameters (quat int) */
-struct IntRefModel {
-  struct FloatRates omega;
-  struct FloatRates zeta;
-  /* cached intermediate values in int */
-  struct Int32Rates two_zeta_omega;
-  struct Int32Rates two_omega2;
+struct IntRefModel
+{
+    struct FloatRates omega;
+    struct FloatRates zeta;
+    /* cached intermediate values in int */
+    struct Int32Rates two_zeta_omega;
+    struct Int32Rates two_omega2;
 };
 
 /** Attitude reference models and state/output (quat int) */
-struct AttRefQuatInt {
-  struct Int32Eulers euler;   ///< with #INT32_ANGLE_FRAC
-  struct Int32Quat   quat;
-  struct Int32Rates  rate;    ///< with #REF_RATE_FRAC
-  struct Int32Rates  accel;   ///< with #REF_ACCEL_FRAC
-  struct IntRefModel model;
-  struct Int32RefSat saturation;
+struct AttRefQuatInt
+{
+    struct Int32Eulers euler;   ///< with #INT32_ANGLE_FRAC
+    struct Int32Quat   quat;
+    struct Int32Rates  rate;    ///< with #REF_RATE_FRAC
+    struct Int32Rates  accel;   ///< with #REF_ACCEL_FRAC
+    struct IntRefModel model;
+    struct Int32RefSat saturation;
 };
 
 extern void attitude_ref_quat_int_init(struct AttRefQuatInt *ref);

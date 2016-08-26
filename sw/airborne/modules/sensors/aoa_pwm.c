@@ -89,59 +89,64 @@ struct Aoa_Pwm aoa_pwm;
 
 static void send_aoa(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_AOA(trans, dev, AC_ID, &aoa_pwm.raw, &aoa_pwm.angle);
+    pprz_msg_send_AOA(trans, dev, AC_ID, &aoa_pwm.raw, &aoa_pwm.angle);
 }
 
 #endif
 
 void aoa_pwm_init(void)
 {
-  aoa_pwm.offset = AOA_OFFSET;
-  aoa_pwm.filter = AOA_FILTER;
-  aoa_pwm.sens = AOA_SENS;
-  aoa_pwm.angle = 0.0f;
-  aoa_pwm.raw = 0.0f;
+    aoa_pwm.offset = AOA_OFFSET;
+    aoa_pwm.filter = AOA_FILTER;
+    aoa_pwm.sens = AOA_SENS;
+    aoa_pwm.angle = 0.0f;
+    aoa_pwm.raw = 0.0f;
 #if LOG_AOA
-  log_started = FALSE;
+    log_started = FALSE;
 #endif
 #if PERIODIC_TELEMETRY
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AOA, send_aoa);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AOA, send_aoa);
 #endif
 }
 
-void aoa_pwm_update(void) {
-  static float prev_aoa = 0.0f;
+void aoa_pwm_update(void)
+{
+    static float prev_aoa = 0.0f;
 
-  // raw duty cycle in usec
-  uint32_t duty_raw = get_pwm_input_duty_in_usec(AOA_PWM_CHANNEL);
+    // raw duty cycle in usec
+    uint32_t duty_raw = get_pwm_input_duty_in_usec(AOA_PWM_CHANNEL);
 
-  // remove some offset if needed
-  aoa_pwm.raw = duty_raw - AOA_PWM_OFFSET;
-  // FIXME for some reason, the last value of the MA3 encoder is not 4096 but 4097
-  // this case is not handled since we don't care about angles close to +- 180 deg
-  aoa_pwm.angle = AOA_SIGN * (((float)aoa_pwm.raw * aoa_pwm.sens) - aoa_pwm.offset - AOA_ANGLE_OFFSET);
-  // filter angle
-  aoa_pwm.angle = aoa_pwm.filter * prev_aoa + (1.0f - aoa_pwm.filter) * aoa_pwm.angle;
-  prev_aoa = aoa_pwm.angle;
+    // remove some offset if needed
+    aoa_pwm.raw = duty_raw - AOA_PWM_OFFSET;
+    // FIXME for some reason, the last value of the MA3 encoder is not 4096 but 4097
+    // this case is not handled since we don't care about angles close to +- 180 deg
+    aoa_pwm.angle = AOA_SIGN * (((float)aoa_pwm.raw * aoa_pwm.sens) - aoa_pwm.offset - AOA_ANGLE_OFFSET);
+    // filter angle
+    aoa_pwm.angle = aoa_pwm.filter * prev_aoa + (1.0f - aoa_pwm.filter) * aoa_pwm.angle;
+    prev_aoa = aoa_pwm.angle;
 
 #if USE_AOA
-  stateSetAngleOfAttack_f(aoa_adc.angle);
+    stateSetAngleOfAttack_f(aoa_adc.angle);
 #endif
 
 #if SEND_SYNC_AOA
-  RunOnceEvery(10, DOWNLINK_SEND_AOA(DefaultChannel, DefaultDevice, &aoa_pwm.raw, &aoa_pwm.angle));
+    RunOnceEvery(10, DOWNLINK_SEND_AOA(DefaultChannel, DefaultDevice, &aoa_pwm.raw, &aoa_pwm.angle));
 #endif
 
 #if LOG_AOA
-  if(pprzLogFile != -1) {
-    if (!log_started) {
-      sdLogWriteLog(pprzLogFile, "AOA_PWM: ANGLE(deg) RAW(int16)\n");
-      log_started = TRUE;
-    } else {
-      float angle = DegOfRad(aoa_pwm.angle);
-      sdLogWriteLog(pprzLogFile, "AOA_PWM: %.3f %d\n", angle, aoa_pwm.raw);
+    if(pprzLogFile != -1)
+    {
+        if (!log_started)
+        {
+            sdLogWriteLog(pprzLogFile, "AOA_PWM: ANGLE(deg) RAW(int16)\n");
+            log_started = TRUE;
+        }
+        else
+        {
+            float angle = DegOfRad(aoa_pwm.angle);
+            sdLogWriteLog(pprzLogFile, "AOA_PWM: %.3f %d\n", angle, aoa_pwm.raw);
+        }
     }
-  }
 #endif
 }
 

@@ -49,27 +49,27 @@ struct mavlink_msg_req req;
 // callback function on message reception
 static void decode_optical_flow_msg(struct mavlink_message *msg __attribute__((unused)))
 {
-  optical_flow_available = TRUE;
+    optical_flow_available = TRUE;
 
-  // Y negated to get to the body of the drone
-  AbiSendMsgVELOCITY_ESTIMATE(PX4FLOW_VELOCITY_ID, 0,
-                              (optical_flow.flow_x / optical_flow.ground_distance),
-                              -1.0 * (optical_flow.flow_y / optical_flow.ground_distance),
-                              0.0f,
-                              PX4FLOW_NOISE);
+    // Y negated to get to the body of the drone
+    AbiSendMsgVELOCITY_ESTIMATE(PX4FLOW_VELOCITY_ID, 0,
+                                (optical_flow.flow_x / optical_flow.ground_distance),
+                                -1.0 * (optical_flow.flow_y / optical_flow.ground_distance),
+                                0.0f,
+                                PX4FLOW_NOISE);
 }
 
 /** Initialization function
  */
 void px4flow_init(void)
 {
-  optical_flow_available = FALSE;
+    optical_flow_available = FALSE;
 
-  // register a mavlink message
-  req.msg_id = MAVLINK_OPTICAL_FLOW_MSG_ID;
-  req.callback = decode_optical_flow_msg;
-  req.msg.payload = (uint8_t *)(&optical_flow);
-  mavlink_register_msg(&mavlink_tp, &req);
+    // register a mavlink message
+    req.msg_id = MAVLINK_OPTICAL_FLOW_MSG_ID;
+    req.callback = decode_optical_flow_msg;
+    req.msg.payload = (uint8_t *)(&optical_flow);
+    mavlink_register_msg(&mavlink_tp, &req);
 
 }
 
@@ -82,13 +82,13 @@ void px4flow_init(void)
  */
 void px4flow_downlink(void)
 {
-  DOWNLINK_SEND_PX4FLOW(DefaultChannel, DefaultDevice,
-                        &optical_flow.sensor_id,
-                        &optical_flow.flow_x,
-                        &optical_flow.flow_y,
-                        &optical_flow.flow_comp_m_x,
-                        &optical_flow.flow_comp_m_y,
-                        &optical_flow.quality,
-                        &optical_flow.ground_distance);
+    DOWNLINK_SEND_PX4FLOW(DefaultChannel, DefaultDevice,
+                          &optical_flow.sensor_id,
+                          &optical_flow.flow_x,
+                          &optical_flow.flow_y,
+                          &optical_flow.flow_comp_m_x,
+                          &optical_flow.flow_comp_m_y,
+                          &optical_flow.quality,
+                          &optical_flow.ground_distance);
 }
 

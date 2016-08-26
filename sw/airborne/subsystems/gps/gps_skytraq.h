@@ -27,29 +27,31 @@
 #define SKYTRAQ_ID_NAVIGATION_DATA 0XA8
 
 /* last error type */
-enum GpsSkytraqError {
-  GPS_SKYTRAQ_ERR_NONE = 0,
-  GPS_SKYTRAQ_ERR_OVERRUN,
-  GPS_SKYTRAQ_ERR_MSG_TOO_LONG,
-  GPS_SKYTRAQ_ERR_CHECKSUM,
-  GPS_SKYTRAQ_ERR_OUT_OF_SYNC,
-  GPS_SKYTRAQ_ERR_UNEXPECTED
+enum GpsSkytraqError
+{
+    GPS_SKYTRAQ_ERR_NONE = 0,
+    GPS_SKYTRAQ_ERR_OVERRUN,
+    GPS_SKYTRAQ_ERR_MSG_TOO_LONG,
+    GPS_SKYTRAQ_ERR_CHECKSUM,
+    GPS_SKYTRAQ_ERR_OUT_OF_SYNC,
+    GPS_SKYTRAQ_ERR_UNEXPECTED
 };
 
 #define GPS_SKYTRAQ_MAX_PAYLOAD 255
-struct GpsSkytraq {
-  uint8_t msg_buf[GPS_SKYTRAQ_MAX_PAYLOAD];
-  bool_t  msg_available;
-  uint8_t msg_id;
+struct GpsSkytraq
+{
+    uint8_t msg_buf[GPS_SKYTRAQ_MAX_PAYLOAD];
+    bool_t  msg_available;
+    uint8_t msg_id;
 
-  uint8_t status;
-  uint16_t len;
-  uint8_t msg_idx;
-  uint8_t checksum;
-  uint8_t error_cnt;
-  enum GpsSkytraqError error_last;
+    uint8_t status;
+    uint16_t len;
+    uint8_t msg_idx;
+    uint8_t checksum;
+    uint8_t error_cnt;
+    enum GpsSkytraqError error_last;
 
-  struct LtpDef_i ref_ltp;
+    struct LtpDef_i ref_ltp;
 };
 
 extern struct GpsSkytraq gps_skytraq;
@@ -66,14 +68,16 @@ extern void gps_skytraq_msg(void);
 
 static inline void GpsEvent(void)
 {
-  struct link_device *dev = &((GPS_LINK).device);
+    struct link_device *dev = &((GPS_LINK).device);
 
-  while (dev->char_available(dev->periph)) {
-    gps_skytraq_parse(dev->get_byte(dev->periph));
-    if (gps_skytraq.msg_available) {
-      gps_skytraq_msg();
+    while (dev->char_available(dev->periph))
+    {
+        gps_skytraq_parse(dev->get_byte(dev->periph));
+        if (gps_skytraq.msg_available)
+        {
+            gps_skytraq_msg();
+        }
     }
-  }
 }
 
 #endif /* GPS_SKYTRAQ_H */

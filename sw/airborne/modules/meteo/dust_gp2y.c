@@ -50,33 +50,38 @@ struct i2c_transaction gp2y_trans;
 
 void dust_gp2y_init(void)
 {
-  dust_gp2y_status = DUST_GP2Y_UNINIT;
+    dust_gp2y_status = DUST_GP2Y_UNINIT;
 }
 
 void dust_gp2y_periodic(void)
 {
-  if (dust_gp2y_status == DUST_GP2Y_IDLE) {
-    i2c_receive(&GP2Y_I2C_DEV, &gp2y_trans, GP2Y_SLAVE_ADDR, 2);
-  } else if (dust_gp2y_status == DUST_GP2Y_UNINIT && sys_time.nb_sec > 1) {
-    dust_gp2y_status = DUST_GP2Y_IDLE;
-  }
+    if (dust_gp2y_status == DUST_GP2Y_IDLE)
+    {
+        i2c_receive(&GP2Y_I2C_DEV, &gp2y_trans, GP2Y_SLAVE_ADDR, 2);
+    }
+    else if (dust_gp2y_status == DUST_GP2Y_UNINIT && sys_time.nb_sec > 1)
+    {
+        dust_gp2y_status = DUST_GP2Y_IDLE;
+    }
 }
 
 void dust_gp2y_event(void)
 {
-  if (gp2y_trans.status == I2CTransSuccess) {
-    /* read two byte particle density */
-    dust_gp2y_density  = gp2y_trans.buf[0] << 8;
-    dust_gp2y_density |= gp2y_trans.buf[1];
+    if (gp2y_trans.status == I2CTransSuccess)
+    {
+        /* read two byte particle density */
+        dust_gp2y_density  = gp2y_trans.buf[0] << 8;
+        dust_gp2y_density |= gp2y_trans.buf[1];
 
-    /* "just for reference and not for guarantee" */
-    dust_gp2y_density_f = ((dust_gp2y_density / 1024.) * 3.3 * (51. / 33.) - 0.6) * (0.5 / 3.);
-    if (dust_gp2y_density_f < 0) {
-      dust_gp2y_density_f = 0;
+        /* "just for reference and not for guarantee" */
+        dust_gp2y_density_f = ((dust_gp2y_density / 1024.) * 3.3 * (51. / 33.) - 0.6) * (0.5 / 3.);
+        if (dust_gp2y_density_f < 0)
+        {
+            dust_gp2y_density_f = 0;
+        }
+
+        DOWNLINK_SEND_GP2Y_STATUS(DefaultChannel, DefaultDevice, &dust_gp2y_density, &dust_gp2y_density_f);
+
+        gp2y_trans.status = I2CTransDone;
     }
-
-    DOWNLINK_SEND_GP2Y_STATUS(DefaultChannel, DefaultDevice, &dust_gp2y_density, &dust_gp2y_density_f);
-
-    gp2y_trans.status = I2CTransDone;
-  }
 }

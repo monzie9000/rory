@@ -32,15 +32,16 @@
 #define NB_ACS_ID 256
 #define NB_ACS 24
 
-struct ac_info_ {
-  uint8_t ac_id;
-  float east; /* m relative to nav_utm_east0 */
-  float north; /* m relative to nav_utm_north0 */
-  float course; /* rad (CW) */
-  float alt; /* m */
-  float gspeed; /* m/s */
-  float climb; /* m/s */
-  uint32_t itow; /* ms */
+struct ac_info_
+{
+    uint8_t ac_id;
+    float east; /* m relative to nav_utm_east0 */
+    float north; /* m relative to nav_utm_north0 */
+    float course; /* rad (CW) */
+    float alt; /* m */
+    float gspeed; /* m/s */
+    float climb; /* m/s */
+    uint32_t itow; /* ms */
 };
 
 extern uint8_t acs_idx;

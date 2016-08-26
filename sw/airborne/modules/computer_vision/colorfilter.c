@@ -44,18 +44,18 @@ int color_count = 0;
 bool_t colorfilter_func(struct image_t* img);
 bool_t colorfilter_func(struct image_t* img)
 {
-  // Filter
-  color_count = image_yuv422_colorfilt(img,img,
-      color_lum_min,color_lum_max,
-      color_cb_min,color_cb_max,
-      color_cr_min,color_cr_max
-      );
+    // Filter
+    color_count = image_yuv422_colorfilt(img,img,
+                                         color_lum_min,color_lum_max,
+                                         color_cb_min,color_cb_max,
+                                         color_cr_min,color_cr_max
+                                        );
 
-  return FALSE;
+    return FALSE;
 }
 
 void colorfilter_init(void)
 {
-  cv_add(colorfilter_func);
+    cv_add(colorfilter_func);
 }
 

@@ -34,12 +34,12 @@
 
 void stereo_avoid_init(void)
 {
-  // Simulated vision: obstacle at 0,0
-  avoid_navigation_data.stereo_bin[0] = 0;
-  avoid_navigation_data.stereo_bin[1] = 0;
+    // Simulated vision: obstacle at 0,0
+    avoid_navigation_data.stereo_bin[0] = 0;
+    avoid_navigation_data.stereo_bin[1] = 0;
 
-  // Navigation Code
-  init_avoid_navigation();
+    // Navigation Code
+    init_avoid_navigation();
 }
 
 /** Normalize a degree angle between 0 and 359 */
@@ -52,60 +52,66 @@ void stereo_avoid_init(void)
 
 void stereo_avoid_run(void)
 {
-  static int counter = 0;
+    static int counter = 0;
 
-  counter++;
-  // Read Latest GST Module Results
-  if (counter >= (2)) {
-    // Vertical
-    float dx = sqrt((stateGetPositionEnu_f()->x * stateGetPositionEnu_f()->x) + (stateGetPositionEnu_f()->y *
-                    stateGetPositionEnu_f()->y));
+    counter++;
+    // Read Latest GST Module Results
+    if (counter >= (2))
+    {
+        // Vertical
+        float dx = sqrt((stateGetPositionEnu_f()->x * stateGetPositionEnu_f()->x) + (stateGetPositionEnu_f()->y *
+                        stateGetPositionEnu_f()->y));
 
-    /*
-    float dh = (17.0f - stateGetPositionEnu_f()->z);
-    float vang = atan2(dh,dx) * 80.9F * 2.0f; // 255 / PI
+        /*
+        float dh = (17.0f - stateGetPositionEnu_f()->z);
+        float vang = atan2(dh,dx) * 80.9F * 2.0f; // 255 / PI
 
-    if (vang < 0.0f)
-      vang = 0.0f;
-    if (vang > 255.0f)
-      vang = 255.0f;
-    */
-
-
-    // Horizontal
-    float bearing = atan2(- stateGetPositionEnu_f()->x, - stateGetPositionEnu_f()->y);
-    float heading = stateGetNedToBodyEulers_f()->psi;
-    float diff = bearing - heading;
-    NormAngleRad(diff);
-    diff = DegOfRad(diff);
-
-    //float hang = DegOfRad(atan2(10,dx)); // 255 / PI
+        if (vang < 0.0f)
+          vang = 0.0f;
+        if (vang > 255.0f)
+          vang = 255.0f;
+        */
 
 
-    float viewangle = 50; // degrees
-    float range = viewangle / 2.0f;
-    //float deg_per_bin = viewangle / ((float) 2);
+        // Horizontal
+        float bearing = atan2(- stateGetPositionEnu_f()->x, - stateGetPositionEnu_f()->y);
+        float heading = stateGetNedToBodyEulers_f()->psi;
+        float diff = bearing - heading;
+        NormAngleRad(diff);
+        diff = DegOfRad(diff);
 
-    float disperity = 0;
+        //float hang = DegOfRad(atan2(10,dx)); // 255 / PI
 
-    if (fabs(diff) > range) {
-      disperity = 0;
-    } else if (dx > 2) {
-      disperity = 0;
-    } else {
-      disperity = 30;
+
+        float viewangle = 50; // degrees
+        float range = viewangle / 2.0f;
+        //float deg_per_bin = viewangle / ((float) 2);
+
+        float disperity = 0;
+
+        if (fabs(diff) > range)
+        {
+            disperity = 0;
+        }
+        else if (dx > 2)
+        {
+            disperity = 0;
+        }
+        else
+        {
+            disperity = 30;
+        }
+
+        //float bin_nr_mid = range/deg_per_bin;
+        //float bin_nr_start = bin_nr_mid + diff/deg_per_bin - hang/deg_per_bin;
+        //float bin_nr_stop  = bin_nr_mid + diff/deg_per_bin + hang/deg_per_bin;
+
+        avoid_navigation_data.stereo_bin[0] = disperity;
+        avoid_navigation_data.stereo_bin[1] = diff;
+
+        counter = 0;
+        run_avoid_navigation_onvision();
     }
-
-    //float bin_nr_mid = range/deg_per_bin;
-    //float bin_nr_start = bin_nr_mid + diff/deg_per_bin - hang/deg_per_bin;
-    //float bin_nr_stop  = bin_nr_mid + diff/deg_per_bin + hang/deg_per_bin;
-
-    avoid_navigation_data.stereo_bin[0] = disperity;
-    avoid_navigation_data.stereo_bin[1] = diff;
-
-    counter = 0;
-    run_avoid_navigation_onvision();
-  }
 }
 
 

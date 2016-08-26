@@ -47,47 +47,52 @@ extern "C" {
  * the x-axis intersects the sphere of the earth at 0° latitude (Equator)
  * and 0° longitude (Greenwich). Y-axis completes it to right-hand system.
  * Units: centimeters */
-struct EcefCoor_i {
-  int32_t x; ///< in centimeters
-  int32_t y; ///< in centimeters
-  int32_t z; ///< in centimeters
+struct EcefCoor_i
+{
+    int32_t x; ///< in centimeters
+    int32_t y; ///< in centimeters
+    int32_t z; ///< in centimeters
 };
 
 /**
  * @brief vector in Latitude, Longitude and Altitude
  */
-struct LlaCoor_i {
-  int32_t lat; ///< in degrees*1e7
-  int32_t lon; ///< in degrees*1e7
-  int32_t alt; ///< in millimeters above WGS84 reference ellipsoid
+struct LlaCoor_i
+{
+    int32_t lat; ///< in degrees*1e7
+    int32_t lon; ///< in degrees*1e7
+    int32_t alt; ///< in millimeters above WGS84 reference ellipsoid
 };
 
 /**
  * @brief vector in North East Down coordinates
  */
-struct NedCoor_i {
-  int32_t x;  ///< North
-  int32_t y;  ///< East
-  int32_t z;  ///< Down
+struct NedCoor_i
+{
+    int32_t x;  ///< North
+    int32_t y;  ///< East
+    int32_t z;  ///< Down
 };
 
 /**
  * @brief vector in East North Up coordinates
  */
-struct EnuCoor_i {
-  int32_t x;  ///< East
-  int32_t y;  ///< North
-  int32_t z;  ///< Up
+struct EnuCoor_i
+{
+    int32_t x;  ///< East
+    int32_t y;  ///< North
+    int32_t z;  ///< Up
 };
 
 /**
  * @brief position in UTM coordinates
  */
-struct UtmCoor_i {
-  int32_t north; ///< in centimeters
-  int32_t east; ///< in centimeters
-  int32_t alt; ///< in millimeters above WGS84 reference ellipsoid
-  uint8_t zone; ///< UTM zone number
+struct UtmCoor_i
+{
+    int32_t north; ///< in centimeters
+    int32_t east; ///< in centimeters
+    int32_t alt; ///< in millimeters above WGS84 reference ellipsoid
+    uint8_t zone; ///< UTM zone number
 };
 
 /**
@@ -95,11 +100,12 @@ struct UtmCoor_i {
  * @details Defines the origin of the local coordinate system
  * in ECEF and LLA coordinates and the roation matrix from
  * ECEF to local frame */
-struct LtpDef_i {
-  struct EcefCoor_i ecef;        ///< Reference point in ecef
-  struct LlaCoor_i  lla;         ///< Reference point in lla
-  struct Int32RMat ltp_of_ecef; ///< Rotation matrix
-  int32_t hmsl;                  ///< Height above mean sea level in mm
+struct LtpDef_i
+{
+    struct EcefCoor_i ecef;        ///< Reference point in ecef
+    struct LlaCoor_i  lla;         ///< Reference point in lla
+    struct Int32RMat ltp_of_ecef; ///< Rotation matrix
+    int32_t hmsl;                  ///< Height above mean sea level in mm
 };
 
 extern void ltp_of_ecef_rmat_from_lla_i(struct Int32RMat *ltp_of_ecef, struct LlaCoor_i *lla);

@@ -116,10 +116,11 @@
 #endif
 #endif
 
-enum TakeoffStatus {
-  Launch,
-  Throttle,
-  Finished
+enum TakeoffStatus
+{
+    Launch,
+    Throttle,
+    Finished
 };
 
 static enum TakeoffStatus CTakeoffStatus;
@@ -131,92 +132,100 @@ static struct FloatVect3 bungee_point;
 
 static void compute_points_from_bungee(void)
 {
-  // Store init point (current position, where the plane will be released)
-  VECT2_ASSIGN(init_point, stateGetPositionEnu_f()->x, stateGetPositionEnu_f()->y);
-  // Compute unitary 2D vector (bungee_point - init_point) = takeoff direction
-  VECT2_DIFF(takeoff_dir, bungee_point, init_point);
-  float_vect2_normalize(&takeoff_dir);
-  // Find throttle point (the point where the throttle line and launch line intersect)
-  // If TakeOff_Distance is positive, throttle point is after bungee point, before otherwise
-  VECT2_SMUL(throttle_point, takeoff_dir, BUNGEE_TAKEOFF_DISTANCE);
-  VECT2_SUM(throttle_point, bungee_point, throttle_point);
+    // Store init point (current position, where the plane will be released)
+    VECT2_ASSIGN(init_point, stateGetPositionEnu_f()->x, stateGetPositionEnu_f()->y);
+    // Compute unitary 2D vector (bungee_point - init_point) = takeoff direction
+    VECT2_DIFF(takeoff_dir, bungee_point, init_point);
+    float_vect2_normalize(&takeoff_dir);
+    // Find throttle point (the point where the throttle line and launch line intersect)
+    // If TakeOff_Distance is positive, throttle point is after bungee point, before otherwise
+    VECT2_SMUL(throttle_point, takeoff_dir, BUNGEE_TAKEOFF_DISTANCE);
+    VECT2_SUM(throttle_point, bungee_point, throttle_point);
 }
 
 bool_t nav_bungee_takeoff_setup(uint8_t bungee_wp)
 {
-  // Store bungee point (from WP id, altitude should be ground alt)
-  // FIXME use current alt instead ?
-  VECT3_ASSIGN(bungee_point, WaypointX(bungee_wp), WaypointY(bungee_wp), WaypointAlt(bungee_wp));
+    // Store bungee point (from WP id, altitude should be ground alt)
+    // FIXME use current alt instead ?
+    VECT3_ASSIGN(bungee_point, WaypointX(bungee_wp), WaypointY(bungee_wp), WaypointAlt(bungee_wp));
 
-  // Compute other points
-  compute_points_from_bungee();
+    // Compute other points
+    compute_points_from_bungee();
 
-  // Enable Launch Status and turn kill throttle on
-  CTakeoffStatus = Launch;
-  kill_throttle = 1;
+    // Enable Launch Status and turn kill throttle on
+    CTakeoffStatus = Launch;
+    kill_throttle = 1;
 
-  return FALSE;
+    return FALSE;
 }
 
 bool_t nav_bungee_takeoff_run(void)
 {
-  float cross = 0.;
+    float cross = 0.;
 
-  // Get current position
-  struct FloatVect2 pos;
-  VECT2_ASSIGN(pos, stateGetPositionEnu_f()->x, stateGetPositionEnu_f()->y);
+    // Get current position
+    struct FloatVect2 pos;
+    VECT2_ASSIGN(pos, stateGetPositionEnu_f()->x, stateGetPositionEnu_f()->y);
 
-  switch (CTakeoffStatus) {
+    switch (CTakeoffStatus)
+    {
     case Launch:
-      // Recalculate lines if below min speed
-      if (stateGetHorizontalSpeedNorm_f() < BUNGEE_TAKEOFF_MIN_SPEED) {
-        compute_points_from_bungee();
-      }
+        // Recalculate lines if below min speed
+        if (stateGetHorizontalSpeedNorm_f() < BUNGEE_TAKEOFF_MIN_SPEED)
+        {
+            compute_points_from_bungee();
+        }
 
-      // Follow Launch Line with takeoff pitch and no throttle
-      NavVerticalAutoThrottleMode(BUNGEE_TAKEOFF_PITCH);
-      NavVerticalThrottleMode(0);
-      // FIXME previously using altitude mode, maybe not wise without motors
-      //NavVerticalAltitudeMode(bungee_point.z + BUNGEE_TAKEOFF_HEIGHT, 0.);
-      nav_route_xy(init_point.x, init_point.y, throttle_point.x, throttle_point.y);
+        // Follow Launch Line with takeoff pitch and no throttle
+        NavVerticalAutoThrottleMode(BUNGEE_TAKEOFF_PITCH);
+        NavVerticalThrottleMode(0);
+        // FIXME previously using altitude mode, maybe not wise without motors
+        //NavVerticalAltitudeMode(bungee_point.z + BUNGEE_TAKEOFF_HEIGHT, 0.);
+        nav_route_xy(init_point.x, init_point.y, throttle_point.x, throttle_point.y);
 
-      kill_throttle = 1;
+        kill_throttle = 1;
 
-      // Find out if UAV has crossed the line
-      VECT2_DIFF(pos, pos, throttle_point); // position local to throttle_point
-      cross = VECT2_DOT_PRODUCT(pos, takeoff_dir);
+        // Find out if UAV has crossed the line
+        VECT2_DIFF(pos, pos, throttle_point); // position local to throttle_point
+        cross = VECT2_DOT_PRODUCT(pos, takeoff_dir);
 
-      if (cross > 0. && stateGetHorizontalSpeedNorm_f() > BUNGEE_TAKEOFF_MIN_SPEED) {
-        CTakeoffStatus = Throttle;
-        kill_throttle = 0;
-        nav_init_stage();
-      } else {
-        // If not crossed stay in this status
-        break;
-      }
-    // Start throttle imidiatelly
+        if (cross > 0. && stateGetHorizontalSpeedNorm_f() > BUNGEE_TAKEOFF_MIN_SPEED)
+        {
+            CTakeoffStatus = Throttle;
+            kill_throttle = 0;
+            nav_init_stage();
+        }
+        else
+        {
+            // If not crossed stay in this status
+            break;
+        }
+        // Start throttle imidiatelly
     case Throttle:
-      //Follow Launch Line
-      NavVerticalAutoThrottleMode(BUNGEE_TAKEOFF_PITCH);
-      NavVerticalThrottleMode(MAX_PPRZ * (BUNGEE_TAKEOFF_THROTTLE));
-      nav_route_xy(init_point.x, init_point.y, throttle_point.x, throttle_point.y);
-      kill_throttle = 0;
+        //Follow Launch Line
+        NavVerticalAutoThrottleMode(BUNGEE_TAKEOFF_PITCH);
+        NavVerticalThrottleMode(MAX_PPRZ * (BUNGEE_TAKEOFF_THROTTLE));
+        nav_route_xy(init_point.x, init_point.y, throttle_point.x, throttle_point.y);
+        kill_throttle = 0;
 
-      if ((stateGetPositionUtm_f()->alt > bungee_point.z + BUNGEE_TAKEOFF_HEIGHT)
+        if ((stateGetPositionUtm_f()->alt > bungee_point.z + BUNGEE_TAKEOFF_HEIGHT)
 #if USE_AIRSPEED
-          && (stateGetAirspeed_f() > BUNGEE_TAKEOFF_AIRSPEED)
+                && (stateGetAirspeed_f() > BUNGEE_TAKEOFF_AIRSPEED)
 #endif
-          ) {
-        CTakeoffStatus = Finished;
-        return FALSE;
-      } else {
-        return TRUE;
-      }
-      break;
+           )
+        {
+            CTakeoffStatus = Finished;
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
+        break;
     default:
-      // Invalid status or Finished, end function
-      return FALSE;
-  }
-  return TRUE;
+        // Invalid status or Finished, end function
+        return FALSE;
+    }
+    return TRUE;
 }
 

@@ -35,9 +35,10 @@
 #include "peripherals/mpu60x0_spi.h"
 #include "peripherals/hmc58xx.h"
 
-struct ImuPx4fmu {
-  struct Mpu60x0_Spi mpu;
-  struct Hmc58xx hmc;
+struct ImuPx4fmu
+{
+    struct Mpu60x0_Spi mpu;
+    struct Hmc58xx hmc;
 };
 
 extern struct ImuPx4fmu imu_px4fmu;

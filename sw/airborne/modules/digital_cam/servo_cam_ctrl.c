@@ -55,11 +55,11 @@ static uint8_t dc_timer;
 
 void servo_cam_ctrl_init(void)
 {
-  // Call common DC init
-  dc_init();
+    // Call common DC init
+    dc_init();
 
-  // Do Servo specific DC init
-  dc_timer = 0;
+    // Do Servo specific DC init
+    dc_timer = 0;
 }
 
 
@@ -67,60 +67,65 @@ void servo_cam_ctrl_init(void)
 void servo_cam_ctrl_periodic(void)
 {
 #ifdef DC_SHOOT_ON_BUTTON_RELEASE
-  if (dc_timer == 1) {
-    dc_send_shot_position();
-  }
+    if (dc_timer == 1)
+    {
+        dc_send_shot_position();
+    }
 #endif
 
-  if (dc_timer) {
-    dc_timer--;
-  } else {
-    DC_RELEASE(DC_SHUTTER_SERVO);
+    if (dc_timer)
+    {
+        dc_timer--;
+    }
+    else
+    {
+        DC_RELEASE(DC_SHUTTER_SERVO);
 #ifdef DC_ZOOM_IN_SERVO
-    DC_RELEASE(DC_ZOOM_IN_SERVO);
+        DC_RELEASE(DC_ZOOM_IN_SERVO);
 #endif
 #ifdef DC_ZOOM_OUT_SERVO
-    DC_RELEASE(DC_ZOOM_OUT_SERVO);
+        DC_RELEASE(DC_ZOOM_OUT_SERVO);
 #endif
 #ifdef DC_POWER_SERVO
-    DC_RELEASE(DC_POWER_SERVO);
+        DC_RELEASE(DC_POWER_SERVO);
 #endif
-  }
+    }
 
-  // Common DC Periodic task
-  dc_periodic();
+    // Common DC Periodic task
+    dc_periodic();
 }
 
 
 /* Command The Camera */
 void dc_send_command(uint8_t cmd)
 {
-  dc_timer = DC_SHUTTER_DELAY * SERVO_CAM_CTRL_PERIODIC_FREQ;
+    dc_timer = DC_SHUTTER_DELAY * SERVO_CAM_CTRL_PERIODIC_FREQ;
 
-  switch (cmd) {
+    switch (cmd)
+    {
     case DC_SHOOT:
-      DC_PUSH(DC_SHUTTER_SERVO);
+        DC_PUSH(DC_SHUTTER_SERVO);
 #ifndef DC_SHOOT_ON_BUTTON_RELEASE
-      dc_send_shot_position();
+        dc_send_shot_position();
 #endif
-      break;
+        break;
 #ifdef DC_ZOOM_IN_SERVO
     case DC_TALLER:
-      DC_PUSH(DC_ZOOM_IN_SERVO);
-      break;
+        DC_PUSH(DC_ZOOM_IN_SERVO);
+        break;
 #endif
 #ifdef DC_ZOOM_OUT_SERVO
     case DC_WIDER:
-      DC_PUSH(DC_ZOOM_OUT_SERVO);
-      break;
+        DC_PUSH(DC_ZOOM_OUT_SERVO);
+        break;
 #endif
 #ifdef DC_POWER_SERVO
     case DC_ON:
-      DC_PUSH(DC_POWER_SERVO);
-      break;
+        DC_PUSH(DC_POWER_SERVO);
+        break;
 #endif
     default:
-      break;
-  }
+        break;
+    }
 }
 

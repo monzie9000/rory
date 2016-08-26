@@ -97,12 +97,13 @@ PRINT_CONFIG_VAR(VIEWVIDEO_HOST)
 PRINT_CONFIG_VAR(VIEWVIDEO_PORT_OUT)
 
 // Initialize the viewvideo structure with the defaults
-struct viewvideo_t viewvideo = {
-  .is_streaming = FALSE,
-  .downsize_factor = VIEWVIDEO_DOWNSIZE_FACTOR,
-  .quality_factor = VIEWVIDEO_QUALITY_FACTOR,
+struct viewvideo_t viewvideo =
+{
+    .is_streaming = FALSE,
+    .downsize_factor = VIEWVIDEO_DOWNSIZE_FACTOR,
+    .quality_factor = VIEWVIDEO_QUALITY_FACTOR,
 #if !VIEWVIDEO_USE_NETCAT
-  .use_rtp = VIEWVIDEO_USE_RTP,
+    .use_rtp = VIEWVIDEO_USE_RTP,
 #endif
 };
 
@@ -113,83 +114,96 @@ struct viewvideo_t viewvideo = {
 bool_t viewvideo_function(struct image_t *img);
 bool_t viewvideo_function(struct image_t *img)
 {
-  // Resize image if needed
-  struct image_t img_small;
-  image_create(&img_small,
-               img->w / viewvideo.downsize_factor,
-               img->h / viewvideo.downsize_factor,
-               IMAGE_YUV422);
+    // Resize image if needed
+    struct image_t img_small;
+    image_create(&img_small,
+                 img->w / viewvideo.downsize_factor,
+                 img->h / viewvideo.downsize_factor,
+                 IMAGE_YUV422);
 
-  // Create the JPEG encoded image
-  struct image_t img_jpeg;
-  image_create(&img_jpeg, img_small.w, img_small.h, IMAGE_JPEG);
+    // Create the JPEG encoded image
+    struct image_t img_jpeg;
+    image_create(&img_jpeg, img_small.w, img_small.h, IMAGE_JPEG);
 
 #if VIEWVIDEO_USE_NETCAT
-  char nc_cmd[64];
-  sprintf(nc_cmd, "nc %s %d 2>/dev/null", STRINGIFY(VIEWVIDEO_HOST), VIEWVIDEO_PORT_OUT);
+    char nc_cmd[64];
+    sprintf(nc_cmd, "nc %s %d 2>/dev/null", STRINGIFY(VIEWVIDEO_HOST), VIEWVIDEO_PORT_OUT);
 #endif
 
-  if (viewvideo.is_streaming) {
+    if (viewvideo.is_streaming)
+    {
 
-    // Only resize when needed
-    if (viewvideo.downsize_factor != 1) {
-      image_yuv422_downsample(img, &img_small, viewvideo.downsize_factor);
-      jpeg_encode_image(&img_small, &img_jpeg, VIEWVIDEO_QUALITY_FACTOR, VIEWVIDEO_USE_NETCAT);
-    } else {
-      jpeg_encode_image(img, &img_jpeg, VIEWVIDEO_QUALITY_FACTOR, VIEWVIDEO_USE_NETCAT);
-    }
+        // Only resize when needed
+        if (viewvideo.downsize_factor != 1)
+        {
+            image_yuv422_downsample(img, &img_small, viewvideo.downsize_factor);
+            jpeg_encode_image(&img_small, &img_jpeg, VIEWVIDEO_QUALITY_FACTOR, VIEWVIDEO_USE_NETCAT);
+        }
+        else
+        {
+            jpeg_encode_image(img, &img_jpeg, VIEWVIDEO_QUALITY_FACTOR, VIEWVIDEO_USE_NETCAT);
+        }
 
 #if VIEWVIDEO_USE_NETCAT
-    // Open process to send using netcat (in a fork because sometimes kills itself???)
-    pid_t pid = fork();
+        // Open process to send using netcat (in a fork because sometimes kills itself???)
+        pid_t pid = fork();
 
-    if (pid < 0) {
-      printf("[viewvideo] Could not create netcat fork.\n");
-    } else if (pid == 0) {
-      // We are the child and want to send the image
-      FILE *netcat = popen(nc_cmd, "w");
-      if (netcat != NULL) {
-        fwrite(img_jpeg.buf, sizeof(uint8_t), img_jpeg.buf_size, netcat);
-        pclose(netcat); // Ignore output, because it is too much when not connected
-      } else {
-        printf("[viewvideo] Failed to open netcat process.\n");
-      }
+        if (pid < 0)
+        {
+            printf("[viewvideo] Could not create netcat fork.\n");
+        }
+        else if (pid == 0)
+        {
+            // We are the child and want to send the image
+            FILE *netcat = popen(nc_cmd, "w");
+            if (netcat != NULL)
+            {
+                fwrite(img_jpeg.buf, sizeof(uint8_t), img_jpeg.buf_size, netcat);
+                pclose(netcat); // Ignore output, because it is too much when not connected
+            }
+            else
+            {
+                printf("[viewvideo] Failed to open netcat process.\n");
+            }
 
-      // Exit the program since we don't want to continue after transmitting
-      exit(0);
-    } else {
-      // We want to wait until the child is finished
-      wait(NULL);
-    }
+            // Exit the program since we don't want to continue after transmitting
+            exit(0);
+        }
+        else
+        {
+            // We want to wait until the child is finished
+            wait(NULL);
+        }
 #else
-    if (viewvideo.use_rtp) {
+        if (viewvideo.use_rtp)
+        {
 
-      // Send image with RTP
-      rtp_frame_send(
-        &video_sock,              // UDP socket
-        &img_jpeg,
-        0,                        // Format 422
-        VIEWVIDEO_QUALITY_FACTOR, // Jpeg-Quality
-        0,                        // DRI Header
-        VIEWVIDEO_RTP_TIME_INC    // 90kHz time increment
-      );
-      // Extra note: when the time increment is set to 0,
-      // it is automaticaly calculated by the send_rtp_frame function
-      // based on gettimeofday value. This seems to introduce some lag or jitter.
-      // An other way is to compute the time increment and set the correct value.
-      // It seems that a lower value is also working (when the frame is received
-      // the timestamp is always "late" so the frame is displayed immediately).
-      // Here, we set the time increment to the lowest possible value
-      // (1 = 1/90000 s) which is probably stupid but is actually working.
-    }
+            // Send image with RTP
+            rtp_frame_send(
+                &video_sock,              // UDP socket
+                &img_jpeg,
+                0,                        // Format 422
+                VIEWVIDEO_QUALITY_FACTOR, // Jpeg-Quality
+                0,                        // DRI Header
+                VIEWVIDEO_RTP_TIME_INC    // 90kHz time increment
+            );
+            // Extra note: when the time increment is set to 0,
+            // it is automaticaly calculated by the send_rtp_frame function
+            // based on gettimeofday value. This seems to introduce some lag or jitter.
+            // An other way is to compute the time increment and set the correct value.
+            // It seems that a lower value is also working (when the frame is received
+            // the timestamp is always "late" so the frame is displayed immediately).
+            // Here, we set the time increment to the lowest possible value
+            // (1 = 1/90000 s) which is probably stupid but is actually working.
+        }
 #endif
 
-  }
+    }
 
-  // Free all buffers
-  image_free(&img_jpeg);
-  image_free(&img_small);
-  return TRUE;
+    // Free all buffers
+    image_free(&img_jpeg);
+    image_free(&img_small);
+    return TRUE;
 }
 
 /**
@@ -197,43 +211,49 @@ bool_t viewvideo_function(struct image_t *img)
  */
 void viewvideo_init(void)
 {
-  char save_name[512];
+    char save_name[512];
 
-  cv_add(viewvideo_function);
+    cv_add(viewvideo_function);
 
-  viewvideo.is_streaming = TRUE;
+    viewvideo.is_streaming = TRUE;
 
 #if VIEWVIDEO_USE_NETCAT
-  // Create an Netcat receiver file for the streaming
-  sprintf(save_name, "%s/netcat-recv.sh", STRINGIFY(VIEWVIDEO_SHOT_PATH));
-  FILE *fp = fopen(save_name, "w");
-  if (fp != NULL) {
-    fprintf(fp, "i=0\n");
-    fprintf(fp, "while true\n");
-    fprintf(fp, "do\n");
-    fprintf(fp, "\tn=$(printf \"%%04d\" $i)\n");
-    fprintf(fp, "\tnc -l 0.0.0.0 %d > img_${n}.jpg\n", (int)(VIEWVIDEO_PORT_OUT));
-    fprintf(fp, "\ti=$((i+1))\n");
-    fprintf(fp, "done\n");
-    fclose(fp);
-  } else {
-    printf("[viewvideo] Failed to create netcat receiver file.\n");
-  }
+    // Create an Netcat receiver file for the streaming
+    sprintf(save_name, "%s/netcat-recv.sh", STRINGIFY(VIEWVIDEO_SHOT_PATH));
+    FILE *fp = fopen(save_name, "w");
+    if (fp != NULL)
+    {
+        fprintf(fp, "i=0\n");
+        fprintf(fp, "while true\n");
+        fprintf(fp, "do\n");
+        fprintf(fp, "\tn=$(printf \"%%04d\" $i)\n");
+        fprintf(fp, "\tnc -l 0.0.0.0 %d > img_${n}.jpg\n", (int)(VIEWVIDEO_PORT_OUT));
+        fprintf(fp, "\ti=$((i+1))\n");
+        fprintf(fp, "done\n");
+        fclose(fp);
+    }
+    else
+    {
+        printf("[viewvideo] Failed to create netcat receiver file.\n");
+    }
 #else
-  // Open udp socket
-  udp_socket_create(&video_sock, STRINGIFY(VIEWVIDEO_HOST), VIEWVIDEO_PORT_OUT, -1, VIEWVIDEO_BROADCAST);
+    // Open udp socket
+    udp_socket_create(&video_sock, STRINGIFY(VIEWVIDEO_HOST), VIEWVIDEO_PORT_OUT, -1, VIEWVIDEO_BROADCAST);
 
-  // Create an SDP file for the streaming
-  sprintf(save_name, "%s/stream.sdp", STRINGIFY(VIEWVIDEO_SHOT_PATH));
-  FILE *fp = fopen(save_name, "w");
-  if (fp != NULL) {
-    fprintf(fp, "v=0\n");
-    fprintf(fp, "m=video %d RTP/AVP 26\n", (int)(VIEWVIDEO_PORT_OUT));
-    fprintf(fp, "c=IN IP4 0.0.0.0\n");
-    fclose(fp);
-  } else {
-    printf("[viewvideo] Failed to create SDP file.\n");
-  }
+    // Create an SDP file for the streaming
+    sprintf(save_name, "%s/stream.sdp", STRINGIFY(VIEWVIDEO_SHOT_PATH));
+    FILE *fp = fopen(save_name, "w");
+    if (fp != NULL)
+    {
+        fprintf(fp, "v=0\n");
+        fprintf(fp, "m=video %d RTP/AVP 26\n", (int)(VIEWVIDEO_PORT_OUT));
+        fprintf(fp, "c=IN IP4 0.0.0.0\n");
+        fclose(fp);
+    }
+    else
+    {
+        printf("[viewvideo] Failed to create SDP file.\n");
+    }
 #endif
 }
 

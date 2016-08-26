@@ -29,10 +29,11 @@
 
 #include "std.h"
 
-struct SonarAdc {
-  uint16_t meas;          ///< Raw ADC value
-  uint16_t offset;        ///< Sonar offset in ADC units
-  float distance;         ///< Distance measured in meters
+struct SonarAdc
+{
+    uint16_t meas;          ///< Raw ADC value
+    uint16_t offset;        ///< Sonar offset in ADC units
+    float distance;         ///< Distance measured in meters
 };
 
 extern struct SonarAdc sonar_adc;

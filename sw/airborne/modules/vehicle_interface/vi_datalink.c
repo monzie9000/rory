@@ -41,13 +41,13 @@ struct Int16Vect3 wp_speed_max = { ViMaxHSpeed, ViMaxHSpeed, ViMaxVSpeed };
 
 void vi_update_wp(uint8_t wp_id)
 {
-  struct Int16Vect3 wp_speed;
-  wp_speed.x = ViMaxHSpeed * vi.input.h_sp.speed.x / 128;
-  wp_speed.y = ViMaxHSpeed * vi.input.h_sp.speed.y / 128;
-  wp_speed.z = ViMaxVSpeed * vi.input.v_sp.climb / 128;
-  VECT3_BOUND_BOX(wp_speed, wp_speed, wp_speed_max);
-  int16_t heading_rate = vi.input.h_sp.speed.z;
-  BoundAbs(heading_rate, ViMaxHeadingRate);
-  navigation_update_wp_from_speed(wp_id , wp_speed, heading_rate);
+    struct Int16Vect3 wp_speed;
+    wp_speed.x = ViMaxHSpeed * vi.input.h_sp.speed.x / 128;
+    wp_speed.y = ViMaxHSpeed * vi.input.h_sp.speed.y / 128;
+    wp_speed.z = ViMaxVSpeed * vi.input.v_sp.climb / 128;
+    VECT3_BOUND_BOX(wp_speed, wp_speed, wp_speed_max);
+    int16_t heading_rate = vi.input.h_sp.speed.z;
+    BoundAbs(heading_rate, ViMaxHeadingRate);
+    navigation_update_wp_from_speed(wp_id , wp_speed, heading_rate);
 
 }

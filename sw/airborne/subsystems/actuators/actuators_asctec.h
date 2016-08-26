@@ -50,13 +50,14 @@ enum actuators_asctec_cmds { PITCH,
                              CMD_NB
                            };
 
-struct ActuatorsAsctec {
-  enum actuators_asctec_cmd cmd;
-  enum actuators_asctec_addr cur_addr;
-  enum actuators_asctec_addr new_addr;
-  int32_t cmds[CMD_NB];
-  struct i2c_transaction i2c_trans;
-  volatile uint32_t nb_err;
+struct ActuatorsAsctec
+{
+    enum actuators_asctec_cmd cmd;
+    enum actuators_asctec_addr cur_addr;
+    enum actuators_asctec_addr new_addr;
+    int32_t cmds[CMD_NB];
+    struct i2c_transaction i2c_trans;
+    volatile uint32_t nb_err;
 };
 
 

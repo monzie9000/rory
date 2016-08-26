@@ -39,15 +39,15 @@ void actuators_init(void)
 {
 
 #if defined ACTUATORS_START_DELAY && ! defined SITL
-  actuators_delay_done = FALSE;
-  SysTimeTimerStart(actuators_delay_time);
+    actuators_delay_done = FALSE;
+    SysTimeTimerStart(actuators_delay_time);
 #else
-  actuators_delay_done = TRUE;
-  actuators_delay_time = 0;
+    actuators_delay_done = TRUE;
+    actuators_delay_time = 0;
 #endif
 
-  // Init macro from generated airframe.h
-  AllActuatorsInit();
+    // Init macro from generated airframe.h
+    AllActuatorsInit();
 
 }
 

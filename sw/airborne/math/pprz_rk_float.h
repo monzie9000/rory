@@ -53,17 +53,17 @@ extern "C" {
  * @param dt integration step
  */
 static inline void runge_kutta_1_float(
-  float *xo,
-  const float *x, const int n,
-  const float *u, const int m,
-  void (*f)(float *o, const float *x, const int n, const float *u, const int m),
-  const float dt)
+    float *xo,
+    const float *x, const int n,
+    const float *u, const int m,
+    void (*f)(float *o, const float *x, const int n, const float *u, const int m),
+    const float dt)
 {
-  float dx[n];
+    float dx[n];
 
-  f(dx, x, n, u, m);
-  float_vect_smul(xo, dx, dt, n);
-  float_vect_add(xo, x, n);
+    f(dx, x, n, u, m);
+    float_vect_smul(xo, dx, dt, n);
+    float_vect_add(xo, x, n);
 }
 
 /** Second-Order Runge-Kutta
@@ -87,22 +87,22 @@ static inline void runge_kutta_1_float(
  * @param dt integration step
  */
 static inline void runge_kutta_2_float(
-  float *xo,
-  const float *x, const int n,
-  const float *u, const int m,
-  void (*f)(float *o, const float *x, const int n, const float *u, const int m),
-  const float dt)
+    float *xo,
+    const float *x, const int n,
+    const float *u, const int m,
+    void (*f)(float *o, const float *x, const int n, const float *u, const int m),
+    const float dt)
 {
-  float mid_point[n];
+    float mid_point[n];
 
-  // mid_point = x + (dt/2)*f(x, u)
-  f(mid_point, x, n, u, m);
-  float_vect_smul(mid_point, mid_point, dt / 2., n);
-  float_vect_add(mid_point, x, n);
-  // xo = x + dt * f(mid_point, u)
-  f(xo, mid_point, n, u, m);
-  float_vect_smul(xo, xo, dt, n);
-  float_vect_add(xo, x, n);
+    // mid_point = x + (dt/2)*f(x, u)
+    f(mid_point, x, n, u, m);
+    float_vect_smul(mid_point, mid_point, dt / 2., n);
+    float_vect_add(mid_point, x, n);
+    // xo = x + dt * f(mid_point, u)
+    f(xo, mid_point, n, u, m);
+    float_vect_smul(xo, xo, dt, n);
+    float_vect_add(xo, x, n);
 }
 
 /** Fourth-Order Runge-Kutta
@@ -130,39 +130,39 @@ static inline void runge_kutta_2_float(
  * @param dt integration step
  */
 static inline void runge_kutta_4_float(
-  float *xo,
-  const float *x, const int n,
-  const float *u, const int m,
-  void (*f)(float *o, const float *x, const int n, const float *u, const int m),
-  const float dt)
+    float *xo,
+    const float *x, const int n,
+    const float *u, const int m,
+    void (*f)(float *o, const float *x, const int n, const float *u, const int m),
+    const float dt)
 {
-  float k1[n], k2[n], k3[n], k4[n], ktmp[n];
+    float k1[n], k2[n], k3[n], k4[n], ktmp[n];
 
-  // k1 = f(x, u)
-  f(k1, x, n, u, m);
+    // k1 = f(x, u)
+    f(k1, x, n, u, m);
 
-  // k2 = f(x + dt * (k1 / 2), u)
-  float_vect_smul(ktmp, k1, dt / 2., n);
-  float_vect_add(ktmp, x, n);
-  f(k2, ktmp, n, u, m);
+    // k2 = f(x + dt * (k1 / 2), u)
+    float_vect_smul(ktmp, k1, dt / 2., n);
+    float_vect_add(ktmp, x, n);
+    f(k2, ktmp, n, u, m);
 
-  // k3 = f(x + dt * (k2 / 2), u)
-  float_vect_smul(ktmp, k2, dt / 2., n);
-  float_vect_add(ktmp, x, n);
-  f(k3, ktmp, n, u, m);
+    // k3 = f(x + dt * (k2 / 2), u)
+    float_vect_smul(ktmp, k2, dt / 2., n);
+    float_vect_add(ktmp, x, n);
+    f(k3, ktmp, n, u, m);
 
-  // k4 = f(x + dt * k3, u)
-  float_vect_smul(ktmp, k3, dt, n);
-  float_vect_add(ktmp, x, n);
-  f(k4, ktmp, n, u, m);
+    // k4 = f(x + dt * k3, u)
+    float_vect_smul(ktmp, k3, dt, n);
+    float_vect_add(ktmp, x, n);
+    f(k4, ktmp, n, u, m);
 
-  // xo = x + (dt / 6) * (k1 + 2 * (k2 + k3) + k4)
-  float_vect_add(k2, k3, n);
-  float_vect_smul(k2, k2, 2., n);
-  float_vect_add(k1, k2, n);
-  float_vect_add(k1, k4, n);
-  float_vect_smul(k1, k1, dt / 6., n);
-  float_vect_sum(xo, x, k1, n);
+    // xo = x + (dt / 6) * (k1 + 2 * (k2 + k3) + k4)
+    float_vect_add(k2, k3, n);
+    float_vect_smul(k2, k2, 2., n);
+    float_vect_add(k1, k2, n);
+    float_vect_add(k1, k4, n);
+    float_vect_smul(k1, k1, dt / 6., n);
+    float_vect_sum(xo, x, k1, n);
 }
 
 #ifdef __cplusplus

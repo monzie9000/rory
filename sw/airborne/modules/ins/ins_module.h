@@ -88,17 +88,20 @@ void parse_ins_buffer(uint8_t);
 
 static inline void ins_event_check_and_handle(void (* handler)(void))
 {
-  struct link_device *dev = InsLinkDevice;
-  if (dev->char_available(dev->periph)) {
-    while (dev->char_available(dev->periph) && !ins_msg_received) {
-      parse_ins_buffer(dev->get_byte(dev->periph));
+    struct link_device *dev = InsLinkDevice;
+    if (dev->char_available(dev->periph))
+    {
+        while (dev->char_available(dev->periph) && !ins_msg_received)
+        {
+            parse_ins_buffer(dev->get_byte(dev->periph));
+        }
     }
-  }
-  if (ins_msg_received) {
-    parse_ins_msg();
-    handler();
-    ins_msg_received = FALSE;
-  }
+    if (ins_msg_received)
+    {
+        parse_ins_msg();
+        handler();
+        ins_msg_received = FALSE;
+    }
 }
 
 #endif /* INS_MODULE_H */

@@ -36,40 +36,45 @@
 /* Address and register definitions */
 #include "peripherals/hmc58xx_regs.h"
 
-struct Hmc58xxConfig {
-  uint8_t rate;  ///< Data Output Rate Bits(6 -> 50Hz with HMC5843, 75Hz with HMC5883)
-  uint8_t meas;  ///< Measurement configuration
-  uint8_t gain;   ///< Gain configuration (1 -> +- 1 Gauss)
-  uint8_t mode;   ///< Measurement mode
+struct Hmc58xxConfig
+{
+    uint8_t rate;  ///< Data Output Rate Bits(6 -> 50Hz with HMC5843, 75Hz with HMC5883)
+    uint8_t meas;  ///< Measurement configuration
+    uint8_t gain;   ///< Gain configuration (1 -> +- 1 Gauss)
+    uint8_t mode;   ///< Measurement mode
 };
 
 /** config status states */
-enum Hmc58xxConfStatus {
-  HMC_CONF_UNINIT,
-  HMC_CONF_CRA,
-  HMC_CONF_CRB,
-  HMC_CONF_MODE,
-  HMC_CONF_DONE
+enum Hmc58xxConfStatus
+{
+    HMC_CONF_UNINIT,
+    HMC_CONF_CRA,
+    HMC_CONF_CRB,
+    HMC_CONF_MODE,
+    HMC_CONF_DONE
 };
 
-enum Hmc58xxType {
-  HMC_TYPE_5843,
-  HMC_TYPE_5883
+enum Hmc58xxType
+{
+    HMC_TYPE_5843,
+    HMC_TYPE_5883
 };
 
-struct Hmc58xx {
-  struct i2c_periph *i2c_p;
-  struct i2c_transaction i2c_trans;
-  bool_t initialized;                 ///< config done flag
-  enum Hmc58xxConfStatus init_status; ///< init status
-  volatile bool_t data_available;     ///< data ready flag
-  union {
-    struct Int16Vect3 vect;           ///< data vector in mag coordinate system
-    int16_t value[3];                 ///< data values accessible by channel index
-  } data;
-  struct Hmc58xxConfig config;
-  enum Hmc58xxType type;
-  uint16_t adc_overflow_cnt;          ///< counts number of ADC measurement under/overflows
+struct Hmc58xx
+{
+    struct i2c_periph *i2c_p;
+    struct i2c_transaction i2c_trans;
+    bool_t initialized;                 ///< config done flag
+    enum Hmc58xxConfStatus init_status; ///< init status
+    volatile bool_t data_available;     ///< data ready flag
+    union
+    {
+        struct Int16Vect3 vect;           ///< data vector in mag coordinate system
+        int16_t value[3];                 ///< data values accessible by channel index
+    } data;
+    struct Hmc58xxConfig config;
+    enum Hmc58xxType type;
+    uint16_t adc_overflow_cnt;          ///< counts number of ADC measurement under/overflows
 };
 
 
@@ -84,11 +89,14 @@ extern void hmc58xx_event(struct Hmc58xx *hmc);
 /// convenience function: read or start configuration if not already initialized
 static inline void hmc58xx_periodic(struct Hmc58xx *hmc)
 {
-  if (hmc->initialized) {
-    hmc58xx_read(hmc);
-  } else {
-    hmc58xx_start_configure(hmc);
-  }
+    if (hmc->initialized)
+    {
+        hmc58xx_read(hmc);
+    }
+    else
+    {
+        hmc58xx_start_configure(hmc);
+    }
 }
 
 #endif /* HMC58XX_H */

@@ -74,52 +74,54 @@ struct ImuMpu6000Hmc5883 imu_mpu_hmc;
 
 void imu_impl_init(void)
 {
-  mpu60x0_spi_init(&imu_mpu_hmc.mpu, &IMU_MPU_SPI_DEV, IMU_MPU_SPI_SLAVE_IDX);
-  // change the default configuration
-  imu_mpu_hmc.mpu.config.smplrt_div = IMU_MPU_SMPLRT_DIV;
-  imu_mpu_hmc.mpu.config.dlpf_cfg = IMU_MPU_LOWPASS_FILTER;
-  imu_mpu_hmc.mpu.config.gyro_range = IMU_MPU_GYRO_RANGE;
-  imu_mpu_hmc.mpu.config.accel_range = IMU_MPU_ACCEL_RANGE;
+    mpu60x0_spi_init(&imu_mpu_hmc.mpu, &IMU_MPU_SPI_DEV, IMU_MPU_SPI_SLAVE_IDX);
+    // change the default configuration
+    imu_mpu_hmc.mpu.config.smplrt_div = IMU_MPU_SMPLRT_DIV;
+    imu_mpu_hmc.mpu.config.dlpf_cfg = IMU_MPU_LOWPASS_FILTER;
+    imu_mpu_hmc.mpu.config.gyro_range = IMU_MPU_GYRO_RANGE;
+    imu_mpu_hmc.mpu.config.accel_range = IMU_MPU_ACCEL_RANGE;
 
-  /* initialize mag and set default options */
-  hmc58xx_init(&imu_mpu_hmc.hmc, &IMU_HMC_I2C_DEV, HMC58XX_ADDR);
+    /* initialize mag and set default options */
+    hmc58xx_init(&imu_mpu_hmc.hmc, &IMU_HMC_I2C_DEV, HMC58XX_ADDR);
 }
 
 
 void imu_periodic(void)
 {
-  mpu60x0_spi_periodic(&imu_mpu_hmc.mpu);
+    mpu60x0_spi_periodic(&imu_mpu_hmc.mpu);
 
-  /* Read HMC58XX every 10 times of main freq
-   * at ~50Hz (main loop for rotorcraft: 512Hz)
-   */
-  RunOnceEvery(10, hmc58xx_periodic(&imu_mpu_hmc.hmc));
+    /* Read HMC58XX every 10 times of main freq
+     * at ~50Hz (main loop for rotorcraft: 512Hz)
+     */
+    RunOnceEvery(10, hmc58xx_periodic(&imu_mpu_hmc.hmc));
 }
 
 void imu_mpu_hmc_event(void)
 {
-  uint32_t now_ts = get_sys_time_usec();
+    uint32_t now_ts = get_sys_time_usec();
 
-  mpu60x0_spi_event(&imu_mpu_hmc.mpu);
-  if (imu_mpu_hmc.mpu.data_available) {
-    RATES_COPY(imu.gyro_unscaled, imu_mpu_hmc.mpu.data_rates.rates);
-    VECT3_COPY(imu.accel_unscaled, imu_mpu_hmc.mpu.data_accel.vect);
-    imu_mpu_hmc.mpu.data_available = FALSE;
-    imu_scale_gyro(&imu);
-    imu_scale_accel(&imu);
-    AbiSendMsgIMU_GYRO_INT32(IMU_MPU6000_HMC_ID, now_ts, &imu.gyro);
-    AbiSendMsgIMU_ACCEL_INT32(IMU_MPU6000_HMC_ID, now_ts, &imu.accel);
-  }
+    mpu60x0_spi_event(&imu_mpu_hmc.mpu);
+    if (imu_mpu_hmc.mpu.data_available)
+    {
+        RATES_COPY(imu.gyro_unscaled, imu_mpu_hmc.mpu.data_rates.rates);
+        VECT3_COPY(imu.accel_unscaled, imu_mpu_hmc.mpu.data_accel.vect);
+        imu_mpu_hmc.mpu.data_available = FALSE;
+        imu_scale_gyro(&imu);
+        imu_scale_accel(&imu);
+        AbiSendMsgIMU_GYRO_INT32(IMU_MPU6000_HMC_ID, now_ts, &imu.gyro);
+        AbiSendMsgIMU_ACCEL_INT32(IMU_MPU6000_HMC_ID, now_ts, &imu.accel);
+    }
 
-  /* HMC58XX event task */
-  hmc58xx_event(&imu_mpu_hmc.hmc);
-  if (imu_mpu_hmc.hmc.data_available) {
-    /* mag rotated by 90deg around z axis relative to MPU */
-    imu.mag_unscaled.x =  imu_mpu_hmc.hmc.data.vect.y;
-    imu.mag_unscaled.y = -imu_mpu_hmc.hmc.data.vect.x;
-    imu.mag_unscaled.z =  imu_mpu_hmc.hmc.data.vect.z;
-    imu_mpu_hmc.hmc.data_available = FALSE;
-    imu_scale_mag(&imu);
-    AbiSendMsgIMU_MAG_INT32(IMU_MPU6000_HMC_ID, now_ts, &imu.mag);
-  }
+    /* HMC58XX event task */
+    hmc58xx_event(&imu_mpu_hmc.hmc);
+    if (imu_mpu_hmc.hmc.data_available)
+    {
+        /* mag rotated by 90deg around z axis relative to MPU */
+        imu.mag_unscaled.x =  imu_mpu_hmc.hmc.data.vect.y;
+        imu.mag_unscaled.y = -imu_mpu_hmc.hmc.data.vect.x;
+        imu.mag_unscaled.z =  imu_mpu_hmc.hmc.data.vect.z;
+        imu_mpu_hmc.hmc.data_available = FALSE;
+        imu_scale_mag(&imu);
+        AbiSendMsgIMU_MAG_INT32(IMU_MPU6000_HMC_ID, now_ts, &imu.mag);
+    }
 }

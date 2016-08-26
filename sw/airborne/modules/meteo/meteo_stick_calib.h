@@ -40,12 +40,13 @@
 #define  MTOSTK_MAX_TEMP_ARRAY_SIZE 6 //
 #define  UUID_LEN 13 // including trailing 0
 
-typedef enum {
-  MTOSTK_TEMP = 0,
-  MTOSTK_ABS_PRESS,
-  MTOSTK_DIF_PRESS,
-  MTOSTK_HUMIDITY,
-  MTOSTK_NUM_SENSORS
+typedef enum
+{
+    MTOSTK_TEMP = 0,
+    MTOSTK_ABS_PRESS,
+    MTOSTK_DIF_PRESS,
+    MTOSTK_HUMIDITY,
+    MTOSTK_NUM_SENSORS
 } Mtostk_sensors ;
 
 /**
@@ -58,17 +59,19 @@ typedef enum {
  * @var  num_temp   number of temerature of calibration, at least 1
  * @var  num_coeff  number of coefficient for the polynom. the polynom order is num_coeff-1
  */
-typedef struct {
-  float  coeffs[MTOSTK_MAX_TEMP_ARRAY_SIZE][MTOSTK_MAX_POLY_ARRAY_SIZE];
-  float  temps[MTOSTK_MAX_TEMP_ARRAY_SIZE];
-  time_t timestamp;
-  uint16_t num_temp;
-  uint16_t num_coeff;
+typedef struct
+{
+    float  coeffs[MTOSTK_MAX_TEMP_ARRAY_SIZE][MTOSTK_MAX_POLY_ARRAY_SIZE];
+    float  temps[MTOSTK_MAX_TEMP_ARRAY_SIZE];
+    time_t timestamp;
+    uint16_t num_temp;
+    uint16_t num_coeff;
 } Sensors_params;
 
-typedef struct {
-  Sensors_params params[MTOSTK_NUM_SENSORS];
-  char uuid[13];
+typedef struct
+{
+    Sensors_params params[MTOSTK_NUM_SENSORS];
+    char uuid[13];
 } Calibration_params;
 
 

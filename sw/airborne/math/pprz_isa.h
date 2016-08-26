@@ -74,11 +74,14 @@ static const float PPRZ_ISA_M_OF_P_CONST = (PPRZ_ISA_AIR_GAS_CONSTANT *PPRZ_ISA_
  */
 static inline float pprz_isa_altitude_of_pressure(float pressure)
 {
-  if (pressure > 0.) {
-    return (PPRZ_ISA_M_OF_P_CONST * logf(PPRZ_ISA_SEA_LEVEL_PRESSURE / pressure));
-  } else {
-    return 0.;
-  }
+    if (pressure > 0.)
+    {
+        return (PPRZ_ISA_M_OF_P_CONST * logf(PPRZ_ISA_SEA_LEVEL_PRESSURE / pressure));
+    }
+    else
+    {
+        return 0.;
+    }
 }
 
 /**
@@ -94,11 +97,14 @@ static inline float pprz_isa_altitude_of_pressure(float pressure)
  */
 static inline float pprz_isa_height_of_pressure(float pressure, float ref_p)
 {
-  if (pressure > 0. && ref_p > 0.) {
-    return (PPRZ_ISA_M_OF_P_CONST * logf(ref_p / pressure));
-  } else {
-    return 0.;
-  }
+    if (pressure > 0. && ref_p > 0.)
+    {
+        return (PPRZ_ISA_M_OF_P_CONST * logf(ref_p / pressure));
+    }
+    else
+    {
+        return 0.;
+    }
 }
 
 /**
@@ -109,7 +115,7 @@ static inline float pprz_isa_height_of_pressure(float pressure, float ref_p)
  */
 static inline float pprz_isa_pressure_of_altitude(float altitude)
 {
-  return (PPRZ_ISA_SEA_LEVEL_PRESSURE * expf((-1. / PPRZ_ISA_M_OF_P_CONST) * altitude));
+    return (PPRZ_ISA_SEA_LEVEL_PRESSURE * expf((-1. / PPRZ_ISA_M_OF_P_CONST) * altitude));
 }
 
 /**
@@ -121,7 +127,7 @@ static inline float pprz_isa_pressure_of_altitude(float altitude)
  */
 static inline float pprz_isa_pressure_of_height(float height, float ref_p)
 {
-  return (ref_p * expf((-1. / PPRZ_ISA_M_OF_P_CONST) * height));
+    return (ref_p * expf((-1. / PPRZ_ISA_M_OF_P_CONST) * height));
 }
 
 
@@ -138,14 +144,17 @@ static inline float pprz_isa_pressure_of_height(float height, float ref_p)
  */
 static inline float pprz_isa_height_of_pressure_full(float pressure, float ref_p)
 {
-  if (ref_p > 0.) {
-    const float prel = pressure / ref_p;
-    const float inv_expo = PPRZ_ISA_GAS_CONSTANT * PPRZ_ISA_TEMP_LAPS_RATE /
-                           PPRZ_ISA_GRAVITY / PPRZ_ISA_MOLAR_MASS;
-    return (1 - powf(prel, inv_expo)) * PPRZ_ISA_SEA_LEVEL_TEMP / PPRZ_ISA_TEMP_LAPS_RATE;
-  } else {
-    return 0.;
-  }
+    if (ref_p > 0.)
+    {
+        const float prel = pressure / ref_p;
+        const float inv_expo = PPRZ_ISA_GAS_CONSTANT * PPRZ_ISA_TEMP_LAPS_RATE /
+                               PPRZ_ISA_GRAVITY / PPRZ_ISA_MOLAR_MASS;
+        return (1 - powf(prel, inv_expo)) * PPRZ_ISA_SEA_LEVEL_TEMP / PPRZ_ISA_TEMP_LAPS_RATE;
+    }
+    else
+    {
+        return 0.;
+    }
 }
 
 /**
@@ -158,11 +167,11 @@ static inline float pprz_isa_height_of_pressure_full(float pressure, float ref_p
  */
 static inline float pprz_isa_ref_pressure_of_height_full(float pressure, float height)
 {
-  //  Trel = 1 - L*h/T0;
-  const float Trel = 1.0 - PPRZ_ISA_TEMP_LAPS_RATE * height / PPRZ_ISA_SEA_LEVEL_TEMP;
-  const float expo = PPRZ_ISA_GRAVITY * PPRZ_ISA_MOLAR_MASS / PPRZ_ISA_GAS_CONSTANT /
-                     PPRZ_ISA_TEMP_LAPS_RATE;
-  return pressure / pow(Trel, expo);
+    //  Trel = 1 - L*h/T0;
+    const float Trel = 1.0 - PPRZ_ISA_TEMP_LAPS_RATE * height / PPRZ_ISA_SEA_LEVEL_TEMP;
+    const float expo = PPRZ_ISA_GRAVITY * PPRZ_ISA_MOLAR_MASS / PPRZ_ISA_GAS_CONSTANT /
+                       PPRZ_ISA_TEMP_LAPS_RATE;
+    return pressure / pow(Trel, expo);
 }
 
 #ifdef __cplusplus

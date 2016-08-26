@@ -21,8 +21,9 @@
 #include <std.h>
 #include "modules/stereocam/stereocam.h"
 
-struct GpsStereoCam {
-  struct EcefCoor_i ecef_vel;
+struct GpsStereoCam
+{
+    struct EcefCoor_i ecef_vel;
 };
 
 extern struct GpsStereoCam gps_stereocam;

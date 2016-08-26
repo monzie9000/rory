@@ -37,71 +37,73 @@
 #include "math/pprz_algebra_int.h"
 #include "math/pprz_orientation_conversion.h"
 
-enum AhrsICQStatus {
-  AHRS_ICQ_UNINIT,
-  AHRS_ICQ_RUNNING
+enum AhrsICQStatus
+{
+    AHRS_ICQ_UNINIT,
+    AHRS_ICQ_RUNNING
 };
 
 /**
  * Ahrs implementation specifc values
  */
-struct AhrsIntCmplQuat {
-  struct Int32Rates  gyro_bias;
-  struct Int32Rates  imu_rate;
-  struct Int32Rates  rate_correction;
-  struct Int64Quat   high_rez_quat;
-  struct Int64Rates  high_rez_bias;
-  struct Int32Quat   ltp_to_imu_quat;
-  struct Int32Vect3  mag_h;
+struct AhrsIntCmplQuat
+{
+    struct Int32Rates  gyro_bias;
+    struct Int32Rates  imu_rate;
+    struct Int32Rates  rate_correction;
+    struct Int64Quat   high_rez_quat;
+    struct Int64Rates  high_rez_bias;
+    struct Int32Quat   ltp_to_imu_quat;
+    struct Int32Vect3  mag_h;
 
-  int32_t ltp_vel_norm;
-  bool_t ltp_vel_norm_valid;
-  bool_t heading_aligned;
-  float weight;
-  float accel_inv_kp;
-  float accel_inv_ki;
-  float mag_kp;
-  float mag_ki;
+    int32_t ltp_vel_norm;
+    bool_t ltp_vel_norm_valid;
+    bool_t heading_aligned;
+    float weight;
+    float accel_inv_kp;
+    float accel_inv_ki;
+    float mag_kp;
+    float mag_ki;
 
-  /* parameters/options that can be changed */
-  /** enable gravity vector correction by removing centrifugal acceleration */
-  bool_t correct_gravity;
+    /* parameters/options that can be changed */
+    /** enable gravity vector correction by removing centrifugal acceleration */
+    bool_t correct_gravity;
 
-  /** sets how strongly the gravity heuristic reduces accel correction.
-   * Set to zero in order to disable gravity heuristic.
-   */
-  uint8_t gravity_heuristic_factor;
+    /** sets how strongly the gravity heuristic reduces accel correction.
+     * Set to zero in order to disable gravity heuristic.
+     */
+    uint8_t gravity_heuristic_factor;
 
-  /** filter cut-off frequency for correcting the attitude from accels.
-   *  (pseudo-gravity measurement)
-   * only update through #ahrs_int_cmpl_quat_SetAccelOmega
-   */
-  float accel_omega;
+    /** filter cut-off frequency for correcting the attitude from accels.
+     *  (pseudo-gravity measurement)
+     * only update through #ahrs_int_cmpl_quat_SetAccelOmega
+     */
+    float accel_omega;
 
-  /** filter damping for correcting the gyro-bias from accels.
-   *  (pseudo-gravity measurement)
-   * only update through #ahrs_int_cmpl_quat_SetAccelZeta
-   */
-  float accel_zeta;
+    /** filter damping for correcting the gyro-bias from accels.
+     *  (pseudo-gravity measurement)
+     * only update through #ahrs_int_cmpl_quat_SetAccelZeta
+     */
+    float accel_zeta;
 
-  /** filter cut-off frequency for correcting the attitude (heading) from magnetometer.
-   * only update through #ahrs_int_cmpl_quat_SetMagOmega
-   */
-  float mag_omega;
+    /** filter cut-off frequency for correcting the attitude (heading) from magnetometer.
+     * only update through #ahrs_int_cmpl_quat_SetMagOmega
+     */
+    float mag_omega;
 
-  /** filter damping for correcting the gyro bias from magnetometer.
-   * only update through #ahrs_int_cmpl_quat_SetMagZeta
-   */
-  float mag_zeta;
+    /** filter damping for correcting the gyro bias from magnetometer.
+     * only update through #ahrs_int_cmpl_quat_SetMagZeta
+     */
+    float mag_zeta;
 
-  /* internal counters for the gains */
-  uint16_t accel_cnt; ///< number of propagations since last accel update
-  uint16_t mag_cnt;   ///< number of propagations since last mag update
+    /* internal counters for the gains */
+    uint16_t accel_cnt; ///< number of propagations since last accel update
+    uint16_t mag_cnt;   ///< number of propagations since last mag update
 
-  struct OrientationReps body_to_imu;
+    struct OrientationReps body_to_imu;
 
-  enum AhrsICQStatus status; ///< status of the AHRS, AHRS_ICQ_UNINIT or AHRS_ICQ_RUNNING
-  bool_t is_aligned;
+    enum AhrsICQStatus status; ///< status of the AHRS, AHRS_ICQ_UNINIT or AHRS_ICQ_RUNNING
+    bool_t is_aligned;
 };
 
 extern struct AhrsIntCmplQuat ahrs_icq;
@@ -135,14 +137,14 @@ extern void ahrs_icq_set_accel_gains(void);
 
 static inline void ahrs_int_cmpl_quat_SetAccelOmega(float omega)
 {
-  ahrs_icq.accel_omega = omega;
-  ahrs_icq_set_accel_gains();
+    ahrs_icq.accel_omega = omega;
+    ahrs_icq_set_accel_gains();
 }
 
 static inline void ahrs_int_cmpl_quat_SetAccelZeta(float zeta)
 {
-  ahrs_icq.accel_zeta = zeta;
-  ahrs_icq_set_accel_gains();
+    ahrs_icq.accel_zeta = zeta;
+    ahrs_icq_set_accel_gains();
 }
 
 /// update pre-computed kp and ki gains from mag_omega and mag_zeta
@@ -150,14 +152,14 @@ extern void ahrs_icq_set_mag_gains(void);
 
 static inline void ahrs_int_cmpl_quat_SetMagOmega(float omega)
 {
-  ahrs_icq.mag_omega = omega;
-  ahrs_icq_set_mag_gains();
+    ahrs_icq.mag_omega = omega;
+    ahrs_icq_set_mag_gains();
 }
 
 static inline void ahrs_int_cmpl_quat_SetMagZeta(float zeta)
 {
-  ahrs_icq.mag_zeta = zeta;
-  ahrs_icq_set_mag_gains();
+    ahrs_icq.mag_zeta = zeta;
+    ahrs_icq_set_mag_gains();
 }
 
 

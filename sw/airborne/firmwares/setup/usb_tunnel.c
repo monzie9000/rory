@@ -51,55 +51,60 @@ PRINT_CONFIG_VAR(TUNNEL_TX_LED)
 
 static inline void tunnel_event(void)
 {
-  unsigned char inc;
+    unsigned char inc;
 
 #if LED_AVAILABLE(TUNNEL_RX_LED)
-  static uint32_t rx_time = 0;
-  if (get_sys_time_msec() > rx_time + BLINK_MIN) {
-    LED_OFF(TUNNEL_RX_LED);
-  }
+    static uint32_t rx_time = 0;
+    if (get_sys_time_msec() > rx_time + BLINK_MIN)
+    {
+        LED_OFF(TUNNEL_RX_LED);
+    }
 #endif
 #if LED_AVAILABLE(TUNNEL_TX_LED)
-  static uint32_t tx_time = 0;
-  if (get_sys_time_msec() > tx_time + BLINK_MIN) {
-    LED_OFF(TUNNEL_TX_LED);
-  }
+    static uint32_t tx_time = 0;
+    if (get_sys_time_msec() > tx_time + BLINK_MIN)
+    {
+        LED_OFF(TUNNEL_TX_LED);
+    }
 #endif
 
-  if (uart_char_available(&USB_TUNNEL_UART) && VCOM_check_free_space(1)) {
+    if (uart_char_available(&USB_TUNNEL_UART) && VCOM_check_free_space(1))
+    {
 #if LED_AVAILABLE(TUNNEL_RX_LED)
-    LED_ON(TUNNEL_RX_LED);
-    rx_time = get_sys_time_msec();
+        LED_ON(TUNNEL_RX_LED);
+        rx_time = get_sys_time_msec();
 #endif
-    inc = uart_getch(&USB_TUNNEL_UART);
-    VCOM_putchar(inc);
-  }
-  if (VCOM_check_available() && uart_check_free_space(&USB_TUNNEL_UART, 1)) {
+        inc = uart_getch(&USB_TUNNEL_UART);
+        VCOM_putchar(inc);
+    }
+    if (VCOM_check_available() && uart_check_free_space(&USB_TUNNEL_UART, 1))
+    {
 #if LED_AVAILABLE(TUNNEL_TX_LED)
-    LED_ON(TUNNEL_TX_LED);
-    tx_time = get_sys_time_msec();
+        LED_ON(TUNNEL_TX_LED);
+        tx_time = get_sys_time_msec();
 #endif
-    inc = VCOM_getchar();
-    uart_put_byte(&USB_TUNNEL_UART, inc);
-  }
+        inc = VCOM_getchar();
+        uart_put_byte(&USB_TUNNEL_UART, inc);
+    }
 }
 
 int main(void)
 {
-  mcu_init();
-  sys_time_init();
-  led_init();
+    mcu_init();
+    sys_time_init();
+    led_init();
 
-  VCOM_allow_linecoding(1);
+    VCOM_allow_linecoding(1);
 
-  VCOM_init();
+    VCOM_init();
 
-  mcu_int_enable();
+    mcu_int_enable();
 
-  while (1) {
-    VCOM_event();
-    tunnel_event();
-  }
+    while (1)
+    {
+        VCOM_event();
+        tunnel_event();
+    }
 
-  return 0;
+    return 0;
 }

@@ -30,66 +30,67 @@ static struct adc_buf analog_imu_adc_buf[NB_ANALOG_IMU_ADC];
 void imu_impl_init(void)
 {
 
-  imu_overrun = 0;
+    imu_overrun = 0;
 
 #ifdef ADC_CHANNEL_GYRO_P
-  adc_buf_channel(ADC_CHANNEL_GYRO_P, &analog_imu_adc_buf[0], ADC_CHANNEL_GYRO_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_GYRO_P, &analog_imu_adc_buf[0], ADC_CHANNEL_GYRO_NB_SAMPLES);
 #endif
 #ifdef ADC_CHANNEL_GYRO_Q
-  adc_buf_channel(ADC_CHANNEL_GYRO_Q, &analog_imu_adc_buf[1], ADC_CHANNEL_GYRO_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_GYRO_Q, &analog_imu_adc_buf[1], ADC_CHANNEL_GYRO_NB_SAMPLES);
 #endif
 #ifdef ADC_CHANNEL_GYRO_R
-  adc_buf_channel(ADC_CHANNEL_GYRO_R, &analog_imu_adc_buf[2], ADC_CHANNEL_GYRO_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_GYRO_R, &analog_imu_adc_buf[2], ADC_CHANNEL_GYRO_NB_SAMPLES);
 #endif
 #ifdef ADC_CHANNEL_ACCEL_X
-  adc_buf_channel(ADC_CHANNEL_ACCEL_X, &analog_imu_adc_buf[3], ADC_CHANNEL_ACCEL_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_ACCEL_X, &analog_imu_adc_buf[3], ADC_CHANNEL_ACCEL_NB_SAMPLES);
 #endif
 #ifdef ADC_CHANNEL_ACCEL_Y
-  adc_buf_channel(ADC_CHANNEL_ACCEL_Y, &analog_imu_adc_buf[4], ADC_CHANNEL_ACCEL_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_ACCEL_Y, &analog_imu_adc_buf[4], ADC_CHANNEL_ACCEL_NB_SAMPLES);
 #endif
 #ifdef ADC_CHANNEL_ACCEL_Z
-  adc_buf_channel(ADC_CHANNEL_ACCEL_Z, &analog_imu_adc_buf[5], ADC_CHANNEL_ACCEL_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_ACCEL_Z, &analog_imu_adc_buf[5], ADC_CHANNEL_ACCEL_NB_SAMPLES);
 #endif
 
 }
 
 void imu_periodic(void)
 {
-  // Actual Nr of ADC measurements per channel per periodic loop
-  static int last_head = 0;
+    // Actual Nr of ADC measurements per channel per periodic loop
+    static int last_head = 0;
 
-  uint32_t now_ts = get_sys_time_usec();
+    uint32_t now_ts = get_sys_time_usec();
 
-  imu_overrun = analog_imu_adc_buf[0].head - last_head;
-  if (imu_overrun < 0) {
-    imu_overrun += ADC_CHANNEL_GYRO_NB_SAMPLES;
-  }
-  last_head = analog_imu_adc_buf[0].head;
+    imu_overrun = analog_imu_adc_buf[0].head - last_head;
+    if (imu_overrun < 0)
+    {
+        imu_overrun += ADC_CHANNEL_GYRO_NB_SAMPLES;
+    }
+    last_head = analog_imu_adc_buf[0].head;
 
-  // Read All Measurements
+    // Read All Measurements
 #ifdef ADC_CHANNEL_GYRO_P
-  imu.gyro_unscaled.p = analog_imu_adc_buf[0].sum / ADC_CHANNEL_GYRO_NB_SAMPLES;
+    imu.gyro_unscaled.p = analog_imu_adc_buf[0].sum / ADC_CHANNEL_GYRO_NB_SAMPLES;
 #endif
 #ifdef ADC_CHANNEL_GYRO_Q
-  imu.gyro_unscaled.q = analog_imu_adc_buf[1].sum / ADC_CHANNEL_GYRO_NB_SAMPLES;
+    imu.gyro_unscaled.q = analog_imu_adc_buf[1].sum / ADC_CHANNEL_GYRO_NB_SAMPLES;
 #endif
 #ifdef ADC_CHANNEL_GYRO_R
-  imu.gyro_unscaled.r = analog_imu_adc_buf[2].sum / ADC_CHANNEL_GYRO_NB_SAMPLES;
+    imu.gyro_unscaled.r = analog_imu_adc_buf[2].sum / ADC_CHANNEL_GYRO_NB_SAMPLES;
 #endif
 #ifdef ADC_CHANNEL_ACCEL_X
-  imu.accel_unscaled.x = analog_imu_adc_buf[3].sum / ADC_CHANNEL_ACCEL_NB_SAMPLES;
+    imu.accel_unscaled.x = analog_imu_adc_buf[3].sum / ADC_CHANNEL_ACCEL_NB_SAMPLES;
 #endif
 #ifdef ADC_CHANNEL_ACCEL_Y
-  imu.accel_unscaled.y = analog_imu_adc_buf[4].sum / ADC_CHANNEL_ACCEL_NB_SAMPLES;
+    imu.accel_unscaled.y = analog_imu_adc_buf[4].sum / ADC_CHANNEL_ACCEL_NB_SAMPLES;
 #endif
 #ifdef ADC_CHANNEL_ACCEL_Z
-  imu.accel_unscaled.z = analog_imu_adc_buf[5].sum / ADC_CHANNEL_ACCEL_NB_SAMPLES;
+    imu.accel_unscaled.z = analog_imu_adc_buf[5].sum / ADC_CHANNEL_ACCEL_NB_SAMPLES;
 #endif
 
-  imu_scale_gyro(&imu);
-  imu_scale_accel(&imu);
-  AbiSendMsgIMU_GYRO_INT32(IMU_ANALOG_ID, now_ts, &imu.gyro);
-  AbiSendMsgIMU_ACCEL_INT32(IMU_ANALOG_ID, now_ts, &imu.accel);
+    imu_scale_gyro(&imu);
+    imu_scale_accel(&imu);
+    AbiSendMsgIMU_GYRO_INT32(IMU_ANALOG_ID, now_ts, &imu.gyro);
+    AbiSendMsgIMU_ACCEL_INT32(IMU_ANALOG_ID, now_ts, &imu.accel);
 }
 
 // if not all gyros are used, override the imu_scale_gyro handler
@@ -97,18 +98,18 @@ void imu_periodic(void)
 
 void imu_scale_gyro(struct Imu *_imu)
 {
-  _imu->gyro.p = ((_imu->gyro_unscaled.p - _imu->gyro_neutral.p) * IMU_GYRO_P_SIGN * IMU_GYRO_P_SENS_NUM) /
-                 IMU_GYRO_P_SENS_DEN;
-  _imu->gyro.q = ((_imu->gyro_unscaled.q - _imu->gyro_neutral.q) * IMU_GYRO_Q_SIGN * IMU_GYRO_Q_SENS_NUM) /
-                 IMU_GYRO_Q_SENS_DEN;
+    _imu->gyro.p = ((_imu->gyro_unscaled.p - _imu->gyro_neutral.p) * IMU_GYRO_P_SIGN * IMU_GYRO_P_SENS_NUM) /
+                   IMU_GYRO_P_SENS_DEN;
+    _imu->gyro.q = ((_imu->gyro_unscaled.q - _imu->gyro_neutral.q) * IMU_GYRO_Q_SIGN * IMU_GYRO_Q_SENS_NUM) /
+                   IMU_GYRO_Q_SENS_DEN;
 }
 
 #elif defined ADC_CHANNEL_GYRO_P && ! defined ADC_CHANNEL_GYRO_Q && ! defined ADC_CHANNEL_GYRO_R
 
 void imu_scale_gyro(struct Imu *_imu)
 {
-  _imu->gyro.p = ((_imu->gyro_unscaled.p - _imu->gyro_neutral.p) * IMU_GYRO_P_SIGN * IMU_GYRO_P_SENS_NUM) /
-                 IMU_GYRO_P_SENS_DEN;
+    _imu->gyro.p = ((_imu->gyro_unscaled.p - _imu->gyro_neutral.p) * IMU_GYRO_P_SIGN * IMU_GYRO_P_SENS_NUM) /
+                   IMU_GYRO_P_SENS_DEN;
 }
 
 #endif

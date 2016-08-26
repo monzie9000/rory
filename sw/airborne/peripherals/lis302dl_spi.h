@@ -36,19 +36,21 @@
 #include "peripherals/lis302dl.h"
 
 
-struct Lis302dl_Spi {
-  struct spi_periph *spi_p;
-  struct spi_transaction spi_trans;
-  volatile uint8_t tx_buf[2];
-  volatile uint8_t rx_buf[8];
-  enum Lis302dlConfStatus init_status; ///< init status
-  bool_t initialized;                  ///< config done flag
-  volatile bool_t data_available;      ///< data ready flag
-  union {
-    struct Int8Vect3 vect;           ///< data vector in accel coordinate system
-    int8_t value[3];                 ///< data values accessible by channel index
-  } data;
-  struct Lis302dlConfig config;
+struct Lis302dl_Spi
+{
+    struct spi_periph *spi_p;
+    struct spi_transaction spi_trans;
+    volatile uint8_t tx_buf[2];
+    volatile uint8_t rx_buf[8];
+    enum Lis302dlConfStatus init_status; ///< init status
+    bool_t initialized;                  ///< config done flag
+    volatile bool_t data_available;      ///< data ready flag
+    union
+    {
+        struct Int8Vect3 vect;           ///< data vector in accel coordinate system
+        int8_t value[3];                 ///< data values accessible by channel index
+    } data;
+    struct Lis302dlConfig config;
 };
 
 // Functions
@@ -60,11 +62,14 @@ extern void lis302dl_spi_event(struct Lis302dl_Spi *lis);
 /// convenience function: read or start configuration if not already initialized
 static inline void lis302dl_spi_periodic(struct Lis302dl_Spi *lis)
 {
-  if (lis->initialized) {
-    lis302dl_spi_read(lis);
-  } else {
-    lis302dl_spi_start_configure(lis);
-  }
+    if (lis->initialized)
+    {
+        lis302dl_spi_read(lis);
+    }
+    else
+    {
+        lis302dl_spi_start_configure(lis);
+    }
 }
 
 #endif // LIS302DL_SPI_H

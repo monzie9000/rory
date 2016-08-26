@@ -67,100 +67,106 @@ struct ImuAspirin imu_aspirin;
 
 void imu_impl_init(void)
 {
-  imu_aspirin.accel_valid = FALSE;
-  imu_aspirin.gyro_valid = FALSE;
-  imu_aspirin.mag_valid = FALSE;
+    imu_aspirin.accel_valid = FALSE;
+    imu_aspirin.gyro_valid = FALSE;
+    imu_aspirin.mag_valid = FALSE;
 
-  /* Set accel configuration */
-  adxl345_spi_init(&imu_aspirin.acc_adxl, &(ASPIRIN_SPI_DEV), ASPIRIN_SPI_SLAVE_IDX);
-  // set the data rate
-  imu_aspirin.acc_adxl.config.rate = ASPIRIN_ACCEL_RATE;
-  /// @todo drdy int handling for adxl345
-  //imu_aspirin.acc_adxl.config.drdy_int_enable = TRUE;
+    /* Set accel configuration */
+    adxl345_spi_init(&imu_aspirin.acc_adxl, &(ASPIRIN_SPI_DEV), ASPIRIN_SPI_SLAVE_IDX);
+    // set the data rate
+    imu_aspirin.acc_adxl.config.rate = ASPIRIN_ACCEL_RATE;
+    /// @todo drdy int handling for adxl345
+    //imu_aspirin.acc_adxl.config.drdy_int_enable = TRUE;
 
-  /* Gyro configuration and initalization */
-  itg3200_init(&imu_aspirin.gyro_itg, &(ASPIRIN_I2C_DEV), ITG3200_ADDR);
-  /* change the default config */
-  // Aspirin sample rate divider defaults to 533Hz
-  imu_aspirin.gyro_itg.config.smplrt_div = ASPIRIN_GYRO_SMPLRT_DIV;
-  // aspirin defaults to 8kHz internal with 256Hz low pass
-  imu_aspirin.gyro_itg.config.dlpf_cfg = ASPIRIN_GYRO_LOWPASS;
+    /* Gyro configuration and initalization */
+    itg3200_init(&imu_aspirin.gyro_itg, &(ASPIRIN_I2C_DEV), ITG3200_ADDR);
+    /* change the default config */
+    // Aspirin sample rate divider defaults to 533Hz
+    imu_aspirin.gyro_itg.config.smplrt_div = ASPIRIN_GYRO_SMPLRT_DIV;
+    // aspirin defaults to 8kHz internal with 256Hz low pass
+    imu_aspirin.gyro_itg.config.dlpf_cfg = ASPIRIN_GYRO_LOWPASS;
 
-  /// @todo eoc interrupt for itg3200, polling for now (including status reg)
-  /* interrupt on data ready, idle high, latch until read any register */
-  //itg_conf.int_cfg = (0x01 | (0x1<<4) | (0x1<<5) | 0x01<<7);
+    /// @todo eoc interrupt for itg3200, polling for now (including status reg)
+    /* interrupt on data ready, idle high, latch until read any register */
+    //itg_conf.int_cfg = (0x01 | (0x1<<4) | (0x1<<5) | 0x01<<7);
 
-  /* initialize mag and set default options */
-  hmc58xx_init(&imu_aspirin.mag_hmc, &(ASPIRIN_I2C_DEV), HMC58XX_ADDR);
+    /* initialize mag and set default options */
+    hmc58xx_init(&imu_aspirin.mag_hmc, &(ASPIRIN_I2C_DEV), HMC58XX_ADDR);
 #ifdef IMU_ASPIRIN_VERSION_1_0
-  imu_aspirin.mag_hmc.type = HMC_TYPE_5843;
+    imu_aspirin.mag_hmc.type = HMC_TYPE_5843;
 #endif
 
 #if ASPIRIN_ARCH_INDEP
-  TODO("Arch dependent functions (accel and gyro eoc interrupt) not used for aspirin!")
+    TODO("Arch dependent functions (accel and gyro eoc interrupt) not used for aspirin!")
 #else
-  imu_aspirin_arch_init();
+    imu_aspirin_arch_init();
 #endif
 }
 
 
 void imu_periodic(void)
 {
-  adxl345_spi_periodic(&imu_aspirin.acc_adxl);
+    adxl345_spi_periodic(&imu_aspirin.acc_adxl);
 
-  // Start reading the latest gyroscope data
-  itg3200_periodic(&imu_aspirin.gyro_itg);
+    // Start reading the latest gyroscope data
+    itg3200_periodic(&imu_aspirin.gyro_itg);
 
-  // Read HMC58XX at 50Hz (main loop for rotorcraft: 512Hz)
-  RunOnceEvery(10, hmc58xx_periodic(&imu_aspirin.mag_hmc));
+    // Read HMC58XX at 50Hz (main loop for rotorcraft: 512Hz)
+    RunOnceEvery(10, hmc58xx_periodic(&imu_aspirin.mag_hmc));
 }
 
 void imu_aspirin_event(void)
 {
-  uint32_t now_ts = get_sys_time_usec();
+    uint32_t now_ts = get_sys_time_usec();
 
-  adxl345_spi_event(&imu_aspirin.acc_adxl);
-  if (imu_aspirin.acc_adxl.data_available) {
-    VECT3_COPY(imu.accel_unscaled, imu_aspirin.acc_adxl.data.vect);
-    imu_aspirin.acc_adxl.data_available = FALSE;
-    imu_aspirin.accel_valid = TRUE;
-  }
+    adxl345_spi_event(&imu_aspirin.acc_adxl);
+    if (imu_aspirin.acc_adxl.data_available)
+    {
+        VECT3_COPY(imu.accel_unscaled, imu_aspirin.acc_adxl.data.vect);
+        imu_aspirin.acc_adxl.data_available = FALSE;
+        imu_aspirin.accel_valid = TRUE;
+    }
 
-  /* If the itg3200 I2C transaction has succeeded: convert the data */
-  itg3200_event(&imu_aspirin.gyro_itg);
-  if (imu_aspirin.gyro_itg.data_available) {
-    RATES_COPY(imu.gyro_unscaled, imu_aspirin.gyro_itg.data.rates);
-    imu_aspirin.gyro_itg.data_available = FALSE;
-    imu_aspirin.gyro_valid = TRUE;
-  }
+    /* If the itg3200 I2C transaction has succeeded: convert the data */
+    itg3200_event(&imu_aspirin.gyro_itg);
+    if (imu_aspirin.gyro_itg.data_available)
+    {
+        RATES_COPY(imu.gyro_unscaled, imu_aspirin.gyro_itg.data.rates);
+        imu_aspirin.gyro_itg.data_available = FALSE;
+        imu_aspirin.gyro_valid = TRUE;
+    }
 
-  /* HMC58XX event task */
-  hmc58xx_event(&imu_aspirin.mag_hmc);
-  if (imu_aspirin.mag_hmc.data_available) {
+    /* HMC58XX event task */
+    hmc58xx_event(&imu_aspirin.mag_hmc);
+    if (imu_aspirin.mag_hmc.data_available)
+    {
 #ifdef IMU_ASPIRIN_VERSION_1_0
-    VECT3_COPY(imu.mag_unscaled, imu_aspirin.mag_hmc.data.vect);
+        VECT3_COPY(imu.mag_unscaled, imu_aspirin.mag_hmc.data.vect);
 #else // aspirin 1.5 with hmc5883
-    imu.mag_unscaled.x =  imu_aspirin.mag_hmc.data.vect.y;
-    imu.mag_unscaled.y = -imu_aspirin.mag_hmc.data.vect.x;
-    imu.mag_unscaled.z =  imu_aspirin.mag_hmc.data.vect.z;
+        imu.mag_unscaled.x =  imu_aspirin.mag_hmc.data.vect.y;
+        imu.mag_unscaled.y = -imu_aspirin.mag_hmc.data.vect.x;
+        imu.mag_unscaled.z =  imu_aspirin.mag_hmc.data.vect.z;
 #endif
-    imu_aspirin.mag_hmc.data_available = FALSE;
-    imu_aspirin.mag_valid = TRUE;
-  }
+        imu_aspirin.mag_hmc.data_available = FALSE;
+        imu_aspirin.mag_valid = TRUE;
+    }
 
-  if (imu_aspirin.gyro_valid) {
-    imu_aspirin.gyro_valid = FALSE;
-    imu_scale_gyro(&imu);
-    AbiSendMsgIMU_GYRO_INT32(IMU_ASPIRIN_ID, now_ts, &imu.gyro);
-  }
-  if (imu_aspirin.accel_valid) {
-    imu_aspirin.accel_valid = FALSE;
-    imu_scale_accel(&imu);
-    AbiSendMsgIMU_ACCEL_INT32(IMU_ASPIRIN_ID, now_ts, &imu.accel);
-  }
-  if (imu_aspirin.mag_valid) {
-    imu_aspirin.mag_valid = FALSE;
-    imu_scale_mag(&imu);
-    AbiSendMsgIMU_MAG_INT32(IMU_ASPIRIN_ID, now_ts, &imu.mag);
-  }
+    if (imu_aspirin.gyro_valid)
+    {
+        imu_aspirin.gyro_valid = FALSE;
+        imu_scale_gyro(&imu);
+        AbiSendMsgIMU_GYRO_INT32(IMU_ASPIRIN_ID, now_ts, &imu.gyro);
+    }
+    if (imu_aspirin.accel_valid)
+    {
+        imu_aspirin.accel_valid = FALSE;
+        imu_scale_accel(&imu);
+        AbiSendMsgIMU_ACCEL_INT32(IMU_ASPIRIN_ID, now_ts, &imu.accel);
+    }
+    if (imu_aspirin.mag_valid)
+    {
+        imu_aspirin.mag_valid = FALSE;
+        imu_scale_mag(&imu);
+        AbiSendMsgIMU_MAG_INT32(IMU_ASPIRIN_ID, now_ts, &imu.mag);
+    }
 }

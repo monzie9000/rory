@@ -48,113 +48,133 @@
 // Init function
 void ads1220_init(struct Ads1220 *ads, struct spi_periph *spi_p, uint8_t slave_idx)
 {
-  /* set spi_peripheral */
-  ads->spi_p = spi_p;
+    /* set spi_peripheral */
+    ads->spi_p = spi_p;
 
-  /* configure spi transaction */
-  ads->spi_trans.cpol = SPICpolIdleLow;
-  ads->spi_trans.cpha = SPICphaEdge2;
-  ads->spi_trans.dss = SPIDss8bit;
-  ads->spi_trans.bitorder = SPIMSBFirst;
-  ads->spi_trans.cdiv = SPIDiv128; // f_PCLK / div
+    /* configure spi transaction */
+    ads->spi_trans.cpol = SPICpolIdleLow;
+    ads->spi_trans.cpha = SPICphaEdge2;
+    ads->spi_trans.dss = SPIDss8bit;
+    ads->spi_trans.bitorder = SPIMSBFirst;
+    ads->spi_trans.cdiv = SPIDiv128; // f_PCLK / div
 
-  ads->spi_trans.select = SPISelectUnselect;
-  ads->spi_trans.slave_idx = slave_idx;
-  ads->spi_trans.output_length = 0;
-  ads->spi_trans.input_length = 0;
-  ads->spi_trans.before_cb = NULL;
-  ads->spi_trans.after_cb = NULL;
-  ads->spi_trans.input_buf = &(ads->rx_buf[0]);
-  ads->spi_trans.output_buf = &(ads->tx_buf[0]);
+    ads->spi_trans.select = SPISelectUnselect;
+    ads->spi_trans.slave_idx = slave_idx;
+    ads->spi_trans.output_length = 0;
+    ads->spi_trans.input_length = 0;
+    ads->spi_trans.before_cb = NULL;
+    ads->spi_trans.after_cb = NULL;
+    ads->spi_trans.input_buf = &(ads->rx_buf[0]);
+    ads->spi_trans.output_buf = &(ads->tx_buf[0]);
 
-  /* set inital status: Success or Done */
-  ads->spi_trans.status = SPITransDone;
+    /* set inital status: Success or Done */
+    ads->spi_trans.status = SPITransDone;
 
-  ads->data = 0;
-  ads->data_available = FALSE;
-  ads->config.status = ADS1220_UNINIT;
+    ads->data = 0;
+    ads->data_available = FALSE;
+    ads->config.status = ADS1220_UNINIT;
 }
 
 
 // Configuration function called once before normal use
 static void ads1220_send_config(struct Ads1220 *ads)
 {
-  ads->spi_trans.output_length = 5;
-  ads->spi_trans.input_length = 0;
-  ads->tx_buf[0] = ADS1220_WREG(ADS1220_CONF0, 4);
-  ads->tx_buf[1] = (
-                     (ads->config.pga_bypass << 0) |
-                     (ads->config.gain << 1) |
-                     (ads->config.mux << 4));
-  ads->tx_buf[2] = (
-                     (ads->config.conv << 2) |
-                     (ads->config.rate << 5));
-  ads->tx_buf[3] = (
-                     (ads->config.idac << 0) |
-                     (ads->config.vref << 6));
-  ads->tx_buf[4] = (
-                     (ads->config.i2mux << 2) |
-                     (ads->config.i1mux << 5));
-  spi_submit(ads->spi_p, &(ads->spi_trans));
+    ads->spi_trans.output_length = 5;
+    ads->spi_trans.input_length = 0;
+    ads->tx_buf[0] = ADS1220_WREG(ADS1220_CONF0, 4);
+    ads->tx_buf[1] = (
+                         (ads->config.pga_bypass << 0) |
+                         (ads->config.gain << 1) |
+                         (ads->config.mux << 4));
+    ads->tx_buf[2] = (
+                         (ads->config.conv << 2) |
+                         (ads->config.rate << 5));
+    ads->tx_buf[3] = (
+                         (ads->config.idac << 0) |
+                         (ads->config.vref << 6));
+    ads->tx_buf[4] = (
+                         (ads->config.i2mux << 2) |
+                         (ads->config.i1mux << 5));
+    spi_submit(ads->spi_p, &(ads->spi_trans));
 }
 
 // Configuration function called before normal use
 void ads1220_configure(struct Ads1220 *ads)
 {
-  if (ads->config.status == ADS1220_UNINIT) {
-    if (ads->spi_trans.status == SPITransSuccess || ads->spi_trans.status == SPITransDone) {
-      ads->spi_trans.output_length = 1;
-      ads->spi_trans.input_length = 0;
-      ads->tx_buf[0] = ADS1220_RESET;
-      spi_submit(ads->spi_p, &(ads->spi_trans));
-      ads->config.status = ADS1220_SEND_RESET;
+    if (ads->config.status == ADS1220_UNINIT)
+    {
+        if (ads->spi_trans.status == SPITransSuccess || ads->spi_trans.status == SPITransDone)
+        {
+            ads->spi_trans.output_length = 1;
+            ads->spi_trans.input_length = 0;
+            ads->tx_buf[0] = ADS1220_RESET;
+            spi_submit(ads->spi_p, &(ads->spi_trans));
+            ads->config.status = ADS1220_SEND_RESET;
+        }
     }
-  } else if (ads->config.status == ADS1220_INITIALIZING) { // Configuring but not yet initialized
-    if (ads->spi_trans.status == SPITransSuccess || ads->spi_trans.status == SPITransDone) {
-      ads1220_send_config(ads); // do config
+    else if (ads->config.status == ADS1220_INITIALIZING)     // Configuring but not yet initialized
+    {
+        if (ads->spi_trans.status == SPITransSuccess || ads->spi_trans.status == SPITransDone)
+        {
+            ads1220_send_config(ads); // do config
+        }
     }
-  }
 }
 
 // Read next data
 void ads1220_read(struct Ads1220 *ads)
 {
-  if (ads->config.status == ADS1220_INITIALIZED && ads->spi_trans.status == SPITransDone) {
-    ads->spi_trans.output_length = 0;
-    ads->spi_trans.input_length = 3;
-    spi_submit(ads->spi_p, &(ads->spi_trans));
-  }
+    if (ads->config.status == ADS1220_INITIALIZED && ads->spi_trans.status == SPITransDone)
+    {
+        ads->spi_trans.output_length = 0;
+        ads->spi_trans.input_length = 3;
+        spi_submit(ads->spi_p, &(ads->spi_trans));
+    }
 }
 
 // Check end of transaction
 void ads1220_event(struct Ads1220 *ads)
 {
-  if (ads->config.status == ADS1220_INITIALIZED) {
-    if (ads->spi_trans.status == SPITransFailed) {
-      ads->spi_trans.status = SPITransDone;
-    } else if (ads->spi_trans.status == SPITransSuccess) {
-      // Successfull reading of 24bits adc
-      ads->data = (uint32_t)(((uint32_t)(ads->rx_buf[0]) << 16) | ((uint32_t)(ads->rx_buf[1]) << 8) | (ads->rx_buf[2]));
-      ads->data_available = TRUE;
-      ads->spi_trans.status = SPITransDone;
+    if (ads->config.status == ADS1220_INITIALIZED)
+    {
+        if (ads->spi_trans.status == SPITransFailed)
+        {
+            ads->spi_trans.status = SPITransDone;
+        }
+        else if (ads->spi_trans.status == SPITransSuccess)
+        {
+            // Successfull reading of 24bits adc
+            ads->data = (uint32_t)(((uint32_t)(ads->rx_buf[0]) << 16) | ((uint32_t)(ads->rx_buf[1]) << 8) | (ads->rx_buf[2]));
+            ads->data_available = TRUE;
+            ads->spi_trans.status = SPITransDone;
+        }
     }
-  } else if (ads->config.status == ADS1220_SEND_RESET) { // Reset ads1220 before configuring
-    if (ads->spi_trans.status == SPITransFailed) {
-      ads->spi_trans.status = SPITransDone;
-      ads->config.status = ADS1220_UNINIT; // config failed
-    } else if (ads->spi_trans.status == SPITransSuccess) {
-      ads->spi_trans.status = SPITransDone;
-      ads->config.status = ADS1220_INITIALIZING;
-      // do config at next call of ads1220_configure() (or ads1220_periodic())
+    else if (ads->config.status == ADS1220_SEND_RESET)     // Reset ads1220 before configuring
+    {
+        if (ads->spi_trans.status == SPITransFailed)
+        {
+            ads->spi_trans.status = SPITransDone;
+            ads->config.status = ADS1220_UNINIT; // config failed
+        }
+        else if (ads->spi_trans.status == SPITransSuccess)
+        {
+            ads->spi_trans.status = SPITransDone;
+            ads->config.status = ADS1220_INITIALIZING;
+            // do config at next call of ads1220_configure() (or ads1220_periodic())
+        }
     }
-  } else if (ads->config.status == ADS1220_INITIALIZING) { // Configuring but not yet initialized
-    if (ads->spi_trans.status == SPITransFailed) {
-      ads->spi_trans.status = SPITransDone;
-      ads->config.status = ADS1220_UNINIT; // config failed
-    } else if (ads->spi_trans.status == SPITransSuccess) {
-      ads->spi_trans.status = SPITransDone;
-      ads->config.status = ADS1220_INITIALIZED; // config done
+    else if (ads->config.status == ADS1220_INITIALIZING)     // Configuring but not yet initialized
+    {
+        if (ads->spi_trans.status == SPITransFailed)
+        {
+            ads->spi_trans.status = SPITransDone;
+            ads->config.status = ADS1220_UNINIT; // config failed
+        }
+        else if (ads->spi_trans.status == SPITransSuccess)
+        {
+            ads->spi_trans.status = SPITransDone;
+            ads->config.status = ADS1220_INITIALIZED; // config done
+        }
     }
-  }
 }
 

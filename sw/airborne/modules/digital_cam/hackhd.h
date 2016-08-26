@@ -45,23 +45,25 @@
 #include "std.h"
 #include "math/pprz_geodetic_float.h"
 
-enum hackhd_status {
-  HACKHD_NONE,
-  HACKHD_POWER_ON,
-  HACKHD_POWER_OFF,
-  HACKHD_START_RECORD,
-  HACKHD_STOP_RECORD,
-  HACKHD_SHOOT,
-  HACKHD_AUTOSHOOT_START
+enum hackhd_status
+{
+    HACKHD_NONE,
+    HACKHD_POWER_ON,
+    HACKHD_POWER_OFF,
+    HACKHD_START_RECORD,
+    HACKHD_STOP_RECORD,
+    HACKHD_SHOOT,
+    HACKHD_AUTOSHOOT_START
 };
 
-struct HackHD {
-  enum hackhd_status status;
-  uint32_t timer;
-  int16_t photo_nr;
-  uint32_t autoshoot;
-  struct EnuCoor_f last_shot_pos;
-  uint32_t log_delay;
+struct HackHD
+{
+    enum hackhd_status status;
+    uint32_t timer;
+    int16_t photo_nr;
+    uint32_t autoshoot;
+    struct EnuCoor_f last_shot_pos;
+    uint32_t log_delay;
 };
 
 extern struct HackHD hackhd;

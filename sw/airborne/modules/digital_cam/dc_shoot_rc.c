@@ -38,17 +38,21 @@
 
 void dc_shoot_rc_periodic(void)
 {
-  static uint8_t rd_shoot = 0;
-  static uint8_t rd_num = 0;
+    static uint8_t rd_shoot = 0;
+    static uint8_t rd_num = 0;
 
-  if ((rd_shoot == 0) && (fbw_state->channels[DC_RADIO_SHOOT] > DC_RADIO_SHOOT_THRESHOLD)) {
-    dc_send_command(DC_SHOOT);
-    rd_shoot = 1;
-  }
-  if ((rd_shoot == 1) && (rd_num < 4)) {
-    rd_num = rd_num + 1;
-  } else {
-    rd_num = 0;
-    rd_shoot = 0;
-  }
+    if ((rd_shoot == 0) && (fbw_state->channels[DC_RADIO_SHOOT] > DC_RADIO_SHOOT_THRESHOLD))
+    {
+        dc_send_command(DC_SHOOT);
+        rd_shoot = 1;
+    }
+    if ((rd_shoot == 1) && (rd_num < 4))
+    {
+        rd_num = rd_num + 1;
+    }
+    else
+    {
+        rd_num = 0;
+        rd_shoot = 0;
+    }
 }

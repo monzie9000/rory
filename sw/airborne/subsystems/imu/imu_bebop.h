@@ -70,9 +70,10 @@
 #endif
 
 /** Everything that is in the bebop IMU */
-struct ImuBebop {
-  struct Mpu60x0_I2c mpu;         ///< The MPU gyro/accel device
-  struct Ak8963 ak;               ///< The AK8963 mag
+struct ImuBebop
+{
+    struct Mpu60x0_I2c mpu;         ///< The MPU gyro/accel device
+    struct Ak8963 ak;               ///< The AK8963 mag
 };
 
 extern struct ImuBebop imu_bebop;

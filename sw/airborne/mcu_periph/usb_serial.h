@@ -32,9 +32,10 @@
 #include "std.h"
 #include "mcu_periph/link_device.h"
 
-struct usb_serial_periph {
-  /** Generic device interface */
-  struct link_device device;
+struct usb_serial_periph
+{
+    /** Generic device interface */
+    struct link_device device;
 };
 
 extern struct usb_serial_periph usb_serial;

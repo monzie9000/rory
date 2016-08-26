@@ -57,27 +57,28 @@
 /**
  * UART peripheral
  */
-struct uart_periph {
-  /** Receive buffer */
-  uint8_t rx_buf[UART_RX_BUFFER_SIZE];
-  uint16_t rx_insert_idx;
-  uint16_t rx_extract_idx;
-  /** Transmit buffer */
-  uint8_t tx_buf[UART_TX_BUFFER_SIZE];
-  uint16_t tx_insert_idx;
-  uint16_t tx_extract_idx;
-  uint8_t tx_running;
-  /** UART Register */
-  void *reg_addr;
-  /** UART Baudrate */
-  int baudrate;
-  /** UART Dev (linux) */
-  char dev[UART_DEV_NAME_SIZE];
-  volatile uint16_t ore;    ///< overrun error counter
-  volatile uint16_t ne_err; ///< noise error counter
-  volatile uint16_t fe_err; ///< framing error counter
-  /** Generic device interface */
-  struct link_device device;
+struct uart_periph
+{
+    /** Receive buffer */
+    uint8_t rx_buf[UART_RX_BUFFER_SIZE];
+    uint16_t rx_insert_idx;
+    uint16_t rx_extract_idx;
+    /** Transmit buffer */
+    uint8_t tx_buf[UART_TX_BUFFER_SIZE];
+    uint16_t tx_insert_idx;
+    uint16_t tx_extract_idx;
+    uint8_t tx_running;
+    /** UART Register */
+    void *reg_addr;
+    /** UART Baudrate */
+    int baudrate;
+    /** UART Dev (linux) */
+    char dev[UART_DEV_NAME_SIZE];
+    volatile uint16_t ore;    ///< overrun error counter
+    volatile uint16_t ne_err; ///< noise error counter
+    volatile uint16_t fe_err; ///< framing error counter
+    /** Generic device interface */
+    struct link_device device;
 };
 
 

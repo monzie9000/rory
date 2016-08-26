@@ -48,14 +48,15 @@
 #define ITG3200_REG_PWR_MGM     0X3E
 
 /** Digital Low Pass Filter Options */
-enum Itg3200DLPF {
-  ITG3200_DLPF_256HZ = 0x0,  // internal sampling rate 8kHz
-  ITG3200_DLPF_188HZ = 0x1,  // internal sampling rate 1kHz
-  ITG3200_DLPF_98HZ  = 0x2,
-  ITG3200_DLPF_42HZ  = 0x3,
-  ITG3200_DLPF_20HZ  = 0x4,
-  ITG3200_DLPF_10HZ  = 0x5,
-  ITG3200_DLPF_05HZ  = 0x6
+enum Itg3200DLPF
+{
+    ITG3200_DLPF_256HZ = 0x0,  // internal sampling rate 8kHz
+    ITG3200_DLPF_188HZ = 0x1,  // internal sampling rate 1kHz
+    ITG3200_DLPF_98HZ  = 0x2,
+    ITG3200_DLPF_42HZ  = 0x3,
+    ITG3200_DLPF_20HZ  = 0x4,
+    ITG3200_DLPF_10HZ  = 0x5,
+    ITG3200_DLPF_05HZ  = 0x6
 };
 
 #endif /* ITG3200_REGS_H */

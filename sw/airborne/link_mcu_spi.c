@@ -52,45 +52,50 @@ static uint16_t crc = 0;
 void link_mcu_init(void)
 {
 
-  link_mcu_trans.cpol = SPICpolIdleLow;
-  link_mcu_trans.cpha = SPICphaEdge2;
-  link_mcu_trans.dss = SPIDss8bit;
-  link_mcu_trans.input_buf = (uint8_t *)&link_mcu_from_ap_msg;
-  link_mcu_trans.output_buf = (uint8_t *)&link_mcu_from_fbw_msg;
-  link_mcu_trans.input_length = LINK_MCU_FRAME_LENGTH;
-  link_mcu_trans.output_length = LINK_MCU_FRAME_LENGTH;
-  spi_slave_register(&(LINK_MCU_SPI_DEV), &link_mcu_trans);
+    link_mcu_trans.cpol = SPICpolIdleLow;
+    link_mcu_trans.cpha = SPICphaEdge2;
+    link_mcu_trans.dss = SPIDss8bit;
+    link_mcu_trans.input_buf = (uint8_t *)&link_mcu_from_ap_msg;
+    link_mcu_trans.output_buf = (uint8_t *)&link_mcu_from_fbw_msg;
+    link_mcu_trans.input_length = LINK_MCU_FRAME_LENGTH;
+    link_mcu_trans.output_length = LINK_MCU_FRAME_LENGTH;
+    spi_slave_register(&(LINK_MCU_SPI_DEV), &link_mcu_trans);
 }
 
 void link_mcu_restart(void)
 {
-  ComputeChecksum(link_mcu_from_fbw_msg);
-  link_mcu_from_fbw_msg.checksum = crc;
+    ComputeChecksum(link_mcu_from_fbw_msg);
+    link_mcu_from_fbw_msg.checksum = crc;
 
-  // wait for the next transaction
-  spi_slave_wait(&(LINK_MCU_SPI_DEV));
+    // wait for the next transaction
+    spi_slave_wait(&(LINK_MCU_SPI_DEV));
 }
 
 void link_mcu_event_task(void)
 {
-  if (link_mcu_trans.status == SPITransSuccess) {
-    /* Got a message on SPI. */
-    link_mcu_trans.status = SPITransDone;
+    if (link_mcu_trans.status == SPITransSuccess)
+    {
+        /* Got a message on SPI. */
+        link_mcu_trans.status = SPITransDone;
 
-    /* A message has been received */
-    ComputeChecksum(link_mcu_from_ap_msg);
-    link_mcu_received = TRUE;
-    if (link_mcu_from_ap_msg.checksum == crc) {
-      inter_mcu_received_ap = TRUE;
-    } else {
-      fbw_state->nb_err++;
+        /* A message has been received */
+        ComputeChecksum(link_mcu_from_ap_msg);
+        link_mcu_received = TRUE;
+        if (link_mcu_from_ap_msg.checksum == crc)
+        {
+            inter_mcu_received_ap = TRUE;
+        }
+        else
+        {
+            fbw_state->nb_err++;
+        }
     }
-  }
-  if (link_mcu_trans.status == SPITransFailed) {
-    link_mcu_trans.status = SPITransDone;
-    link_mcu_received = TRUE;
-    fbw_state->nb_err++;
-  }
+    if (link_mcu_trans.status == SPITransFailed)
+    {
+        link_mcu_trans.status = SPITransDone;
+        link_mcu_received = TRUE;
+        fbw_state->nb_err++;
+    }
 }
 
 #endif /* FBW */
@@ -112,57 +117,62 @@ uint8_t link_mcu_fbw_nb_err;
 
 static void send_debug_link(struct transport_tx *trans, struct link_device *dev)
 {
-  uint8_t mcu1_ppm_cpt_foo = 0; //FIXME
-  pprz_msg_send_DEBUG_MCU_LINK(trans, dev, AC_ID,
-                               &link_mcu_nb_err, &link_mcu_fbw_nb_err, &mcu1_ppm_cpt_foo);
+    uint8_t mcu1_ppm_cpt_foo = 0; //FIXME
+    pprz_msg_send_DEBUG_MCU_LINK(trans, dev, AC_ID,
+                                 &link_mcu_nb_err, &link_mcu_fbw_nb_err, &mcu1_ppm_cpt_foo);
 }
 #endif
 
 void link_mcu_init(void)
 {
-  link_mcu_nb_err = 0;
+    link_mcu_nb_err = 0;
 
-  link_mcu_trans.cpol = SPICpolIdleLow;
-  link_mcu_trans.cpha = SPICphaEdge2;
-  link_mcu_trans.dss = SPIDss8bit;
-  link_mcu_trans.select = SPISelectUnselect;
-  link_mcu_trans.slave_idx = LINK_MCU_SLAVE_IDX;
-  link_mcu_trans.input_buf = (uint8_t *)&link_mcu_from_fbw_msg;
-  link_mcu_trans.output_buf = (uint8_t *)&link_mcu_from_ap_msg;
-  link_mcu_trans.input_length = LINK_MCU_FRAME_LENGTH;
-  link_mcu_trans.output_length = LINK_MCU_FRAME_LENGTH;
+    link_mcu_trans.cpol = SPICpolIdleLow;
+    link_mcu_trans.cpha = SPICphaEdge2;
+    link_mcu_trans.dss = SPIDss8bit;
+    link_mcu_trans.select = SPISelectUnselect;
+    link_mcu_trans.slave_idx = LINK_MCU_SLAVE_IDX;
+    link_mcu_trans.input_buf = (uint8_t *)&link_mcu_from_fbw_msg;
+    link_mcu_trans.output_buf = (uint8_t *)&link_mcu_from_ap_msg;
+    link_mcu_trans.input_length = LINK_MCU_FRAME_LENGTH;
+    link_mcu_trans.output_length = LINK_MCU_FRAME_LENGTH;
 
 #if PERIODIC_TELEMETRY
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_DEBUG_MCU_LINK, send_debug_link);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_DEBUG_MCU_LINK, send_debug_link);
 #endif
 }
 
 void link_mcu_send(void)
 {
 
-  ComputeChecksum(link_mcu_from_ap_msg);
-  link_mcu_from_ap_msg.checksum = crc;
-  spi_submit(&(LINK_MCU_SPI_DEV), &link_mcu_trans);
+    ComputeChecksum(link_mcu_from_ap_msg);
+    link_mcu_from_ap_msg.checksum = crc;
+    spi_submit(&(LINK_MCU_SPI_DEV), &link_mcu_trans);
 }
 
 void link_mcu_event_task(void)
 {
-  if (link_mcu_trans.status == SPITransSuccess) {
-    /* Got a message on SPI. */
-    link_mcu_trans.status = SPITransDone;
-    /* A message has been received */
-    ComputeChecksum(link_mcu_from_fbw_msg);
-    if (link_mcu_from_fbw_msg.checksum == crc) {
-      inter_mcu_received_fbw = TRUE;
-    } else {
-      link_mcu_nb_err++;
+    if (link_mcu_trans.status == SPITransSuccess)
+    {
+        /* Got a message on SPI. */
+        link_mcu_trans.status = SPITransDone;
+        /* A message has been received */
+        ComputeChecksum(link_mcu_from_fbw_msg);
+        if (link_mcu_from_fbw_msg.checksum == crc)
+        {
+            inter_mcu_received_fbw = TRUE;
+        }
+        else
+        {
+            link_mcu_nb_err++;
+        }
     }
-  }
-  if (link_mcu_trans.status == SPITransFailed) {
-    link_mcu_trans.status = SPITransDone;
-    link_mcu_received = TRUE;
-    link_mcu_nb_err++;
-  }
+    if (link_mcu_trans.status == SPITransFailed)
+    {
+        link_mcu_trans.status = SPITransDone;
+        link_mcu_received = TRUE;
+        link_mcu_nb_err++;
+    }
 }
 
 #endif /* AP */

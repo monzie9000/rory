@@ -44,65 +44,69 @@ static FILE *file_logger = NULL;
 /** Start the file logger and open a new file */
 void file_logger_start(void)
 {
-  uint32_t counter = 0;
-  char filename[512];
+    uint32_t counter = 0;
+    char filename[512];
 
-  // Check for available files
-  sprintf(filename, "%s/%05d.csv", STRINGIFY(FILE_LOGGER_PATH), counter);
-  while ((file_logger = fopen(filename, "r"))) {
-    fclose(file_logger);
-
-    counter++;
+    // Check for available files
     sprintf(filename, "%s/%05d.csv", STRINGIFY(FILE_LOGGER_PATH), counter);
-  }
+    while ((file_logger = fopen(filename, "r")))
+    {
+        fclose(file_logger);
 
-  file_logger = fopen(filename, "w");
+        counter++;
+        sprintf(filename, "%s/%05d.csv", STRINGIFY(FILE_LOGGER_PATH), counter);
+    }
 
-  if (file_logger != NULL) {
-    fprintf(
-      file_logger,
-      "counter,gyro_unscaled_p,gyro_unscaled_q,gyro_unscaled_r,accel_unscaled_x,accel_unscaled_y,accel_unscaled_z,mag_unscaled_x,mag_unscaled_y,mag_unscaled_z,COMMAND_THRUST,COMMAND_ROLL,COMMAND_PITCH,COMMAND_YAW,qi,qx,qy,qz\n"
-    );
-  }
+    file_logger = fopen(filename, "w");
+
+    if (file_logger != NULL)
+    {
+        fprintf(
+            file_logger,
+            "counter,gyro_unscaled_p,gyro_unscaled_q,gyro_unscaled_r,accel_unscaled_x,accel_unscaled_y,accel_unscaled_z,mag_unscaled_x,mag_unscaled_y,mag_unscaled_z,COMMAND_THRUST,COMMAND_ROLL,COMMAND_PITCH,COMMAND_YAW,qi,qx,qy,qz\n"
+        );
+    }
 }
 
 /** Stop the logger an nicely close the file */
 void file_logger_stop(void)
 {
-  if (file_logger != NULL) {
-    fclose(file_logger);
-    file_logger = NULL;
-  }
+    if (file_logger != NULL)
+    {
+        fclose(file_logger);
+        file_logger = NULL;
+    }
 }
 
 /** Log the values to a csv file */
 void file_logger_periodic(void)
 {
-  if (file_logger == NULL) {
-    return;
-  }
-  static uint32_t counter;
-  struct Int32Quat *quat = stateGetNedToBodyQuat_i();
+    if (file_logger == NULL)
+    {
+        return;
+    }
+    static uint32_t counter;
+    struct Int32Quat *quat = stateGetNedToBodyQuat_i();
 
-  fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-          counter,
-          imu.gyro_unscaled.p,
-          imu.gyro_unscaled.q,
-          imu.gyro_unscaled.r,
-          imu.accel_unscaled.x,
-          imu.accel_unscaled.y,
-          imu.accel_unscaled.z,
-          imu.mag_unscaled.x,
-          imu.mag_unscaled.y,
-          imu.mag_unscaled.z,
-          stabilization_cmd[COMMAND_THRUST],
-          stabilization_cmd[COMMAND_ROLL],
-          stabilization_cmd[COMMAND_PITCH],
-          stabilization_cmd[COMMAND_YAW],
-          quat->qi,
-          quat->qx,
-          quat->qy,
-          quat->qz
-         );
-  counter++;
+    fprintf(file_logger, "%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+            counter,
+            imu.gyro_unscaled.p,
+            imu.gyro_unscaled.q,
+            imu.gyro_unscaled.r,
+            imu.accel_unscaled.x,
+            imu.accel_unscaled.y,
+            imu.accel_unscaled.z,
+            imu.mag_unscaled.x,
+            imu.mag_unscaled.y,
+            imu.mag_unscaled.z,
+            stabilization_cmd[COMMAND_THRUST],
+            stabilization_cmd[COMMAND_ROLL],
+            stabilization_cmd[COMMAND_PITCH],
+            stabilization_cmd[COMMAND_YAW],
+            quat->qi,
+            quat->qx,
+            quat->qy,
+            quat->qz
+           );
+    counter++;
 }

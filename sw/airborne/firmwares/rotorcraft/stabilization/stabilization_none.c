@@ -36,26 +36,26 @@ struct Int32Rates stabilization_none_rc_cmd;
 
 void stabilization_none_init(void)
 {
-  INT_RATES_ZERO(stabilization_none_rc_cmd);
+    INT_RATES_ZERO(stabilization_none_rc_cmd);
 }
 
 void stabilization_none_read_rc(void)
 {
 
-  stabilization_none_rc_cmd.p = (int32_t)radio_control.values[RADIO_ROLL];
-  stabilization_none_rc_cmd.q = (int32_t)radio_control.values[RADIO_PITCH];
-  stabilization_none_rc_cmd.r = (int32_t)radio_control.values[RADIO_YAW];
+    stabilization_none_rc_cmd.p = (int32_t)radio_control.values[RADIO_ROLL];
+    stabilization_none_rc_cmd.q = (int32_t)radio_control.values[RADIO_PITCH];
+    stabilization_none_rc_cmd.r = (int32_t)radio_control.values[RADIO_YAW];
 }
 
 void stabilization_none_enter(void)
 {
-  INT_RATES_ZERO(stabilization_none_rc_cmd);
+    INT_RATES_ZERO(stabilization_none_rc_cmd);
 }
 
 void stabilization_none_run(bool_t in_flight __attribute__((unused)))
 {
-  /* just directly pass rc commands through */
-  stabilization_cmd[COMMAND_ROLL]  = stabilization_none_rc_cmd.p;
-  stabilization_cmd[COMMAND_PITCH] = stabilization_none_rc_cmd.q;
-  stabilization_cmd[COMMAND_YAW]   = stabilization_none_rc_cmd.r;
+    /* just directly pass rc commands through */
+    stabilization_cmd[COMMAND_ROLL]  = stabilization_none_rc_cmd.p;
+    stabilization_cmd[COMMAND_PITCH] = stabilization_none_rc_cmd.q;
+    stabilization_cmd[COMMAND_YAW]   = stabilization_none_rc_cmd.r;
 }

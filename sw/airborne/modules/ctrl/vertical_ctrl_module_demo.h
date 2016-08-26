@@ -30,12 +30,13 @@
 
 #include "std.h"
 
-struct VerticalCtrlDemo {
-  float agl;
-  float setpoint;
-  float pgain;
-  float igain;
-  float sum_err;
+struct VerticalCtrlDemo
+{
+    float agl;
+    float setpoint;
+    float pgain;
+    float igain;
+    float sum_err;
 };
 
 extern struct VerticalCtrlDemo v_ctrl;

@@ -38,54 +38,61 @@ extern "C" {
 #include "pprz_algebra.h"
 #include "pprz_algebra_float.h"
 
-struct DoubleVect2 {
-  double x;
-  double y;
+struct DoubleVect2
+{
+    double x;
+    double y;
 };
 
-struct DoubleVect3 {
-  double x;
-  double y;
-  double z;
+struct DoubleVect3
+{
+    double x;
+    double y;
+    double z;
 };
 
 /**
  * @brief Roation quaternion
  */
-struct DoubleQuat {
-  double qi;
-  double qx;
-  double qy;
-  double qz;
+struct DoubleQuat
+{
+    double qi;
+    double qx;
+    double qy;
+    double qz;
 };
 
-struct DoubleMat33 {
-  double m[3 * 3];
+struct DoubleMat33
+{
+    double m[3 * 3];
 };
 
 /**
  * @brief rotation matrix
  */
-struct DoubleRMat {
-  double m[3 * 3];
+struct DoubleRMat
+{
+    double m[3 * 3];
 };
 
 /**
  * @brief euler angles
  * @details Units: radians */
-struct DoubleEulers {
-  double phi; ///< in radians
-  double theta; ///< in radians
-  double psi; ///< in radians
+struct DoubleEulers
+{
+    double phi; ///< in radians
+    double theta; ///< in radians
+    double psi; ///< in radians
 };
 
 /**
  * @brief angular rates
  * @details Units: rad/s^2 */
-struct DoubleRates {
-  double p; ///< in rad/s^2
-  double q; ///< in rad/s^2
-  double r; ///< in rad/s^2
+struct DoubleRates
+{
+    double p; ///< in rad/s^2
+    double q; ///< in rad/s^2
+    double r; ///< in rad/s^2
 };
 
 #define DOUBLE_VECT3_ROUND(_v) DOUBLE_VECT3_RINT(_v, _v)
@@ -99,45 +106,47 @@ struct DoubleRates {
 
 static inline double double_vect3_norm(struct DoubleVect3 *v)
 {
-  return sqrt(VECT3_NORM2(*v));
+    return sqrt(VECT3_NORM2(*v));
 }
 
 /** normalize 3D vector in place */
 static inline void double_vect3_normalize(struct DoubleVect3 *v)
 {
-  const double n = double_vect3_norm(v);
-  if (n > 0) {
-    v->x /= n;
-    v->y /= n;
-    v->z /= n;
-  }
+    const double n = double_vect3_norm(v);
+    if (n > 0)
+    {
+        v->x /= n;
+        v->y /= n;
+        v->z /= n;
+    }
 }
 
 
 /** initialises a quaternion to identity */
 static inline void double_quat_identity(struct DoubleQuat *q)
 {
-  q->qi = 1.0;
-  q->qx = 0;
-  q->qy = 0;
-  q->qz = 0;
+    q->qi = 1.0;
+    q->qx = 0;
+    q->qy = 0;
+    q->qz = 0;
 }
 
 static inline double double_quat_norm(struct DoubleQuat *q)
 {
-  return sqrt(SQUARE(q->qi) + SQUARE(q->qx) +  SQUARE(q->qy) + SQUARE(q->qz));
+    return sqrt(SQUARE(q->qi) + SQUARE(q->qx) +  SQUARE(q->qy) + SQUARE(q->qz));
 }
 
 
 static inline void double_quat_normalize(struct DoubleQuat *q)
 {
-  double qnorm = double_quat_norm(q);
-  if (qnorm > FLT_MIN) {
-    q->qi = q->qi / qnorm;
-    q->qx = q->qx / qnorm;
-    q->qy = q->qy / qnorm;
-    q->qz = q->qz / qnorm;
-  }
+    double qnorm = double_quat_norm(q);
+    if (qnorm > FLT_MIN)
+    {
+        q->qi = q->qi / qnorm;
+        q->qx = q->qx / qnorm;
+        q->qy = q->qy / qnorm;
+        q->qz = q->qz / qnorm;
+    }
 }
 
 /** Rotation matrix from 321 Euler angles (double).
@@ -160,7 +169,7 @@ extern void double_quat_vmult(struct DoubleVect3 *v_out, struct DoubleQuat *q, s
 /** initialises a rotation matrix to identity */
 static inline void double_rmat_identity(struct DoubleRMat *rm)
 {
-  FLOAT_MAT33_DIAG(*rm, 1., 1., 1.);
+    FLOAT_MAT33_DIAG(*rm, 1., 1., 1.);
 }
 
 /** Inverse/transpose of a rotation matrix.
@@ -182,7 +191,7 @@ extern void double_rmat_vmult(struct DoubleVect3 *vb, struct DoubleRMat *m_a2b,
 extern void double_rmat_of_quat(struct DoubleRMat *rm, struct DoubleQuat *q);
 static inline void double_rmat_of_eulers(struct DoubleRMat *rm, struct DoubleEulers *e)
 {
-  double_rmat_of_eulers_321(rm, e);
+    double_rmat_of_eulers_321(rm, e);
 }
 
 /* defines for backwards compatibility */

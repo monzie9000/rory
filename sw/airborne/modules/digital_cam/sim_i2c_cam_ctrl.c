@@ -38,40 +38,48 @@
 
 void atmega_i2c_cam_ctrl_init(void)
 {
-  dc_init();
+    dc_init();
 }
 
 void atmega_i2c_cam_ctrl_periodic(void)
 {
-  dc_periodic();
+    dc_periodic();
 
-  // Request Status
-  dc_send_command(DC_GET_STATUS);
+    // Request Status
+    dc_send_command(DC_GET_STATUS);
 }
 
 
 
 void atmega_i2c_cam_ctrl_send(uint8_t cmd)
 {
-  static uint8_t zoom = 0;
-  static uint8_t mode = 0;
-  unsigned char cam_ret[1];
+    static uint8_t zoom = 0;
+    static uint8_t mode = 0;
+    unsigned char cam_ret[1];
 
-  if (cmd == DC_SHOOT) {
-    dc_send_shot_position();
-  } else if (cmd == DC_TALLER) {
-    zoom = 1;
-  } else if (cmd == DC_WIDER) {
-    zoom = 0;
-  } else if (cmd == DC_GET_STATUS) {
-    mode++;
-    if (mode > 15) {
-      mode = 0;
+    if (cmd == DC_SHOOT)
+    {
+        dc_send_shot_position();
     }
-  }
+    else if (cmd == DC_TALLER)
+    {
+        zoom = 1;
+    }
+    else if (cmd == DC_WIDER)
+    {
+        zoom = 0;
+    }
+    else if (cmd == DC_GET_STATUS)
+    {
+        mode++;
+        if (mode > 15)
+        {
+            mode = 0;
+        }
+    }
 
-  cam_ret[0] = mode + zoom * 0x20;
-  RunOnceEvery(6, DOWNLINK_SEND_PAYLOAD(DefaultChannel, DefaultDevice, 1, cam_ret));
+    cam_ret[0] = mode + zoom * 0x20;
+    RunOnceEvery(6, DOWNLINK_SEND_PAYLOAD(DefaultChannel, DefaultDevice, 1, cam_ret));
 
 }
 

@@ -39,13 +39,14 @@
 /* include default aspirin sensitivity definitions */
 #include "subsystems/imu/imu_aspirin_defaults.h"
 
-struct ImuAspirin {
-  volatile uint8_t accel_valid;
-  volatile uint8_t gyro_valid;
-  volatile uint8_t mag_valid;
-  struct Adxl345_Spi acc_adxl;
-  struct Itg3200 gyro_itg;
-  struct Hmc58xx mag_hmc;
+struct ImuAspirin
+{
+    volatile uint8_t accel_valid;
+    volatile uint8_t gyro_valid;
+    volatile uint8_t mag_valid;
+    struct Adxl345_Spi acc_adxl;
+    struct Itg3200 gyro_itg;
+    struct Hmc58xx mag_hmc;
 };
 
 extern struct ImuAspirin imu_aspirin;

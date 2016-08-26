@@ -32,11 +32,12 @@
 
 #include "generated/airframe.h"
 
-struct Int32AttitudeGains {
-  struct Int32Vect3  p;
-  struct Int32Vect3  d;
-  struct Int32Vect3  dd;
-  struct Int32Vect3  i;
+struct Int32AttitudeGains
+{
+    struct Int32Vect3  p;
+    struct Int32Vect3  d;
+    struct Int32Vect3  dd;
+    struct Int32Vect3  i;
 };
 
 extern struct Int32AttitudeGains  stabilization_gains;

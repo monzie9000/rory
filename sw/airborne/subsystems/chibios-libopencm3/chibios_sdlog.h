@@ -49,10 +49,11 @@ extern FileDes flightRecorderLogFile;
 extern bool_t chibios_logInit(void);
 extern void chibios_logFinish(bool_t flush);
 
-struct chibios_sdlog {
-  FileDes *file;
-  /** Generic device interface */
-  struct link_device device;
+struct chibios_sdlog
+{
+    FileDes *file;
+    /** Generic device interface */
+    struct link_device device;
 };
 
 extern struct chibios_sdlog chibios_sdlog;

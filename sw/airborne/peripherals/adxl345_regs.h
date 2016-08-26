@@ -48,25 +48,27 @@
  * Selectable data rates in ADXL345_REG_BW_RATE
  * bandwith is always half of data rate
  */
-enum Adxl345Rates {
-  ADXL345_RATE_25HZ   = 0x08,
-  ADXL345_RATE_50HZ   = 0x09,
-  ADXL345_RATE_100HZ  = 0x0A,
-  ADXL345_RATE_200HZ  = 0x0B,
-  ADXL345_RATE_400HZ  = 0x0C,
-  ADXL345_RATE_800HZ  = 0x0D,
-  ADXL345_RATE_1600HZ = 0x0E,
-  ADXL345_RATE_3200HZ = 0x0F
+enum Adxl345Rates
+{
+    ADXL345_RATE_25HZ   = 0x08,
+    ADXL345_RATE_50HZ   = 0x09,
+    ADXL345_RATE_100HZ  = 0x0A,
+    ADXL345_RATE_200HZ  = 0x0B,
+    ADXL345_RATE_400HZ  = 0x0C,
+    ADXL345_RATE_800HZ  = 0x0D,
+    ADXL345_RATE_1600HZ = 0x0E,
+    ADXL345_RATE_3200HZ = 0x0F
 };
 
 /**
  * Selectable range in ADXL345_REG_DATA_FORMAT
  */
-enum Adxl345Ranges {
-  ADXL345_RANGE_2G  = 0x00,
-  ADXL345_RANGE_4G  = 0x01,
-  ADXL345_RANGE_8G  = 0x02,
-  ADXL345_RANGE_16G = 0x03
+enum Adxl345Ranges
+{
+    ADXL345_RANGE_2G  = 0x00,
+    ADXL345_RANGE_4G  = 0x01,
+    ADXL345_RANGE_8G  = 0x02,
+    ADXL345_RANGE_16G = 0x03
 };
 
 /* data format bits */

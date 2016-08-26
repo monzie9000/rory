@@ -30,10 +30,10 @@
 
 int32_t persistent_write(void *ptr UNUSED, uint32_t size UNUSED)
 {
-  return -1;
+    return -1;
 }
 
 int32_t persistent_read(void *ptr UNUSED, uint32_t size UNUSED)
 {
-  return -1;
+    return -1;
 }

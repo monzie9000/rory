@@ -71,19 +71,21 @@ EXTERN bool_t datalink_enabled;
 /** Check for new message and parse */
 static inline void DlCheckAndParse(void)
 {
-  // make it possible to disable datalink in NPS sim
+    // make it possible to disable datalink in NPS sim
 #if USE_NPS
-  if (!datalink_enabled) {
-    return;
-  }
+    if (!datalink_enabled)
+    {
+        return;
+    }
 #endif
 
-  if (dl_msg_available) {
-    datalink_time = 0;
-    datalink_nb_msgs++;
-    dl_parse_msg();
-    dl_msg_available = FALSE;
-  }
+    if (dl_msg_available)
+    {
+        datalink_time = 0;
+        datalink_nb_msgs++;
+        dl_parse_msg();
+        dl_msg_available = FALSE;
+    }
 }
 
 #if defined DATALINK && DATALINK == PPRZ

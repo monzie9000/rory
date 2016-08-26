@@ -40,9 +40,10 @@
 
 
 
-struct AvoidNavigationStruct {
-  uint8_t mode; ///< 0 = nothing, 1 =  climb, 2 = sideways, ...
-  uint8_t stereo_bin[8];
+struct AvoidNavigationStruct
+{
+    uint8_t mode; ///< 0 = nothing, 1 =  climb, 2 = sideways, ...
+    uint8_t stereo_bin[8];
 };
 
 /** global VIDEO state */

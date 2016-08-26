@@ -46,7 +46,10 @@ extern "C" {
 #define ERROR_CHUNKBUFFER_INVALID -20
 #define ERROR_ZEROCOPY_NOT_ENABLED -30
 
-typedef enum  {VarLenMsgQueue_REGULAR, VarLenMsgQueue_OUT_OF_BAND} VarLenMsgQueueUrgency;
+typedef enum  {
+    VarLenMsgQueue_REGULAR, VarLenMsgQueue_OUT_OF_BAND
+}
+VarLenMsgQueueUrgency;
 
 #define _MAILBOX_BUFFER(name, size, attrib)				\
   static msg_t __ ## name ## _mailboxBufferInternal[size] attrib = {0};
@@ -77,15 +80,17 @@ _SPARSECHUNK_MAP_BUFFER(name, mailboxSize, attrib);
 
 
 // used by zero copy PUSH (reserve/send) api
-typedef struct  {
-  uint8_t* bptr;  //  pointer on message buffer
-  uint16_t blen;  //  length of message to send
+typedef struct
+{
+    uint8_t* bptr;  //  pointer on message buffer
+    uint16_t blen;  //  length of message to send
 } ChunkBuffer;
 
 // used by zero copy POP (pop/free) api
-typedef struct  {
-  const uint8_t* const bptr; //  pointer on message buffer
-  const uint16_t blen;       //  length of received message
+typedef struct
+{
+    const uint8_t* const bptr; //  pointer on message buffer
+    const uint16_t blen;       //  length of received message
 } ChunkBufferRO;
 
 typedef struct  VarLenMsgQueue VarLenMsgQueue;
@@ -143,8 +148,8 @@ int32_t 	varLenMsgQueueFreeSize (VarLenMsgQueue* que);
                 if < 0 : error status (see errors at begining of this header file)
  */
 int32_t 	varLenMsgQueuePush     (VarLenMsgQueue* que, const void* msg,
-					const size_t msgLen,
-					const VarLenMsgQueueUrgency urgency);
+                                    const size_t msgLen,
+                                    const VarLenMsgQueueUrgency urgency);
 
 /*
   goal : pop a message. blocking
@@ -154,7 +159,7 @@ int32_t 	varLenMsgQueuePush     (VarLenMsgQueue* que, const void* msg,
                  if < 0 : error status (see errors at begining of this header file)
  */
 int32_t 	varLenMsgQueuePop      (VarLenMsgQueue* que, void* msg,
-					const size_t msgLen);
+                                    const size_t msgLen);
 
 /*
   goal : pop a message. blocking, but with timeout parameter
@@ -165,7 +170,7 @@ int32_t 	varLenMsgQueuePop      (VarLenMsgQueue* que, void* msg,
                  if < 0 : error status (see errors at begining of this header file)
  */
 int32_t 	varLenMsgQueuePopTimeout (VarLenMsgQueue* que, void* msg,
-					  const size_t msgLen, const systime_t  time);
+                                      const size_t msgLen, const systime_t  time);
 
 
 
@@ -180,7 +185,7 @@ int32_t 	varLenMsgQueuePopTimeout (VarLenMsgQueue* que, void* msg,
                 if < 0 : error status (see errors at begining of this header file)
  */
 int32_t		varLenMsgQueueReserveChunk (VarLenMsgQueue* que,
-					    ChunkBuffer *cbuf, const size_t msgLen);
+                                        ChunkBuffer *cbuf, const size_t msgLen);
 
 /*
   bugs : see BUGS section at begining of this header
@@ -193,7 +198,7 @@ int32_t		varLenMsgQueueReserveChunk (VarLenMsgQueue* que,
                 if < 0 : error status (see errors at begining of this header file)
  */
 int32_t		varLenMsgQueueSendChunk (VarLenMsgQueue* que, const ChunkBuffer *cbuf,
-					 const VarLenMsgQueueUrgency urgency);
+                                     const VarLenMsgQueueUrgency urgency);
 
 
 /*
@@ -219,7 +224,7 @@ uint32_t	varLenMsgQueuePopChunk (VarLenMsgQueue* que, ChunkBufferRO *cbro);
 
  */
 uint32_t	varLenMsgQueuePopChunkTimeout (VarLenMsgQueue* que, ChunkBufferRO *cbro,
-					       const systime_t  time);
+        const systime_t  time);
 
 
 /*
@@ -260,24 +265,27 @@ const char*     varLenMsgQueueError (int32_t messIndex);
 #                |_|     |_|    |_|    \_/    \__,_|  \__|   \___|
 */
 
-typedef union {
-  struct {
-    uint16_t ptr;
-    uint16_t len;
-  };
-  msg_t msgPtrLen;
+typedef union
+{
+    struct
+    {
+        uint16_t ptr;
+        uint16_t len;
+    };
+    msg_t msgPtrLen;
 } MsgPtrLen;
 
 
-struct VarLenMsgQueue {
-  const uint16_t mbAndSparseChunkSize;
-  const bool_t useZeroCopyApi;
-  uint16_t mbReservedSlot;
-  Mutex mtx ;
-  Mailbox mb;
-  CircularBuffer circBuf;
-  uint32_t sparseChunkNumber;
-  MsgPtrLen * const sparseChunkMap;
+struct VarLenMsgQueue
+{
+    const uint16_t mbAndSparseChunkSize;
+    const bool_t useZeroCopyApi;
+    uint16_t mbReservedSlot;
+    Mutex mtx ;
+    Mailbox mb;
+    CircularBuffer circBuf;
+    uint32_t sparseChunkNumber;
+    MsgPtrLen * const sparseChunkMap;
 } ;
 
 #ifdef __cplusplus

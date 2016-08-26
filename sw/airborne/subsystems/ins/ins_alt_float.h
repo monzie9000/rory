@@ -34,16 +34,17 @@
 #include "std.h"
 
 /** Ins implementation state (altitude, float) */
-struct InsAltFloat {
-  float alt;     ///< estimated altitude above MSL in meters
-  float alt_dot; ///< estimated vertical speed in m/s (positive-up)
+struct InsAltFloat
+{
+    float alt;     ///< estimated altitude above MSL in meters
+    float alt_dot; ///< estimated vertical speed in m/s (positive-up)
 
-  bool_t reset_alt_ref;  ///< flag to request reset of altitude reference to current alt
+    bool_t reset_alt_ref;  ///< flag to request reset of altitude reference to current alt
 
 #if USE_BAROMETER
-  float qfe;
-  float baro_alt;
-  bool_t baro_initialized;
+    float qfe;
+    float baro_alt;
+    bool_t baro_initialized;
 #endif
 };
 

@@ -28,12 +28,12 @@
 
 void chibios_chSysLock (void)
 {
-  chSysLock ();
+    chSysLock ();
 }
 
 void chibios_chSysUnlock (void)
 {
-  chSysUnlock ();
+    chSysUnlock ();
 }
 
 void chibios_chSysLockFromIsr (void)
@@ -58,20 +58,20 @@ void chibios_chSysEnable (void)
 
 void chibios_chRegSetThreadName (const char* thdName)
 {
-  chRegSetThreadName (thdName);
+    chRegSetThreadName (thdName);
 }
 
 void chibios_chThdSleepMilliseconds(uint32_t ms)
 {
-  chThdSleepMilliseconds(ms);
+    chThdSleepMilliseconds(ms);
 }
 
 void chibios_chThdSleepMicroseconds(uint32_t us)
 {
-   chThdSleepMicroseconds(us);
+    chThdSleepMicroseconds(us);
 }
 
 uint32_t chibios_chTimeNow(void)
 {
-  return chTimeNow();
+    return chTimeNow();
 }

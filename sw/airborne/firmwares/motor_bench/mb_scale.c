@@ -10,11 +10,11 @@ volatile uint8_t  mb_scale_calib;
 
 void mb_scale_init(void)
 {
-  /* select pin for capture */
-  ICP_PINSEL |= ICP_PINSEL_VAL << ICP_PINSEL_BIT;
-  /* enable capture 0.3 on falling edge + trigger interrupt */
-  T0CCR |= TCCR_CR3_F | TCCR_CR3_I;
-  mb_scale_thrust = 0.;
-  mb_scale_torque = 0.;
-  mb_scale_calib = 0;
+    /* select pin for capture */
+    ICP_PINSEL |= ICP_PINSEL_VAL << ICP_PINSEL_BIT;
+    /* enable capture 0.3 on falling edge + trigger interrupt */
+    T0CCR |= TCCR_CR3_F | TCCR_CR3_I;
+    mb_scale_thrust = 0.;
+    mb_scale_torque = 0.;
+    mb_scale_calib = 0;
 }

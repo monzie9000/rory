@@ -35,30 +35,32 @@
 #include "math/pprz_algebra_float.h"
 #include "math/pprz_orientation_conversion.h"
 
-enum AhrsMlkfStatus {
-  AHRS_MLKF_UNINIT,
-  AHRS_MLKF_RUNNING
+enum AhrsMlkfStatus
+{
+    AHRS_MLKF_UNINIT,
+    AHRS_MLKF_RUNNING
 };
 
-struct AhrsMlkf {
-  struct FloatQuat   ltp_to_imu_quat;  ///< Rotation from LocalTangentPlane to IMU frame as unit quaternion
-  struct FloatQuat   ltp_to_body_quat; ///< Rotation from LocalTangentPlane to body frame as unit quaternion
-  struct FloatRates  imu_rate;         ///< Rotational velocity in IMU frame
-  struct FloatRates  gyro_bias;
+struct AhrsMlkf
+{
+    struct FloatQuat   ltp_to_imu_quat;  ///< Rotation from LocalTangentPlane to IMU frame as unit quaternion
+    struct FloatQuat   ltp_to_body_quat; ///< Rotation from LocalTangentPlane to body frame as unit quaternion
+    struct FloatRates  imu_rate;         ///< Rotational velocity in IMU frame
+    struct FloatRates  gyro_bias;
 
-  struct FloatVect3  mag_h;
+    struct FloatVect3  mag_h;
 
-  struct FloatVect3  mag_noise;
+    struct FloatVect3  mag_noise;
 
-  struct FloatQuat  gibbs_cor;
-  float P[6][6];
-  float lp_accel;
+    struct FloatQuat  gibbs_cor;
+    float P[6][6];
+    float lp_accel;
 
-  /** body_to_imu rotation */
-  struct OrientationReps body_to_imu;
+    /** body_to_imu rotation */
+    struct OrientationReps body_to_imu;
 
-  enum AhrsMlkfStatus status;
-  bool_t is_aligned;
+    enum AhrsMlkfStatus status;
+    bool_t is_aligned;
 };
 
 extern struct AhrsMlkf ahrs_mlkf;

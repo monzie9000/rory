@@ -34,72 +34,85 @@
 #include "math/pprz_geodetic_float.h"
 #include "math/pprz_geodetic_int.h"
 
-enum MissionType {
-  MissionWP = 1,
-  MissionCircle = 2,
-  MissionSegment = 3,
-  MissionPath = 4,
-  MissionSurvey = 5,
-  MissionEight = 6,
-  MissionOval = 7
+enum MissionType
+{
+    MissionWP = 1,
+    MissionCircle = 2,
+    MissionSegment = 3,
+    MissionPath = 4,
+    MissionSurvey = 5,
+    MissionEight = 6,
+    MissionOval = 7
 };
 
-enum MissionInsertMode {
-  Append,         ///< add at the last position
-  Prepend,        ///< add before the current element
-  ReplaceCurrent, ///< replace current element
-  ReplaceAll      ///< remove all elements and add the new one
+enum MissionInsertMode
+{
+    Append,         ///< add at the last position
+    Prepend,        ///< add before the current element
+    ReplaceCurrent, ///< replace current element
+    ReplaceAll      ///< remove all elements and add the new one
 };
 
-struct _mission_wp {
-  union {
-    struct EnuCoor_f wp_f;
-    struct EnuCoor_i wp_i;
-  } wp;
+struct _mission_wp
+{
+    union
+    {
+        struct EnuCoor_f wp_f;
+        struct EnuCoor_i wp_i;
+    } wp;
 };
 
-struct _mission_circle {
-  union {
-    struct EnuCoor_f center_f;
-    struct EnuCoor_i center_i;
-  } center;
+struct _mission_circle
+{
+    union
+    {
+        struct EnuCoor_f center_f;
+        struct EnuCoor_i center_i;
+    } center;
 
-  float radius;
+    float radius;
 };
 
-struct _mission_segment {
-  union {
-    struct EnuCoor_f from_f;
-    struct EnuCoor_i from_i;
-  } from;
+struct _mission_segment
+{
+    union
+    {
+        struct EnuCoor_f from_f;
+        struct EnuCoor_i from_i;
+    } from;
 
-  union {
-    struct EnuCoor_f to_f;
-    struct EnuCoor_i to_i;
-  } to;
+    union
+    {
+        struct EnuCoor_f to_f;
+        struct EnuCoor_i to_i;
+    } to;
 };
 
 #define MISSION_PATH_NB 5
-struct _mission_path {
-  union {
-    struct EnuCoor_f path_f[MISSION_PATH_NB];
-    struct EnuCoor_i path_i[MISSION_PATH_NB];
-  } path;
+struct _mission_path
+{
+    union
+    {
+        struct EnuCoor_f path_f[MISSION_PATH_NB];
+        struct EnuCoor_i path_i[MISSION_PATH_NB];
+    } path;
 
-  uint8_t path_idx;
-  uint8_t nb;
+    uint8_t path_idx;
+    uint8_t nb;
 };
 
-struct _mission_element {
-  enum MissionType type;
-  union {
-    struct _mission_wp mission_wp;
-    struct _mission_circle mission_circle;
-    struct _mission_segment mission_segment;
-    struct _mission_path mission_path;
-  } element;
+struct _mission_element
+{
+    enum MissionType type;
+    union
+    {
+        struct _mission_wp mission_wp;
+        struct _mission_circle mission_circle;
+        struct _mission_segment mission_segment;
+        struct _mission_path mission_path;
+    } element;
 
-  float duration; ///< time to spend in the element (<= 0 to disable)
+    float duration; ///< time to spend in the element (<= 0 to disable)
 };
 
 /** Max number of elements in the tasks' list
@@ -109,11 +122,12 @@ struct _mission_element {
 #define MISSION_ELEMENT_NB 20
 #endif
 
-struct _mission {
-  struct _mission_element elements[MISSION_ELEMENT_NB];
-  float element_time;   ///< time in second spend in the current element
-  uint8_t insert_idx;   ///< inserstion index
-  uint8_t current_idx;  ///< current mission element index
+struct _mission
+{
+    struct _mission_element elements[MISSION_ELEMENT_NB];
+    float element_time;   ///< time in second spend in the current element
+    uint8_t insert_idx;   ///< inserstion index
+    uint8_t current_idx;  ///< current mission element index
 };
 
 extern struct _mission mission;

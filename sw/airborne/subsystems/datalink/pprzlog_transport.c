@@ -50,48 +50,49 @@ struct pprzlog_transport pprzlog_tp;
 
 static void put_1byte(struct pprzlog_transport *trans, struct link_device *dev, const uint8_t byte)
 {
-  trans->ck += byte;
-  dev->put_byte(dev->periph, byte);
+    trans->ck += byte;
+    dev->put_byte(dev->periph, byte);
 }
 
 static void put_bytes(struct pprzlog_transport *trans, struct link_device *dev,
                       enum TransportDataType type __attribute__((unused)), enum TransportDataFormat format __attribute__((unused)),
                       uint8_t len, const void *bytes)
 {
-  const uint8_t *b = (const uint8_t *) bytes;
-  int i;
-  for (i = 0; i < len; i++) {
-    put_1byte(trans, dev, b[i]);
-  }
+    const uint8_t *b = (const uint8_t *) bytes;
+    int i;
+    for (i = 0; i < len; i++)
+    {
+        put_1byte(trans, dev, b[i]);
+    }
 }
 
 static void put_named_byte(struct pprzlog_transport *trans, struct link_device *dev,
                            enum TransportDataType type __attribute__((unused)), enum TransportDataFormat format __attribute__((unused)),
                            uint8_t byte, const char *name __attribute__((unused)))
 {
-  put_1byte(trans, dev, byte);
+    put_1byte(trans, dev, byte);
 }
 
 static uint8_t size_of(struct pprzlog_transport *trans __attribute__((unused)), uint8_t len)
 {
-  return len;
+    return len;
 }
 
 static void start_message(struct pprzlog_transport *trans, struct link_device *dev, uint8_t payload_len)
 {
-  dev->put_byte(dev->periph, STX_LOG);
-  const uint8_t msg_len = size_of(trans, payload_len);
-  trans->ck = 0;
-  put_1byte(trans, dev, msg_len);
-  put_1byte(trans, dev, 0); // TODO use correct source ID
-  uint32_t ts = get_sys_time_usec() / 100;
-  put_bytes(trans, dev, DL_TYPE_TIMESTAMP, DL_FORMAT_SCALAR, 4, (uint8_t *)(&ts));
+    dev->put_byte(dev->periph, STX_LOG);
+    const uint8_t msg_len = size_of(trans, payload_len);
+    trans->ck = 0;
+    put_1byte(trans, dev, msg_len);
+    put_1byte(trans, dev, 0); // TODO use correct source ID
+    uint32_t ts = get_sys_time_usec() / 100;
+    put_bytes(trans, dev, DL_TYPE_TIMESTAMP, DL_FORMAT_SCALAR, 4, (uint8_t *)(&ts));
 }
 
 static void end_message(struct pprzlog_transport *trans, struct link_device *dev)
 {
-  dev->put_byte(dev->periph, trans->ck);
-  dev->send_message(dev->periph);
+    dev->put_byte(dev->periph, trans->ck);
+    dev->send_message(dev->periph);
 }
 
 static void overrun(struct pprzlog_transport *trans __attribute__((unused)),
@@ -107,19 +108,19 @@ static void count_bytes(struct pprzlog_transport *trans __attribute__((unused)),
 static int check_available_space(struct pprzlog_transport *trans __attribute__((unused)), struct link_device *dev,
                                  uint8_t bytes)
 {
-  return dev->check_free_space(dev->periph, bytes);
+    return dev->check_free_space(dev->periph, bytes);
 }
 
 void pprzlog_transport_init(void)
 {
-  pprzlog_tp.trans_tx.size_of = (size_of_t) size_of;
-  pprzlog_tp.trans_tx.check_available_space = (check_available_space_t) check_available_space;
-  pprzlog_tp.trans_tx.put_bytes = (put_bytes_t) put_bytes;
-  pprzlog_tp.trans_tx.put_named_byte = (put_named_byte_t) put_named_byte;
-  pprzlog_tp.trans_tx.start_message = (start_message_t) start_message;
-  pprzlog_tp.trans_tx.end_message = (end_message_t) end_message;
-  pprzlog_tp.trans_tx.overrun = (overrun_t) overrun;
-  pprzlog_tp.trans_tx.count_bytes = (count_bytes_t) count_bytes;
-  pprzlog_tp.trans_tx.impl = (void *)(&pprzlog_tp);
+    pprzlog_tp.trans_tx.size_of = (size_of_t) size_of;
+    pprzlog_tp.trans_tx.check_available_space = (check_available_space_t) check_available_space;
+    pprzlog_tp.trans_tx.put_bytes = (put_bytes_t) put_bytes;
+    pprzlog_tp.trans_tx.put_named_byte = (put_named_byte_t) put_named_byte;
+    pprzlog_tp.trans_tx.start_message = (start_message_t) start_message;
+    pprzlog_tp.trans_tx.end_message = (end_message_t) end_message;
+    pprzlog_tp.trans_tx.overrun = (overrun_t) overrun;
+    pprzlog_tp.trans_tx.count_bytes = (count_bytes_t) count_bytes;
+    pprzlog_tp.trans_tx.impl = (void *)(&pprzlog_tp);
 }
 

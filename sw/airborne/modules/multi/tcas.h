@@ -43,9 +43,10 @@ extern uint8_t tcas_status;
 extern enum tcas_resolve tcas_resolve;
 extern uint8_t tcas_ac_RA;
 
-struct tcas_ac_status {
-  uint8_t status;
-  enum tcas_resolve resolve;
+struct tcas_ac_status
+{
+    uint8_t status;
+    enum tcas_resolve resolve;
 };
 
 extern struct tcas_ac_status tcas_acs_status[NB_ACS];

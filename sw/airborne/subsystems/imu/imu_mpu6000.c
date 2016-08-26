@@ -71,31 +71,32 @@ struct ImuMpu6000 imu_mpu_spi;
 
 void imu_impl_init(void)
 {
-  mpu60x0_spi_init(&imu_mpu_spi.mpu, &IMU_MPU_SPI_DEV, IMU_MPU_SPI_SLAVE_IDX);
-  // change the default configuration
-  imu_mpu_spi.mpu.config.smplrt_div = IMU_MPU_SMPLRT_DIV;
-  imu_mpu_spi.mpu.config.dlpf_cfg = IMU_MPU_LOWPASS_FILTER;
-  imu_mpu_spi.mpu.config.gyro_range = IMU_MPU_GYRO_RANGE;
-  imu_mpu_spi.mpu.config.accel_range = IMU_MPU_ACCEL_RANGE;
+    mpu60x0_spi_init(&imu_mpu_spi.mpu, &IMU_MPU_SPI_DEV, IMU_MPU_SPI_SLAVE_IDX);
+    // change the default configuration
+    imu_mpu_spi.mpu.config.smplrt_div = IMU_MPU_SMPLRT_DIV;
+    imu_mpu_spi.mpu.config.dlpf_cfg = IMU_MPU_LOWPASS_FILTER;
+    imu_mpu_spi.mpu.config.gyro_range = IMU_MPU_GYRO_RANGE;
+    imu_mpu_spi.mpu.config.accel_range = IMU_MPU_ACCEL_RANGE;
 }
 
 
 void imu_periodic(void)
 {
-  mpu60x0_spi_periodic(&imu_mpu_spi.mpu);
+    mpu60x0_spi_periodic(&imu_mpu_spi.mpu);
 }
 
 void imu_mpu_spi_event(void)
 {
-  mpu60x0_spi_event(&imu_mpu_spi.mpu);
-  if (imu_mpu_spi.mpu.data_available) {
-    uint32_t now_ts = get_sys_time_usec();
-    RATES_COPY(imu.gyro_unscaled, imu_mpu_spi.mpu.data_rates.rates);
-    VECT3_COPY(imu.accel_unscaled, imu_mpu_spi.mpu.data_accel.vect);
-    imu_mpu_spi.mpu.data_available = FALSE;
-    imu_scale_gyro(&imu);
-    imu_scale_accel(&imu);
-    AbiSendMsgIMU_GYRO_INT32(IMU_MPU6000_ID, now_ts, &imu.gyro);
-    AbiSendMsgIMU_ACCEL_INT32(IMU_MPU6000_ID, now_ts, &imu.accel);
-  }
+    mpu60x0_spi_event(&imu_mpu_spi.mpu);
+    if (imu_mpu_spi.mpu.data_available)
+    {
+        uint32_t now_ts = get_sys_time_usec();
+        RATES_COPY(imu.gyro_unscaled, imu_mpu_spi.mpu.data_rates.rates);
+        VECT3_COPY(imu.accel_unscaled, imu_mpu_spi.mpu.data_accel.vect);
+        imu_mpu_spi.mpu.data_available = FALSE;
+        imu_scale_gyro(&imu);
+        imu_scale_accel(&imu);
+        AbiSendMsgIMU_GYRO_INT32(IMU_MPU6000_ID, now_ts, &imu.gyro);
+        AbiSendMsgIMU_ACCEL_INT32(IMU_MPU6000_ID, now_ts, &imu.accel);
+    }
 }

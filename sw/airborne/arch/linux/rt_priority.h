@@ -31,35 +31,41 @@
 
 static inline int get_rt_prio(int prio)
 {
-  struct sched_param param;
-  int policy;
-  pthread_getschedparam(pthread_self(), &policy, &param);
-  printf("Current schedparam: policy %d, prio %d\n", policy, param.sched_priority);
-
-  //SCHED_RR, SCHED_FIFO, SCHED_OTHER (POSIX scheduling policies)
-  int sched = SCHED_FIFO;
-  int min = sched_get_priority_min(sched);
-  int max = sched_get_priority_max(sched);
-  param.sched_priority = prio;
-  if (prio > max || prio < min) {
-    printf("Requested prio %d outside current min/max prios: %d/%d\n", prio, min, max);
-    if (prio > max) {
-      param.sched_priority = max;
-    } else {
-      param.sched_priority = min;
-    }
-  }
-
-  if (pthread_setschedparam(pthread_self(), sched, &param)) {
-    perror("setschedparam failed!");
-    return -1;
-  }
-  else {
+    struct sched_param param;
+    int policy;
     pthread_getschedparam(pthread_self(), &policy, &param);
-    printf("New schedparam: policy %d, prio %d\n", policy, param.sched_priority);
-  }
+    printf("Current schedparam: policy %d, prio %d\n", policy, param.sched_priority);
 
-  return 0;
+    //SCHED_RR, SCHED_FIFO, SCHED_OTHER (POSIX scheduling policies)
+    int sched = SCHED_FIFO;
+    int min = sched_get_priority_min(sched);
+    int max = sched_get_priority_max(sched);
+    param.sched_priority = prio;
+    if (prio > max || prio < min)
+    {
+        printf("Requested prio %d outside current min/max prios: %d/%d\n", prio, min, max);
+        if (prio > max)
+        {
+            param.sched_priority = max;
+        }
+        else
+        {
+            param.sched_priority = min;
+        }
+    }
+
+    if (pthread_setschedparam(pthread_self(), sched, &param))
+    {
+        perror("setschedparam failed!");
+        return -1;
+    }
+    else
+    {
+        pthread_getschedparam(pthread_self(), &policy, &param);
+        printf("New schedparam: policy %d, prio %d\n", policy, param.sched_priority);
+    }
+
+    return 0;
 }
 
 #include <sys/resource.h>
@@ -68,10 +74,10 @@ static inline int get_rt_prio(int prio)
 
 static inline int set_nice_level(int level)
 {
-  pid_t tid;
-  tid = syscall(SYS_gettid);
+    pid_t tid;
+    tid = syscall(SYS_gettid);
 
-  return setpriority(PRIO_PROCESS, tid, level);
+    return setpriority(PRIO_PROCESS, tid, level);
 }
 
 #endif /* RT_PRIORITY_H */

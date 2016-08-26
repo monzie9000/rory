@@ -46,18 +46,19 @@
 /// Default clock: PLL with X gyro reference
 #define MPU60X0_DEFAULT_CLK_SEL 1
 
-enum Mpu60x0ConfStatus {
-  MPU60X0_CONF_UNINIT,
-  MPU60X0_CONF_RESET,
-  MPU60X0_CONF_USER_RESET,
-  MPU60X0_CONF_PWR,
-  MPU60X0_CONF_SD,
-  MPU60X0_CONF_DLPF,
-  MPU60X0_CONF_GYRO,
-  MPU60X0_CONF_ACCEL,
-  MPU60X0_CONF_I2C_SLAVES,
-  MPU60X0_CONF_INT_ENABLE,
-  MPU60X0_CONF_DONE
+enum Mpu60x0ConfStatus
+{
+    MPU60X0_CONF_UNINIT,
+    MPU60X0_CONF_RESET,
+    MPU60X0_CONF_USER_RESET,
+    MPU60X0_CONF_PWR,
+    MPU60X0_CONF_SD,
+    MPU60X0_CONF_DLPF,
+    MPU60X0_CONF_GYRO,
+    MPU60X0_CONF_ACCEL,
+    MPU60X0_CONF_I2C_SLAVES,
+    MPU60X0_CONF_INT_ENABLE,
+    MPU60X0_CONF_DONE
 };
 
 /// Configuration function prototype
@@ -66,30 +67,32 @@ typedef void (*Mpu60x0ConfigSet)(void *mpu, uint8_t _reg, uint8_t _val);
 /// function prototype for configuration of a single I2C slave
 typedef bool_t (*Mpu60x0I2cSlaveConfigure)(Mpu60x0ConfigSet mpu_set, void *mpu);
 
-struct Mpu60x0I2cSlave {
-  Mpu60x0I2cSlaveConfigure configure;
+struct Mpu60x0I2cSlave
+{
+    Mpu60x0I2cSlaveConfigure configure;
 };
 
-struct Mpu60x0Config {
-  uint8_t smplrt_div;                   ///< Sample rate divider
-  enum Mpu60x0DLPF dlpf_cfg;            ///< Digital Low Pass Filter
-  enum Mpu60x0GyroRanges gyro_range;    ///< deg/s Range
-  enum Mpu60x0AccelRanges accel_range;  ///< g Range
-  bool_t drdy_int_enable;               ///< Enable Data Ready Interrupt
-  uint8_t clk_sel;                      ///< Clock select
-  uint8_t nb_bytes;                     ///< number of bytes to read starting with MPU60X0_REG_INT_STATUS
-  enum Mpu60x0ConfStatus init_status;   ///< init status
-  bool_t initialized;                   ///< config done flag
+struct Mpu60x0Config
+{
+    uint8_t smplrt_div;                   ///< Sample rate divider
+    enum Mpu60x0DLPF dlpf_cfg;            ///< Digital Low Pass Filter
+    enum Mpu60x0GyroRanges gyro_range;    ///< deg/s Range
+    enum Mpu60x0AccelRanges accel_range;  ///< g Range
+    bool_t drdy_int_enable;               ///< Enable Data Ready Interrupt
+    uint8_t clk_sel;                      ///< Clock select
+    uint8_t nb_bytes;                     ///< number of bytes to read starting with MPU60X0_REG_INT_STATUS
+    enum Mpu60x0ConfStatus init_status;   ///< init status
+    bool_t initialized;                   ///< config done flag
 
-  /** Bypass MPU I2C.
-   * Only effective if using the I2C implementation.
-   */
-  bool_t i2c_bypass;
+    /** Bypass MPU I2C.
+     * Only effective if using the I2C implementation.
+     */
+    bool_t i2c_bypass;
 
-  uint8_t nb_slaves;                    ///< number of used I2C slaves
-  struct Mpu60x0I2cSlave slaves[5];     ///< I2C slaves
-  enum Mpu60x0MstClk i2c_mst_clk;       ///< MPU I2C master clock speed
-  uint8_t i2c_mst_delay;                ///< MPU I2C slaves delayed sample rate
+    uint8_t nb_slaves;                    ///< number of used I2C slaves
+    struct Mpu60x0I2cSlave slaves[5];     ///< I2C slaves
+    enum Mpu60x0MstClk i2c_mst_clk;       ///< MPU I2C master clock speed
+    uint8_t i2c_mst_delay;                ///< MPU I2C slaves delayed sample rate
 };
 
 extern void mpu60x0_set_default_config(struct Mpu60x0Config *c);

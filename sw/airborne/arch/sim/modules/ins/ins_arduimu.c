@@ -25,13 +25,14 @@ extern float sim_theta;
 void ArduIMU_init(void) {}
 void ArduIMU_periodic(void)
 {
-  // Feed directly the estimator
-  struct FloatEulers att = {
-    sim_phi - ins_roll_neutral,
-    sim_theta - ins_pitch_neutral,
-    0.
-  };
-  stateSetNedToBodyEulers_f(&att);
+    // Feed directly the estimator
+    struct FloatEulers att =
+    {
+        sim_phi - ins_roll_neutral,
+        sim_theta - ins_pitch_neutral,
+        0.
+    };
+    stateSetNedToBodyEulers_f(&att);
 }
 void ArduIMU_periodicGPS(void) {}
 void IMU_Daten_verarbeiten(void) {}

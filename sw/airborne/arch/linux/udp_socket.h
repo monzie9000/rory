@@ -31,10 +31,11 @@
 #include <netinet/in.h>
 #include "std.h"
 
-struct UdpSocket {
-  int sockfd;
-  struct sockaddr_in addr_in;
-  struct sockaddr_in addr_out;
+struct UdpSocket
+{
+    int sockfd;
+    struct sockaddr_in addr_in;
+    struct sockaddr_in addr_out;
 };
 
 /**

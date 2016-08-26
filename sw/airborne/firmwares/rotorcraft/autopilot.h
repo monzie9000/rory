@@ -149,14 +149,16 @@ extern uint16_t autopilot_flight_time;
  */
 static inline void DetectGroundEvent(void)
 {
-  if (autopilot_mode == AP_MODE_FAILSAFE || autopilot_detect_ground_once) {
-    struct NedCoor_f *accel = stateGetAccelNed_f();
-    if (accel->z < -THRESHOLD_GROUND_DETECT ||
-        accel->z > THRESHOLD_GROUND_DETECT) {
-      autopilot_ground_detected = TRUE;
-      autopilot_detect_ground_once = FALSE;
+    if (autopilot_mode == AP_MODE_FAILSAFE || autopilot_detect_ground_once)
+    {
+        struct NedCoor_f *accel = stateGetAccelNed_f();
+        if (accel->z < -THRESHOLD_GROUND_DETECT ||
+                accel->z > THRESHOLD_GROUND_DETECT)
+        {
+            autopilot_ground_detected = TRUE;
+            autopilot_detect_ground_once = FALSE;
+        }
     }
-  }
 }
 
 #include "subsystems/settings.h"
@@ -164,18 +166,20 @@ static inline void DetectGroundEvent(void)
 /* try to make sure that we don't write to flash while flying */
 static inline void autopilot_StoreSettings(float store)
 {
-  if (kill_throttle && store) {
-    settings_store_flag = store;
-    settings_store();
-  }
+    if (kill_throttle && store)
+    {
+        settings_store_flag = store;
+        settings_store();
+    }
 }
 
 static inline void autopilot_ClearSettings(float clear)
 {
-  if (kill_throttle && clear) {
-    settings_clear_flag = clear;
-    settings_clear();
-  }
+    if (kill_throttle && clear)
+    {
+        settings_clear_flag = clear;
+        settings_clear();
+    }
 }
 
 #if DOWNLINK

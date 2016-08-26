@@ -45,25 +45,32 @@ struct periodic_telemetry pprz_telemetry = { TELEMETRY_PPRZ_NB_MSG, telemetry_cb
  */
 int8_t register_periodic_telemetry(struct periodic_telemetry *_pt, uint8_t _id, telemetry_cb _cb)
 {
-  uint8_t i, j;
-  // return if NULL is passed as periodic_telemetry
-  if (_pt == NULL) { return -1; }
-  // check if message with id _msgn has a periodic entery in telemetry file
-  for (i = 0; i < _pt->nb; i++) {
-    if (_pt->cbs[i].id == _id) {
-      // msg found, register another callback if not all TELEMETRY_NB_CBS slots taken
-      for (j = 0; j < TELEMETRY_NB_CBS; j++) {
-        if (_pt->cbs[i].slots[j] == NULL) {
-          _pt->cbs[i].slots[j] = _cb;
-          return j;
-        }
-      }
-      // message matched but no more empty slots available
-      return -1;
+    uint8_t i, j;
+    // return if NULL is passed as periodic_telemetry
+    if (_pt == NULL)
+    {
+        return -1;
     }
-  }
-  // message is not in telemetry file
-  return -1;
+    // check if message with id _msgn has a periodic entery in telemetry file
+    for (i = 0; i < _pt->nb; i++)
+    {
+        if (_pt->cbs[i].id == _id)
+        {
+            // msg found, register another callback if not all TELEMETRY_NB_CBS slots taken
+            for (j = 0; j < TELEMETRY_NB_CBS; j++)
+            {
+                if (_pt->cbs[i].slots[j] == NULL)
+                {
+                    _pt->cbs[i].slots[j] = _cb;
+                    return j;
+                }
+            }
+            // message matched but no more empty slots available
+            return -1;
+        }
+    }
+    // message is not in telemetry file
+    return -1;
 }
 
 #if USE_PERIODIC_TELEMETRY_REPORT
@@ -77,10 +84,10 @@ int8_t register_periodic_telemetry(struct periodic_telemetry *_pt, uint8_t _id, 
  */
 void periodic_telemetry_err_report(uint8_t _process, uint8_t _mode, uint8_t _id)
 {
-  uint8_t process = _process;
-  uint8_t mode = _mode;
-  uint8_t id = _id;
-  DOWNLINK_SEND_PERIODIC_TELEMETRY_ERR(DefaultChannel, DefaultDevice, &process, &mode, &id);
+    uint8_t process = _process;
+    uint8_t mode = _mode;
+    uint8_t id = _id;
+    DOWNLINK_SEND_PERIODIC_TELEMETRY_ERR(DefaultChannel, DefaultDevice, &process, &mode, &id);
 }
 
 #endif

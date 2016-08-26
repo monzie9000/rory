@@ -32,14 +32,14 @@
 
 void digital_cam_video_init(void)
 {
-  // Call common DC init
-  dc_init();
+    // Call common DC init
+    dc_init();
 }
 
 void digital_cam_video_periodic(void)
 {
-  // Common DC Periodic task
-  dc_periodic();
+    // Common DC Periodic task
+    dc_periodic();
 }
 
 #ifndef SITL
@@ -49,22 +49,23 @@ void digital_cam_video_periodic(void)
 /* Command The Camera */
 void dc_send_command(uint8_t cmd)
 {
-  switch (cmd) {
+    switch (cmd)
+    {
     case DC_SHOOT:
 #ifndef SITL
-      video_thread_take_shot(TRUE);
+        video_thread_take_shot(TRUE);
 #endif
-      dc_send_shot_position();
-      break;
+        dc_send_shot_position();
+        break;
     case DC_TALLER:
-      break;
+        break;
     case DC_WIDER:
-      break;
+        break;
     case DC_ON:
-      break;
+        break;
     case DC_OFF:
-      break;
+        break;
     default:
-      break;
-  }
+        break;
+    }
 }

@@ -47,23 +47,25 @@
 
 
 /** Data structure shared by fbw and ap processes */
-struct fbw_state {
+struct fbw_state
+{
 #if defined RADIO_CONTROL || RADIO_CONTROL_AUTO1
-  pprz_t channels[RADIO_CONTROL_NB_CHANNEL];
-  uint8_t ppm_cpt;
+    pprz_t channels[RADIO_CONTROL_NB_CHANNEL];
+    uint8_t ppm_cpt;
 #endif
-  uint8_t status;
-  uint8_t nb_err;
-  uint16_t vsupply; ///< 1e-1 V
-  int32_t current;  ///< milliAmps
-  float energy;     ///< mAh
+    uint8_t status;
+    uint8_t nb_err;
+    uint16_t vsupply; ///< 1e-1 V
+    int32_t current;  ///< milliAmps
+    float energy;     ///< mAh
 };
 
-struct ap_state {
-  pprz_t commands[COMMANDS_NB];
-  pprz_t command_roll_trim;
-  pprz_t command_pitch_trim;
-  pprz_t command_yaw_trim;
+struct ap_state
+{
+    pprz_t commands[COMMANDS_NB];
+    pprz_t command_roll_trim;
+    pprz_t command_pitch_trim;
+    pprz_t command_yaw_trim;
 };
 
 // Status bits from FBW to AUTOPILOT
@@ -92,65 +94,69 @@ extern bool_t ap_ok;
 
 static inline void inter_mcu_init(void)
 {
-  fbw_state->status = 0;
-  fbw_state->nb_err = 0;
+    fbw_state->status = 0;
+    fbw_state->nb_err = 0;
 
-  ap_ok = FALSE;
+    ap_ok = FALSE;
 }
 
 
 /* Prepare data to be sent to mcu0 */
 static inline void inter_mcu_fill_fbw_state(void)
 {
-  uint8_t status = 0;
+    uint8_t status = 0;
 
 #ifdef RADIO_CONTROL
-  uint8_t i;
-  for (i = 0; i < RADIO_CONTROL_NB_CHANNEL; i++) {
-    fbw_state->channels[i] = radio_control.values[i];
-  }
+    uint8_t i;
+    for (i = 0; i < RADIO_CONTROL_NB_CHANNEL; i++)
+    {
+        fbw_state->channels[i] = radio_control.values[i];
+    }
 
-  fbw_state->ppm_cpt = radio_control.frame_rate;
+    fbw_state->ppm_cpt = radio_control.frame_rate;
 
-  status = (radio_control.status == RC_OK ? _BV(STATUS_RADIO_OK) : 0);
-  status |= (radio_control.status == RC_REALLY_LOST ? _BV(STATUS_RADIO_REALLY_LOST) : 0);
-  status |= (radio_control.status == RC_OK ? _BV(AVERAGED_CHANNELS_SENT) :
-             0); // Any valid frame contains averaged channels
+    status = (radio_control.status == RC_OK ? _BV(STATUS_RADIO_OK) : 0);
+    status |= (radio_control.status == RC_REALLY_LOST ? _BV(STATUS_RADIO_REALLY_LOST) : 0);
+    status |= (radio_control.status == RC_OK ? _BV(AVERAGED_CHANNELS_SENT) :
+               0); // Any valid frame contains averaged channels
 #endif // RADIO_CONTROL
 
-  status |= (fbw_mode == FBW_MODE_AUTO ? _BV(STATUS_MODE_AUTO) : 0);
-  status |= (fbw_mode == FBW_MODE_FAILSAFE ? _BV(STATUS_MODE_FAILSAFE) : 0);
-  fbw_state->status  = status;
+    status |= (fbw_mode == FBW_MODE_AUTO ? _BV(STATUS_MODE_AUTO) : 0);
+    status |= (fbw_mode == FBW_MODE_FAILSAFE ? _BV(STATUS_MODE_FAILSAFE) : 0);
+    fbw_state->status  = status;
 
-  fbw_state->vsupply = electrical.vsupply;
-  fbw_state->current = electrical.current;
-  fbw_state->energy = electrical.energy;
+    fbw_state->vsupply = electrical.vsupply;
+    fbw_state->current = electrical.current;
+    fbw_state->energy = electrical.energy;
 #if defined SINGLE_MCU
-  /**Directly set the flag indicating to AP that shared buffer is available*/
-  inter_mcu_received_fbw = TRUE;
+    /**Directly set the flag indicating to AP that shared buffer is available*/
+    inter_mcu_received_fbw = TRUE;
 #endif
 }
 
 /** Prepares date for next comm with AP. Set ::ap_ok to TRUE */
 static inline void inter_mcu_event_task(void)
 {
-  time_since_last_ap = 0;
-  ap_ok = TRUE;
+    time_since_last_ap = 0;
+    ap_ok = TRUE;
 }
 
 /** Monitors AP. Set ::ap_ok to false if AP is down for a long time. */
 static inline void inter_mcu_periodic_task(void)
 {
-  if (time_since_last_ap >= AP_STALLED_TIME) {
-    ap_ok = FALSE;
+    if (time_since_last_ap >= AP_STALLED_TIME)
+    {
+        ap_ok = FALSE;
 #ifdef SINGLE_MCU
-    // Keep filling the buffer even if no AP commands are received
-    inter_mcu_fill_fbw_state();
+        // Keep filling the buffer even if no AP commands are received
+        inter_mcu_fill_fbw_state();
 #endif
 
-  } else {
-    time_since_last_ap++;
-  }
+    }
+    else
+    {
+        time_since_last_ap++;
+    }
 }
 
 #endif /* FBW */

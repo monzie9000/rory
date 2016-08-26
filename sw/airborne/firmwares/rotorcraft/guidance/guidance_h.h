@@ -62,42 +62,46 @@
 #define GUIDANCE_H_MODE_GUIDED      10
 
 
-struct HorizontalGuidanceSetpoint {
-  /** horizontal position setpoint in NED.
-   *  fixed point representation: Q23.8
-   *  accuracy 0.0039, range 8388km
-   */
-  struct Int32Vect2 pos;
-  struct Int32Vect2 speed;  ///< only used if GUIDANCE_H_USE_SPEED_REF
-  int32_t heading;          ///< with #INT32_ANGLE_FRAC
+struct HorizontalGuidanceSetpoint
+{
+    /** horizontal position setpoint in NED.
+     *  fixed point representation: Q23.8
+     *  accuracy 0.0039, range 8388km
+     */
+    struct Int32Vect2 pos;
+    struct Int32Vect2 speed;  ///< only used if GUIDANCE_H_USE_SPEED_REF
+    int32_t heading;          ///< with #INT32_ANGLE_FRAC
 };
 
-struct HorizontalGuidanceReference {
-  struct Int32Vect2 pos;     ///< with #INT32_POS_FRAC
-  struct Int32Vect2 speed;   ///< with #INT32_SPEED_FRAC
-  struct Int32Vect2 accel;   ///< with #INT32_ACCEL_FRAC
+struct HorizontalGuidanceReference
+{
+    struct Int32Vect2 pos;     ///< with #INT32_POS_FRAC
+    struct Int32Vect2 speed;   ///< with #INT32_SPEED_FRAC
+    struct Int32Vect2 accel;   ///< with #INT32_ACCEL_FRAC
 };
 
-struct HorizontalGuidanceGains {
-  int32_t p;
-  int32_t d;
-  int32_t i;
-  int32_t v;
-  int32_t a;
+struct HorizontalGuidanceGains
+{
+    int32_t p;
+    int32_t d;
+    int32_t i;
+    int32_t v;
+    int32_t a;
 };
 
-struct HorizontalGuidance {
-  uint8_t mode;
-  /* configuration options */
-  bool_t use_ref;
-  bool_t approx_force_by_thrust;
-  /* gains */
-  struct HorizontalGuidanceGains gains;
+struct HorizontalGuidance
+{
+    uint8_t mode;
+    /* configuration options */
+    bool_t use_ref;
+    bool_t approx_force_by_thrust;
+    /* gains */
+    struct HorizontalGuidanceGains gains;
 
-  struct HorizontalGuidanceSetpoint sp; ///< setpoints
-  struct HorizontalGuidanceReference ref; ///< reference calculated from setpoints
+    struct HorizontalGuidanceSetpoint sp; ///< setpoints
+    struct HorizontalGuidanceReference ref; ///< reference calculated from setpoints
 
-  struct Int32Eulers rc_sp;    ///< with #INT32_ANGLE_FRAC
+    struct Int32Eulers rc_sp;    ///< with #INT32_ANGLE_FRAC
 };
 
 extern struct HorizontalGuidance guidance_h;
@@ -134,22 +138,22 @@ bool_t guidance_h_set_guided_heading(float heading);
 
 static inline void guidance_h_SetMaxSpeed(float speed)
 {
-  gh_set_max_speed(speed);
+    gh_set_max_speed(speed);
 }
 
 static inline void guidance_h_SetOmega(float omega)
 {
-  gh_set_omega(omega);
+    gh_set_omega(omega);
 }
 
 static inline void guidance_h_SetZeta(float zeta)
 {
-  gh_set_zeta(zeta);
+    gh_set_zeta(zeta);
 }
 
 static inline void guidance_h_SetTau(float tau)
 {
-  gh_set_tau(tau);
+    gh_set_tau(tau);
 }
 
 #endif /* GUIDANCE_H_H */

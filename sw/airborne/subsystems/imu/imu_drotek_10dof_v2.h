@@ -73,9 +73,10 @@
 #endif
 
 
-struct ImuDrotek2 {
-  struct Mpu60x0_I2c mpu;
-  struct Hmc58xx hmc;
+struct ImuDrotek2
+{
+    struct Mpu60x0_I2c mpu;
+    struct Hmc58xx hmc;
 };
 
 extern struct ImuDrotek2 imu_drotek2;

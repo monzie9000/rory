@@ -33,10 +33,11 @@
 #define ACTUATORS_SPEKTRUM_MAX_NB   7
 
 /* Main actuator structure */
-struct ActuatorsSpektrum {
-  int32_t cmds[ACTUATORS_SPEKTRUM_MAX_NB];
-  struct link_device *device;
-  struct link_device *device2;
+struct ActuatorsSpektrum
+{
+    int32_t cmds[ACTUATORS_SPEKTRUM_MAX_NB];
+    struct link_device *device;
+    struct link_device *device2;
 };
 
 /* Functions used in actuator macros */

@@ -34,8 +34,9 @@
 // Use I2C broadcast adderss
 #define ACTUATORS_SKIRON_I2C_ADDR 0x00
 
-struct ActuatorsSkiron {
-  struct i2c_transaction trans;
+struct ActuatorsSkiron
+{
+    struct i2c_transaction trans;
 };
 
 extern struct ActuatorsSkiron actuators_skiron;

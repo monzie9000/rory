@@ -44,42 +44,43 @@
 */
 enum SurveyStage {ERR, ENTRY, SEG, TURN1, RET, TURN2};
 
-struct SurveyPolyAdv {
-  /*
-  The following variables are set by nav_survey_polygon_start and not changed later on
-  */
+struct SurveyPolyAdv
+{
+    /*
+    The following variables are set by nav_survey_polygon_start and not changed later on
+    */
 
-  // precomputed vectors to ease calculations
-  struct FloatVect2 dir_vec;
-  struct FloatVect2 sweep_vec;
-  struct FloatVect2 rad_vec;
+    // precomputed vectors to ease calculations
+    struct FloatVect2 dir_vec;
+    struct FloatVect2 sweep_vec;
+    struct FloatVect2 rad_vec;
 
-  //the polygon from the flightplan
-  uint8_t poly_first;
-  uint8_t poly_count;
+    //the polygon from the flightplan
+    uint8_t poly_first;
+    uint8_t poly_count;
 
-  //desired properties of the flyover
-  float psa_min_rad;
-  float psa_sweep_width;
-  float psa_shot_dist;
-  float psa_altitude;
+    //desired properties of the flyover
+    float psa_min_rad;
+    float psa_sweep_width;
+    float psa_shot_dist;
+    float psa_altitude;
 
-  //direction for the flyover (0° == N)
-  int segment_angle;
-  int return_angle;
+    //direction for the flyover (0° == N)
+    int segment_angle;
+    int return_angle;
 
-  /*
-     The Following variables are dynamic, changed while navigating.
-  */
-  enum SurveyStage stage;
-  // points for navigation
-  struct FloatVect2 seg_start;
-  struct FloatVect2 seg_end;
-  struct FloatVect2 seg_center1;
-  struct FloatVect2 seg_center2;
-  struct FloatVect2 entry_center;
-  struct FloatVect2 ret_start;
-  struct FloatVect2 ret_end;
+    /*
+       The Following variables are dynamic, changed while navigating.
+    */
+    enum SurveyStage stage;
+    // points for navigation
+    struct FloatVect2 seg_start;
+    struct FloatVect2 seg_end;
+    struct FloatVect2 seg_center1;
+    struct FloatVect2 seg_center2;
+    struct FloatVect2 entry_center;
+    struct FloatVect2 ret_start;
+    struct FloatVect2 ret_end;
 };
 
 extern bool_t nav_survey_polygon_setup(uint8_t first_wp, uint8_t size, float angle, float sweep_width, float shot_dist,

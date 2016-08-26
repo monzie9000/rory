@@ -40,10 +40,11 @@
 
 #define MF_DAQ_SIZE 32
 
-struct MF_DAQ {
-  float values[MF_DAQ_SIZE];
-  uint8_t nb;
-  uint8_t power;
+struct MF_DAQ
+{
+    float values[MF_DAQ_SIZE];
+    uint8_t nb;
+    uint8_t power;
 };
 
 extern struct MF_DAQ mf_daq;

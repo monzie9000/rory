@@ -41,28 +41,32 @@ extern "C" {
 #include <stdlib.h>
 
 
-struct Uint8Vect3 {
-  uint8_t x;
-  uint8_t y;
-  uint8_t z;
+struct Uint8Vect3
+{
+    uint8_t x;
+    uint8_t y;
+    uint8_t z;
 };
 
-struct Int8Vect3 {
-  int8_t x;
-  int8_t y;
-  int8_t z;
+struct Int8Vect3
+{
+    int8_t x;
+    int8_t y;
+    int8_t z;
 };
 
-struct Uint16Vect3 {
-  uint16_t x;
-  uint16_t y;
-  uint16_t z;
+struct Uint16Vect3
+{
+    uint16_t x;
+    uint16_t y;
+    uint16_t z;
 };
 
-struct Int16Vect3 {
-  int16_t x;
-  int16_t y;
-  int16_t z;
+struct Int16Vect3
+{
+    int16_t x;
+    int16_t y;
+    int16_t z;
 };
 
 #define INT32_POS_FRAC 8
@@ -80,15 +84,17 @@ struct Int16Vect3 {
 
 #define INT32_PERCENTAGE_FRAC 10
 
-struct Int32Vect2 {
-  int32_t x;
-  int32_t y;
+struct Int32Vect2
+{
+    int32_t x;
+    int32_t y;
 };
 
-struct Int32Vect3 {
-  int32_t x;
-  int32_t y;
-  int32_t z;
+struct Int32Vect3
+{
+    int32_t x;
+    int32_t y;
+    int32_t z;
 };
 
 /* Rotation quaternions                         */
@@ -96,19 +102,21 @@ struct Int32Vect3 {
 /**
  * @brief Rotation quaternion
  * @details Units: BFP with #INT32_QUAT_FRAC */
-struct Int32Quat {
-  int32_t qi;
-  int32_t qx;
-  int32_t qy;
-  int32_t qz;
+struct Int32Quat
+{
+    int32_t qi;
+    int32_t qx;
+    int32_t qy;
+    int32_t qz;
 };
 
 
-struct Int64Quat {
-  int64_t qi;
-  int64_t qx;
-  int64_t qy;
-  int64_t qz;
+struct Int64Quat
+{
+    int64_t qi;
+    int64_t qx;
+    int64_t qy;
+    int64_t qz;
 };
 
 
@@ -134,19 +142,21 @@ struct Int64Quat {
   }
 
 
-struct Int16Eulers {
-  int16_t phi;
-  int16_t theta;
-  int16_t psi;
+struct Int16Eulers
+{
+    int16_t phi;
+    int16_t theta;
+    int16_t psi;
 };
 
 /**
  * @brief euler angles
  * @details Units: rad in BFP with #INT32_ANGLE_FRAC */
-struct Int32Eulers {
-  int32_t phi;   ///< in rad with #INT32_ANGLE_FRAC
-  int32_t theta; ///< in rad with #INT32_ANGLE_FRAC
-  int32_t psi;   ///< in rad with #INT32_ANGLE_FRAC
+struct Int32Eulers
+{
+    int32_t phi;   ///< in rad with #INT32_ANGLE_FRAC
+    int32_t theta; ///< in rad with #INT32_ANGLE_FRAC
+    int32_t psi;   ///< in rad with #INT32_ANGLE_FRAC
 };
 
 
@@ -156,48 +166,55 @@ struct Int32Eulers {
 /**
  * @brief rotation matrix
  * @details Units: rad in BFP with #INT32_TRIG_FRAC */
-struct Int32RMat {
-  int32_t m[3 * 3];
+struct Int32RMat
+{
+    int32_t m[3 * 3];
 };
 
 /* 3x3 matrix                                    */
-struct Int32Mat33 {
-  int32_t m[3 * 3];
+struct Int32Mat33
+{
+    int32_t m[3 * 3];
 };
 
 /* Rotational speed                              */
-struct Int16Rates {
-  int16_t p;
-  int16_t q;
-  int16_t r;
+struct Int16Rates
+{
+    int16_t p;
+    int16_t q;
+    int16_t r;
 };
 
 /* Rotational speed                              */
 /**
  * @brief angular rates
  * @details Units: rad/s in BFP with #INT32_RATE_FRAC */
-struct Int32Rates {
-  int32_t p; ///< in rad/s with #INT32_RATE_FRAC
-  int32_t q; ///< in rad/s with #INT32_RATE_FRAC
-  int32_t r; ///< in rad/s with #INT32_RATE_FRAC
+struct Int32Rates
+{
+    int32_t p; ///< in rad/s with #INT32_RATE_FRAC
+    int32_t q; ///< in rad/s with #INT32_RATE_FRAC
+    int32_t r; ///< in rad/s with #INT32_RATE_FRAC
 };
 
-struct Int64Rates {
-  int64_t p;
-  int64_t q;
-  int64_t r;
+struct Int64Rates
+{
+    int64_t p;
+    int64_t q;
+    int64_t r;
 };
 
 
-struct Int64Vect2 {
-  int64_t x;
-  int64_t y;
+struct Int64Vect2
+{
+    int64_t x;
+    int64_t y;
 };
 
-struct Int64Vect3 {
-  int64_t x;
-  int64_t y;
-  int64_t z;
+struct Int64Vect3
+{
+    int64_t x;
+    int64_t y;
+    int64_t z;
 };
 
 
@@ -241,24 +258,25 @@ extern uint32_t int32_sqrt(uint32_t in);
 /** return squared norm of 2D vector */
 static inline uint32_t int32_vect2_norm2(struct Int32Vect2 *v)
 {
-  return v->x * v->x + v->y * v->y;
+    return v->x * v->x + v->y * v->y;
 }
 
 /** return norm of 2D vector */
 static inline uint32_t int32_vect2_norm(struct Int32Vect2 *v)
 {
-  return int32_sqrt(int32_vect2_norm2(v));
+    return int32_sqrt(int32_vect2_norm2(v));
 }
 
 /** normalize 2D vector inplace */
 static inline void int32_vect2_normalize(struct Int32Vect2 *v, uint8_t frac)
 {
-  const uint32_t n = int32_vect2_norm(v);
-  if (n > 0) {
-    const int32_t f = BFP_OF_REAL((1.), frac);
-    v->x = v->x * f / (int32_t)n;
-    v->y = v->y * f / (int32_t)n;
-  }
+    const uint32_t n = int32_vect2_norm(v);
+    if (n > 0)
+    {
+        const int32_t f = BFP_OF_REAL((1.), frac);
+        v->x = v->x * f / (int32_t)n;
+        v->y = v->y * f / (int32_t)n;
+    }
 }
 
 #define INT32_VECT2_NORMALIZE(_v,_frac) int32_vect2_normalize(&(_v), _frac)
@@ -344,7 +362,7 @@ static inline void int32_vect2_normalize(struct Int32Vect2 *v, uint8_t frac)
 /** initialises a rotation matrix to identity */
 static inline void int32_rmat_identity(struct Int32RMat *rm)
 {
-  INT32_MAT33_DIAG(*rm, TRIG_BFP_OF_REAL(1.), TRIG_BFP_OF_REAL(1.), TRIG_BFP_OF_REAL(1.));
+    INT32_MAT33_DIAG(*rm, TRIG_BFP_OF_REAL(1.), TRIG_BFP_OF_REAL(1.), TRIG_BFP_OF_REAL(1.));
 }
 
 /** Composition (multiplication) of two rotation matrices.
@@ -429,37 +447,39 @@ extern void int32_rmat_of_eulers_312(struct Int32RMat *rm, struct Int32Eulers *e
 /** initialises a quaternion to identity */
 static inline void int32_quat_identity(struct Int32Quat *q)
 {
-  q->qi = QUAT1_BFP_OF_REAL(1);
-  q->qx = 0;
-  q->qy = 0;
-  q->qz = 0;
+    q->qi = QUAT1_BFP_OF_REAL(1);
+    q->qx = 0;
+    q->qy = 0;
+    q->qz = 0;
 }
 
 /** Norm of a quaternion.
  */
 static inline uint32_t int32_quat_norm(struct Int32Quat *q)
 {
-  uint32_t n2 = q->qi * q->qi + q->qx * q->qx + q->qy * q->qy + q->qz * q->qz;
-  return int32_sqrt(n2);
+    uint32_t n2 = q->qi * q->qi + q->qx * q->qx + q->qy * q->qy + q->qz * q->qz;
+    return int32_sqrt(n2);
 }
 
 static inline void int32_quat_wrap_shortest(struct Int32Quat *q)
 {
-  if (q->qi < 0) {
-    QUAT_EXPLEMENTARY(*q, *q);
-  }
+    if (q->qi < 0)
+    {
+        QUAT_EXPLEMENTARY(*q, *q);
+    }
 }
 
 /** normalize a quaternion inplace */
 static inline void int32_quat_normalize(struct Int32Quat *q)
 {
-  int32_t n = int32_quat_norm(q);
-  if (n > 0) {
-    q->qi = q->qi * QUAT1_BFP_OF_REAL(1) / n;
-    q->qx = q->qx * QUAT1_BFP_OF_REAL(1) / n;
-    q->qy = q->qy * QUAT1_BFP_OF_REAL(1) / n;
-    q->qz = q->qz * QUAT1_BFP_OF_REAL(1) / n;
-  }
+    int32_t n = int32_quat_norm(q);
+    if (n > 0)
+    {
+        q->qi = q->qi * QUAT1_BFP_OF_REAL(1) / n;
+        q->qx = q->qx * QUAT1_BFP_OF_REAL(1) / n;
+        q->qy = q->qy * QUAT1_BFP_OF_REAL(1) / n;
+        q->qz = q->qz * QUAT1_BFP_OF_REAL(1) / n;
+    }
 }
 
 /** Composition (multiplication) of two quaternions.

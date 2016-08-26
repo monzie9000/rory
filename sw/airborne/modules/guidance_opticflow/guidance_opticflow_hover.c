@@ -87,25 +87,26 @@ PRINT_CONFIG_VAR(VISION_DESIRED_VY)
 static abi_event velocity_est_ev;
 
 /* Initialize the default gains and settings */
-struct opticflow_stab_t opticflow_stab = {
-  .phi_pgain = VISION_PHI_PGAIN,
-  .phi_igain = VISION_PHI_IGAIN,
-  .theta_pgain = VISION_THETA_PGAIN,
-  .theta_igain = VISION_THETA_IGAIN,
-  .desired_vx = VISION_DESIRED_VX,
-  .desired_vy = VISION_DESIRED_VY
+struct opticflow_stab_t opticflow_stab =
+{
+    .phi_pgain = VISION_PHI_PGAIN,
+    .phi_igain = VISION_PHI_IGAIN,
+    .theta_pgain = VISION_THETA_PGAIN,
+    .theta_igain = VISION_THETA_IGAIN,
+    .desired_vx = VISION_DESIRED_VX,
+    .desired_vy = VISION_DESIRED_VY
 };
 
 
 static void stabilization_opticflow_vel_cb(uint8_t sender_id __attribute__((unused)),
-    uint32_t stamp, float vel_x, float vel_y, float vel_z, float noise);
+        uint32_t stamp, float vel_x, float vel_y, float vel_z, float noise);
 /**
  * Initialization of horizontal guidance module.
  */
 void guidance_h_module_init(void)
 {
-  // Subscribe to the VELOCITY_ESTIMATE ABI message
-  AbiBindMsgVELOCITY_ESTIMATE(VISION_VELOCITY_ESTIMATE_ID, &velocity_est_ev, stabilization_opticflow_vel_cb);
+    // Subscribe to the VELOCITY_ESTIMATE ABI message
+    AbiBindMsgVELOCITY_ESTIMATE(VISION_VELOCITY_ESTIMATE_ID, &velocity_est_ev, stabilization_opticflow_vel_cb);
 }
 
 /**
@@ -114,14 +115,14 @@ void guidance_h_module_init(void)
  */
 void guidance_h_module_enter(void)
 {
-  /* Reset the integrated errors */
-  opticflow_stab.err_vx_int = 0;
-  opticflow_stab.err_vy_int = 0;
+    /* Reset the integrated errors */
+    opticflow_stab.err_vx_int = 0;
+    opticflow_stab.err_vy_int = 0;
 
-  /* Set rool/pitch to 0 degrees and psi to current heading */
-  opticflow_stab.cmd.phi = 0;
-  opticflow_stab.cmd.theta = 0;
-  opticflow_stab.cmd.psi = stateGetNedToBodyEulers_i()->psi;
+    /* Set rool/pitch to 0 degrees and psi to current heading */
+    opticflow_stab.cmd.phi = 0;
+    opticflow_stab.cmd.theta = 0;
+    opticflow_stab.cmd.psi = stateGetNedToBodyEulers_i()->psi;
 }
 
 /**
@@ -129,7 +130,7 @@ void guidance_h_module_enter(void)
  */
 void guidance_h_module_read_rc(void)
 {
-  // TODO: change the desired vx/vy
+    // TODO: change the desired vx/vy
 }
 
 /**
@@ -138,39 +139,40 @@ void guidance_h_module_read_rc(void)
  */
 void guidance_h_module_run(bool_t in_flight)
 {
-  /* Update the setpoint */
-  stabilization_attitude_set_rpy_setpoint_i(&opticflow_stab.cmd);
+    /* Update the setpoint */
+    stabilization_attitude_set_rpy_setpoint_i(&opticflow_stab.cmd);
 
-  /* Run the default attitude stabilization */
-  stabilization_attitude_run(in_flight);
+    /* Run the default attitude stabilization */
+    stabilization_attitude_run(in_flight);
 }
 
 /**
  * Update the controls on a new VELOCITY_ESTIMATE ABI message.
  */
 static void stabilization_opticflow_vel_cb(uint8_t sender_id __attribute__((unused)),
-    uint32_t stamp, float vel_x, float vel_y, float vel_z, float noise)
+        uint32_t stamp, float vel_x, float vel_y, float vel_z, float noise)
 {
-  /* Check if we are in the correct AP_MODE before setting commands */
-  if (autopilot_mode != AP_MODE_MODULE) {
-    return;
-  }
+    /* Check if we are in the correct AP_MODE before setting commands */
+    if (autopilot_mode != AP_MODE_MODULE)
+    {
+        return;
+    }
 
-  /* Calculate the error */
-  float err_vx = opticflow_stab.desired_vx - vel_x;
-  float err_vy = opticflow_stab.desired_vy - vel_y;
+    /* Calculate the error */
+    float err_vx = opticflow_stab.desired_vx - vel_x;
+    float err_vy = opticflow_stab.desired_vy - vel_y;
 
-  /* Calculate the integrated errors (TODO: bound??) */
-  opticflow_stab.err_vx_int += err_vx / 512;
-  opticflow_stab.err_vy_int += err_vy / 512;
+    /* Calculate the integrated errors (TODO: bound??) */
+    opticflow_stab.err_vx_int += err_vx / 512;
+    opticflow_stab.err_vy_int += err_vy / 512;
 
-  /* Calculate the commands */
-  opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vy
-                             + opticflow_stab.phi_igain * opticflow_stab.err_vy_int;
-  opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vx
-                               + opticflow_stab.theta_igain * opticflow_stab.err_vx_int);
+    /* Calculate the commands */
+    opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vy
+                               + opticflow_stab.phi_igain * opticflow_stab.err_vy_int;
+    opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vx
+                                 + opticflow_stab.theta_igain * opticflow_stab.err_vx_int);
 
-  /* Bound the roll and pitch commands */
-  BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
-  BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT);
+    /* Bound the roll and pitch commands */
+    BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
+    BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT);
 }

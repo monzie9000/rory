@@ -35,28 +35,30 @@
 #define W5100_TX_BUFFER_SIZE 80
 #define W5100_BUFFER_NUM 2
 
-enum W5100Status {
-  W5100StatusUninit,
-  W5100StatusIdle,
-  W5100StatusReading
+enum W5100Status
+{
+    W5100StatusUninit,
+    W5100StatusIdle,
+    W5100StatusReading
 };
 
-struct w5100_periph {
-  volatile enum W5100Status status;
-  int curbuf;
-  /* Receive buffer */
-  volatile uint8_t rx_buf[W5100_BUFFER_NUM][W5100_RX_BUFFER_SIZE];
-  volatile uint16_t rx_insert_idx[W5100_BUFFER_NUM];
-  volatile uint16_t rx_extract_idx[W5100_BUFFER_NUM];
-  /* Transmit buffer */
-  volatile uint8_t tx_buf[W5100_BUFFER_NUM][W5100_TX_BUFFER_SIZE];
-  volatile uint16_t tx_insert_idx[W5100_BUFFER_NUM];
-  volatile uint16_t tx_extract_idx[W5100_BUFFER_NUM];
-  volatile uint8_t work_tx[4];
-  volatile uint8_t work_rx[4];
-  uint8_t tx_running;
-  /** Generic device interface */
-  struct link_device device;
+struct w5100_periph
+{
+    volatile enum W5100Status status;
+    int curbuf;
+    /* Receive buffer */
+    volatile uint8_t rx_buf[W5100_BUFFER_NUM][W5100_RX_BUFFER_SIZE];
+    volatile uint16_t rx_insert_idx[W5100_BUFFER_NUM];
+    volatile uint16_t rx_extract_idx[W5100_BUFFER_NUM];
+    /* Transmit buffer */
+    volatile uint8_t tx_buf[W5100_BUFFER_NUM][W5100_TX_BUFFER_SIZE];
+    volatile uint16_t tx_insert_idx[W5100_BUFFER_NUM];
+    volatile uint16_t tx_extract_idx[W5100_BUFFER_NUM];
+    volatile uint8_t work_tx[4];
+    volatile uint8_t work_rx[4];
+    uint8_t tx_running;
+    /** Generic device interface */
+    struct link_device device;
 };
 
 extern uint8_t w5100_rx_buf[W5100_RX_BUFFER_SIZE];
@@ -78,25 +80,31 @@ bool_t w5100_ch_available(void);
 
 static inline void w5100_read_buffer(struct pprz_transport *t)
 {
-  while (w5100_ch_available()) {
-    w5100_receive(w5100_rx_buf, W5100_RX_BUFFER_SIZE);
-    int c = 0;
-    do {
-      parse_pprz(t, w5100_rx_buf[ c++ ]);
-    } while ((t->status != UNINIT) && !(t->trans_rx.msg_received));
-  }
+    while (w5100_ch_available())
+    {
+        w5100_receive(w5100_rx_buf, W5100_RX_BUFFER_SIZE);
+        int c = 0;
+        do
+        {
+            parse_pprz(t, w5100_rx_buf[ c++ ]);
+        }
+        while ((t->status != UNINIT) && !(t->trans_rx.msg_received));
+    }
 }
 
 #define W5100CheckAndParse(_dev, _trans) w5100_check_and_parse(&(_dev).device, &(_trans))
 
-static inline void w5100_check_and_parse(struct link_device *dev, struct pprz_transport *trans) {
-  if (dev->char_available(dev->periph)) {
-    w5100_read_buffer(trans);
-    if (trans->trans_rx.msg_received) {
-      pprz_parse_payload(trans);
-      trans->trans_rx.msg_received = FALSE;
+static inline void w5100_check_and_parse(struct link_device *dev, struct pprz_transport *trans)
+{
+    if (dev->char_available(dev->periph))
+    {
+        w5100_read_buffer(trans);
+        if (trans->trans_rx.msg_received)
+        {
+            pprz_parse_payload(trans);
+            trans->trans_rx.msg_received = FALSE;
+        }
     }
-  }
 }
 
 #endif /* W5100_H */

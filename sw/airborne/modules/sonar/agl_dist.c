@@ -54,24 +54,27 @@ static void sonar_cb(uint8_t sender_id, float distance);
 
 void agl_dist_init(void)
 {
-  agl_dist_valid = FALSE;
-  agl_dist_value = 0.;
-  agl_dist_value_filtered = 0.;
+    agl_dist_valid = FALSE;
+    agl_dist_value = 0.;
+    agl_dist_value_filtered = 0.;
 
-  // Bind to AGL message
-  AbiBindMsgAGL(AGL_DIST_SONAR_ID, &sonar_ev, sonar_cb);
+    // Bind to AGL message
+    AbiBindMsgAGL(AGL_DIST_SONAR_ID, &sonar_ev, sonar_cb);
 }
 
 
 static void sonar_cb(uint8_t __attribute__((unused)) sender_id, float distance)
 {
-  if (distance < AGL_DIST_SONAR_MAX_RANGE && distance > AGL_DIST_SONAR_MIN_RANGE) {
-    agl_dist_value = distance;
-    agl_dist_valid = TRUE;
-    agl_dist_value_filtered = (AGL_DIST_SONAR_FILTER * agl_dist_value_filtered + agl_dist_value) /
-                              (AGL_DIST_SONAR_FILTER + 1);
-  } else {
-    agl_dist_valid = FALSE;
-  }
+    if (distance < AGL_DIST_SONAR_MAX_RANGE && distance > AGL_DIST_SONAR_MIN_RANGE)
+    {
+        agl_dist_value = distance;
+        agl_dist_valid = TRUE;
+        agl_dist_value_filtered = (AGL_DIST_SONAR_FILTER * agl_dist_value_filtered + agl_dist_value) /
+                                  (AGL_DIST_SONAR_FILTER + 1);
+    }
+    else
+    {
+        agl_dist_valid = FALSE;
+    }
 }
 

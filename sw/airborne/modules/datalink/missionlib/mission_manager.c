@@ -50,64 +50,70 @@
 
 void mavlink_mission_init(mavlink_mission_mgr *mgr)
 {
-  mgr->seq = 0;
-  mgr->timer_id = -1;
+    mgr->seq = 0;
+    mgr->timer_id = -1;
 }
 
 void mavlink_mission_set_timer(void)
 {
-  if (mission_mgr.timer_id < 0) {
-    mission_mgr.timer_id = sys_time_register_timer(MAVLINK_TIMEOUT, NULL);
-  }
-  else {
-    sys_time_update_timer(mission_mgr.timer_id, MAVLINK_TIMEOUT);
-  }
+    if (mission_mgr.timer_id < 0)
+    {
+        mission_mgr.timer_id = sys_time_register_timer(MAVLINK_TIMEOUT, NULL);
+    }
+    else
+    {
+        sys_time_update_timer(mission_mgr.timer_id, MAVLINK_TIMEOUT);
+    }
 }
 
 void mavlink_mission_cancel_timer(void)
 {
-  if (mission_mgr.timer_id >= 0) {
-    sys_time_cancel_timer(mission_mgr.timer_id);
-  }
-  mission_mgr.timer_id = -1;
+    if (mission_mgr.timer_id >= 0)
+    {
+        sys_time_cancel_timer(mission_mgr.timer_id);
+    }
+    mission_mgr.timer_id = -1;
 }
 
 void mavlink_mission_message_handler(const mavlink_message_t *msg)
 {
-  mavlink_block_message_handler(msg);
+    mavlink_block_message_handler(msg);
 
-  mavlink_wp_message_handler(msg);
+    mavlink_wp_message_handler(msg);
 
-  if (msg->msgid == MAVLINK_MSG_ID_MISSION_ACK) {
-    MAVLINK_DEBUG("Received MISSION_ACK message\n");
-    mavlink_mission_cancel_timer();
-    mission_mgr.state = STATE_IDLE;
-    MAVLINK_DEBUG("State: %d\n", mission_mgr.state);
-  }
+    if (msg->msgid == MAVLINK_MSG_ID_MISSION_ACK)
+    {
+        MAVLINK_DEBUG("Received MISSION_ACK message\n");
+        mavlink_mission_cancel_timer();
+        mission_mgr.state = STATE_IDLE;
+        MAVLINK_DEBUG("State: %d\n", mission_mgr.state);
+    }
 }
 
 /// update current block and send if changed
 void mavlink_mission_periodic(void)
 {
-  // FIXME: really use the SCRIPT_ITEM message to indicate current block?
-  if (mission_mgr.current_block != nav_block) {
-    mission_mgr.current_block = nav_block;
-    mavlink_msg_script_current_send(MAVLINK_COMM_0, nav_block);
-    MAVLinkSendMessage();
-  }
-  // check if we had a timeout on a transaction
-  if (sys_time_check_and_ack_timer(mission_mgr.timer_id)) {
-    mavlink_mission_cancel_timer();
-    mission_mgr.state = STATE_IDLE;
-    mission_mgr.seq = 0;
-    MAVLINK_DEBUG("Warning: Mavlink mission request timed out!\n");
-  }
+    // FIXME: really use the SCRIPT_ITEM message to indicate current block?
+    if (mission_mgr.current_block != nav_block)
+    {
+        mission_mgr.current_block = nav_block;
+        mavlink_msg_script_current_send(MAVLINK_COMM_0, nav_block);
+        MAVLinkSendMessage();
+    }
+    // check if we had a timeout on a transaction
+    if (sys_time_check_and_ack_timer(mission_mgr.timer_id))
+    {
+        mavlink_mission_cancel_timer();
+        mission_mgr.state = STATE_IDLE;
+        mission_mgr.seq = 0;
+        MAVLINK_DEBUG("Warning: Mavlink mission request timed out!\n");
+    }
 }
 
 void mavlink_send_mission_ack(void)
 {
-  mavlink_msg_mission_ack_send(MAVLINK_COMM_0,  mission_mgr.rem_sysid, mission_mgr.rem_compid,
-                               MAV_MISSION_ACCEPTED);
-  MAVLinkSendMessage();
-  MAVLINK_DEBUG("Sent MISSION_ACK message\n");
+    mavlink_msg_mission_ack_send(MAVLINK_COMM_0,  mission_mgr.rem_sysid, mission_mgr.rem_compid,
+                                 MAV_MISSION_ACCEPTED);
+    MAVLinkSendMessage();
+    MAVLINK_DEBUG("Sent MISSION_ACK message\n");
 }

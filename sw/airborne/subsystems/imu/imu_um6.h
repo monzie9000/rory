@@ -76,41 +76,47 @@ extern volatile uint8_t UM6_imu_available;
 extern struct FloatEulers UM6_eulers;
 extern struct FloatQuat UM6_quat;
 
-struct UM6Packet {
-  bool_t  msg_available;
-  uint32_t chksm_error;
-  uint32_t hdr_error;
-  uint8_t msg_buf[IMU_UM6_BUFFER_LENGTH];
-  uint8_t  status;
-  uint8_t  msg_idx;
+struct UM6Packet
+{
+    bool_t  msg_available;
+    uint32_t chksm_error;
+    uint32_t hdr_error;
+    uint8_t msg_buf[IMU_UM6_BUFFER_LENGTH];
+    uint8_t  status;
+    uint8_t  msg_idx;
 };
 
-enum UM6PacketStatus {
-  UM6PacketWaiting,
-  UM6PacketReadingS,
-  UM6PacketReadingN,
-  UM6PacketReadingPT,
-  UM6PacketReadingAddr,
-  UM6PacketReadingData
+enum UM6PacketStatus
+{
+    UM6PacketWaiting,
+    UM6PacketReadingS,
+    UM6PacketReadingN,
+    UM6PacketReadingPT,
+    UM6PacketReadingAddr,
+    UM6PacketReadingData
 };
 
-enum UM6Status {
-  UM6Uninit,
-  UM6Running
+enum UM6Status
+{
+    UM6Uninit,
+    UM6Running
 };
 
 static inline void imu_um6_event(void)
 {
-  if (uart_char_available(&(UM6_LINK))) {
-    while (uart_char_available(&(UM6_LINK)) && !UM6_packet.msg_available) {
-      UM6_packet_parse(uart_getch(&(UM6_LINK)));
+    if (uart_char_available(&(UM6_LINK)))
+    {
+        while (uart_char_available(&(UM6_LINK)) && !UM6_packet.msg_available)
+        {
+            UM6_packet_parse(uart_getch(&(UM6_LINK)));
+        }
+        if (UM6_packet.msg_available)
+        {
+            UM6_packet.msg_available = FALSE;
+            UM6_packet_read_message();
+            imu_um6_publish();
+        }
     }
-    if (UM6_packet.msg_available) {
-      UM6_packet.msg_available = FALSE;
-      UM6_packet_read_message();
-      imu_um6_publish();
-    }
-  }
 }
 
 #define ImuEvent imu_um6_event

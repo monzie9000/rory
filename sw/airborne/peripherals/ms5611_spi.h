@@ -33,17 +33,18 @@
 /* Include common MS5611 definitions */
 #include "peripherals/ms5611.h"
 
-struct Ms5611_Spi {
-  struct spi_periph *spi_p;
-  struct spi_transaction spi_trans;
-  volatile uint8_t tx_buf[1];
-  volatile uint8_t rx_buf[4];
-  enum Ms5611Status status;
-  bool_t is_ms5607;                   ///< TRUE if MS5607, FALSE if MS5611
-  bool_t initialized;                 ///< config done flag
-  volatile bool_t data_available;     ///< data ready flag
-  struct Ms5611Data data;
-  int32_t prom_cnt;                   ///< number of bytes read from PROM
+struct Ms5611_Spi
+{
+    struct spi_periph *spi_p;
+    struct spi_transaction spi_trans;
+    volatile uint8_t tx_buf[1];
+    volatile uint8_t rx_buf[4];
+    enum Ms5611Status status;
+    bool_t is_ms5607;                   ///< TRUE if MS5607, FALSE if MS5611
+    bool_t initialized;                 ///< config done flag
+    volatile bool_t data_available;     ///< data ready flag
+    struct Ms5611Data data;
+    int32_t prom_cnt;                   ///< number of bytes read from PROM
 };
 
 // Functions
@@ -60,18 +61,21 @@ extern void ms5611_spi_event(struct Ms5611_Spi *ms);
  */
 static inline void ms5611_spi_read(struct Ms5611_Spi *ms)
 {
-  if (ms->initialized) {
-    ms5611_spi_start_conversion(ms);
-  } else {
-    ms5611_spi_start_configure(ms);
-  }
+    if (ms->initialized)
+    {
+        ms5611_spi_start_conversion(ms);
+    }
+    else
+    {
+        ms5611_spi_start_configure(ms);
+    }
 }
 
 /// convenience function
 static inline void ms5611_spi_periodic(struct Ms5611_Spi *ms)
 {
-  ms5611_spi_read(ms);
-  ms5611_spi_periodic_check(ms);
+    ms5611_spi_read(ms);
+    ms5611_spi_periodic_check(ms);
 }
 
 

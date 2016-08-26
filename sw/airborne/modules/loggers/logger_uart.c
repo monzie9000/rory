@@ -31,40 +31,43 @@ struct logger_uart_data_struct logger_uart_data;
 
 void logger_uart_init(void)
 {
-  logger_uart_data.id = 0;
+    logger_uart_data.id = 0;
 }
 
 void logger_uart_periodic(void)
 {
-  struct FloatEulers att = *stateGetNedToBodyEulers_f();
+    struct FloatEulers att = *stateGetNedToBodyEulers_f();
 
-  logger_uart_data.start = 0x55CC;
-  logger_uart_data.id++;
+    logger_uart_data.start = 0x55CC;
+    logger_uart_data.id++;
 
-  if (logger_uart_data.id & 0x0080) {
-    LED_ON(1);
-  } else {
-    LED_OFF(1);
-  }
+    if (logger_uart_data.id & 0x0080)
+    {
+        LED_ON(1);
+    }
+    else
+    {
+        LED_OFF(1);
+    }
 
-  logger_uart_data.gyro_p     = imu.gyro_unscaled.p;
-  logger_uart_data.gyro_q     = imu.gyro_unscaled.q;
-  logger_uart_data.gyro_r     = imu.gyro_unscaled.r;
-  logger_uart_data.acc_x      = imu.accel_unscaled.x;
-  logger_uart_data.acc_y      = imu.accel_unscaled.y;
-  logger_uart_data.acc_z      = imu.accel_unscaled.z;
-  logger_uart_data.phi = (att.phi * 100.0f);
-  logger_uart_data.theta = (att.theta * 100.0f);
-  logger_uart_data.psi = (att.psi * 100.0f);
+    logger_uart_data.gyro_p     = imu.gyro_unscaled.p;
+    logger_uart_data.gyro_q     = imu.gyro_unscaled.q;
+    logger_uart_data.gyro_r     = imu.gyro_unscaled.r;
+    logger_uart_data.acc_x      = imu.accel_unscaled.x;
+    logger_uart_data.acc_y      = imu.accel_unscaled.y;
+    logger_uart_data.acc_z      = imu.accel_unscaled.z;
+    logger_uart_data.phi = (att.phi * 100.0f);
+    logger_uart_data.theta = (att.theta * 100.0f);
+    logger_uart_data.psi = (att.psi * 100.0f);
 
-  uint8_t crc = 0;
-  uint8_t *p = (uint8_t*) &logger_uart_data;
-  for (int i=0; i<22; i++)
-  {
-    crc += p[i];
-    UART1Transmit(p[i]);
-  }
-  UART1Transmit(crc);
+    uint8_t crc = 0;
+    uint8_t *p = (uint8_t*) &logger_uart_data;
+    for (int i=0; i<22; i++)
+    {
+        crc += p[i];
+        UART1Transmit(p[i]);
+    }
+    UART1Transmit(crc);
 }
 
 

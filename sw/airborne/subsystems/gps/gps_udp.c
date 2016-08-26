@@ -44,8 +44,8 @@ struct FmsNetwork *gps_network = NULL;
 
 void gps_impl_init(void)
 {
-  gps.fix = GPS_FIX_NONE;
-  gps_network = network_new(STRINGIFY(GPS_UDP_HOST), 6000 /*out*/, 7000 /*in*/, TRUE);
+    gps.fix = GPS_FIX_NONE;
+    gps_network = network_new(STRINGIFY(GPS_UDP_HOST), 6000 /*out*/, 7000 /*in*/, TRUE);
 }
 
 #define STX 99
@@ -54,58 +54,66 @@ void gps_impl_init(void)
 
 void gps_parse(void)
 {
-  if (gps_network == NULL) { return; }
+    if (gps_network == NULL)
+    {
+        return;
+    }
 
-  //Read from the network
-  int size = network_read(gps_network, &gps_udp_read_buffer[0], 256);
+    //Read from the network
+    int size = network_read(gps_network, &gps_udp_read_buffer[0], 256);
 
-  if (size > 0) {
-    // Correct MSG
-    if ((size == GPS_UDP_MSG_LEN) && (gps_udp_read_buffer[0] == STX)) {
-      gps.lla_pos.lat = UDP_GPS_INT(gps_udp_read_buffer + 4);
-      gps.lla_pos.lon = UDP_GPS_INT(gps_udp_read_buffer + 8);
-      gps.lla_pos.alt = UDP_GPS_INT(gps_udp_read_buffer + 12);
-      gps.hmsl        = UDP_GPS_INT(gps_udp_read_buffer + 16);
+    if (size > 0)
+    {
+        // Correct MSG
+        if ((size == GPS_UDP_MSG_LEN) && (gps_udp_read_buffer[0] == STX))
+        {
+            gps.lla_pos.lat = UDP_GPS_INT(gps_udp_read_buffer + 4);
+            gps.lla_pos.lon = UDP_GPS_INT(gps_udp_read_buffer + 8);
+            gps.lla_pos.alt = UDP_GPS_INT(gps_udp_read_buffer + 12);
+            gps.hmsl        = UDP_GPS_INT(gps_udp_read_buffer + 16);
 
-      gps.ecef_pos.x = UDP_GPS_INT(gps_udp_read_buffer + 20);
-      gps.ecef_pos.y = UDP_GPS_INT(gps_udp_read_buffer + 24);
-      gps.ecef_pos.z = UDP_GPS_INT(gps_udp_read_buffer + 28);
+            gps.ecef_pos.x = UDP_GPS_INT(gps_udp_read_buffer + 20);
+            gps.ecef_pos.y = UDP_GPS_INT(gps_udp_read_buffer + 24);
+            gps.ecef_pos.z = UDP_GPS_INT(gps_udp_read_buffer + 28);
 
-      gps.ecef_vel.x = UDP_GPS_INT(gps_udp_read_buffer + 32);
-      gps.ecef_vel.y = UDP_GPS_INT(gps_udp_read_buffer + 36);
-      gps.ecef_vel.z = UDP_GPS_INT(gps_udp_read_buffer + 40);
+            gps.ecef_vel.x = UDP_GPS_INT(gps_udp_read_buffer + 32);
+            gps.ecef_vel.y = UDP_GPS_INT(gps_udp_read_buffer + 36);
+            gps.ecef_vel.z = UDP_GPS_INT(gps_udp_read_buffer + 40);
 
-      gps.fix = GPS_FIX_3D;
+            gps.fix = GPS_FIX_3D;
 
 #if GPS_USE_LATLONG
-      // Computes from (lat, long) in the referenced UTM zone
-      struct LlaCoor_f lla_f;
-      LLA_FLOAT_OF_BFP(lla_f, gps.lla_pos);
-      struct UtmCoor_f utm_f;
-      utm_f.zone = nav_utm_zone0;
-      // convert to utm
-      utm_of_lla_f(&utm_f, &lla_f);
-      // copy results of utm conversion
-      gps.utm_pos.east = utm_f.east * 100;
-      gps.utm_pos.north = utm_f.north * 100;
-      gps.utm_pos.alt = gps.lla_pos.alt;
-      gps.utm_pos.zone = nav_utm_zone0;
+            // Computes from (lat, long) in the referenced UTM zone
+            struct LlaCoor_f lla_f;
+            LLA_FLOAT_OF_BFP(lla_f, gps.lla_pos);
+            struct UtmCoor_f utm_f;
+            utm_f.zone = nav_utm_zone0;
+            // convert to utm
+            utm_of_lla_f(&utm_f, &lla_f);
+            // copy results of utm conversion
+            gps.utm_pos.east = utm_f.east * 100;
+            gps.utm_pos.north = utm_f.north * 100;
+            gps.utm_pos.alt = gps.lla_pos.alt;
+            gps.utm_pos.zone = nav_utm_zone0;
 #endif
 
-      // publish new GPS data
-      uint32_t now_ts = get_sys_time_usec();
-      gps.last_msg_ticks = sys_time.nb_sec_rem;
-      gps.last_msg_time = sys_time.nb_sec;
-      if (gps.fix == GPS_FIX_3D) {
-        gps.last_3dfix_ticks = sys_time.nb_sec_rem;
-        gps.last_3dfix_time = sys_time.nb_sec;
-      }
-      AbiSendMsgGPS(GPS_UDP_ID, now_ts, &gps);
+            // publish new GPS data
+            uint32_t now_ts = get_sys_time_usec();
+            gps.last_msg_ticks = sys_time.nb_sec_rem;
+            gps.last_msg_time = sys_time.nb_sec;
+            if (gps.fix == GPS_FIX_3D)
+            {
+                gps.last_3dfix_ticks = sys_time.nb_sec_rem;
+                gps.last_3dfix_time = sys_time.nb_sec;
+            }
+            AbiSendMsgGPS(GPS_UDP_ID, now_ts, &gps);
 
-    } else {
-      printf("gps_udp error: msg len invalid %d bytes\n", size);
+        }
+        else
+        {
+            printf("gps_udp error: msg len invalid %d bytes\n", size);
+        }
+        memset(&gps_udp_read_buffer[0], 0, sizeof(gps_udp_read_buffer));
     }
-    memset(&gps_udp_read_buffer[0], 0, sizeof(gps_udp_read_buffer));
-  }
 }
 

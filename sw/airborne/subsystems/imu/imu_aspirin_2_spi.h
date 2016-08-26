@@ -35,13 +35,14 @@
 #include "subsystems/imu/imu_mpu60x0_defaults.h"
 #include "peripherals/mpu60x0_spi.h"
 
-struct ImuAspirin2Spi {
-  struct Mpu60x0_Spi mpu;
+struct ImuAspirin2Spi
+{
+    struct Mpu60x0_Spi mpu;
 
-  struct spi_transaction wait_slave4_trans;
-  volatile uint8_t wait_slave4_tx_buf[1];
-  volatile uint8_t wait_slave4_rx_buf[2];
-  volatile bool_t slave4_ready;
+    struct spi_transaction wait_slave4_trans;
+    volatile uint8_t wait_slave4_tx_buf[1];
+    volatile uint8_t wait_slave4_rx_buf[2];
+    volatile bool_t slave4_ready;
 };
 
 extern struct ImuAspirin2Spi imu_aspirin2;

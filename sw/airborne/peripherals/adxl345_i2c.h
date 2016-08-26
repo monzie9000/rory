@@ -36,17 +36,19 @@
 /* Include common ADXL345 options and definitions */
 #include "peripherals/adxl345.h"
 
-struct Adxl345_I2c {
-  struct i2c_periph *i2c_p;
-  struct i2c_transaction i2c_trans;
-  enum Adxl345ConfStatus init_status; ///< init status
-  bool_t initialized;                 ///< config done flag
-  volatile bool_t data_available;     ///< data ready flag
-  union {
-    struct Int16Vect3 vect;           ///< data vector in accel coordinate system
-    int16_t value[3];                 ///< data values accessible by channel index
-  } data;
-  struct Adxl345Config config;
+struct Adxl345_I2c
+{
+    struct i2c_periph *i2c_p;
+    struct i2c_transaction i2c_trans;
+    enum Adxl345ConfStatus init_status; ///< init status
+    bool_t initialized;                 ///< config done flag
+    volatile bool_t data_available;     ///< data ready flag
+    union
+    {
+        struct Int16Vect3 vect;           ///< data vector in accel coordinate system
+        int16_t value[3];                 ///< data values accessible by channel index
+    } data;
+    struct Adxl345Config config;
 };
 
 // Functions
@@ -58,11 +60,14 @@ extern void adxl345_i2c_event(struct Adxl345_I2c *adxl);
 /// convenience function: read or start configuration if not already initialized
 static inline void adxl345_i2c_periodic(struct Adxl345_I2c *adxl)
 {
-  if (adxl->initialized) {
-    adxl345_i2c_read(adxl);
-  } else {
-    adxl345_i2c_start_configure(adxl);
-  }
+    if (adxl->initialized)
+    {
+        adxl345_i2c_read(adxl);
+    }
+    else
+    {
+        adxl345_i2c_start_configure(adxl);
+    }
 }
 
 #endif // ADXL345_I2C_H

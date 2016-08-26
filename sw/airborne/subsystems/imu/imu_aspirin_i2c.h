@@ -40,10 +40,11 @@
 #include "subsystems/imu/imu_aspirin_defaults.h"
 
 
-struct ImuAspirinI2c {
-  struct Adxl345_I2c acc_adxl;
-  struct Itg3200 gyro_itg;
-  struct Hmc58xx mag_hmc;
+struct ImuAspirinI2c
+{
+    struct Adxl345_I2c acc_adxl;
+    struct Itg3200 gyro_itg;
+    struct Hmc58xx mag_hmc;
 };
 
 extern struct ImuAspirinI2c imu_aspirin;

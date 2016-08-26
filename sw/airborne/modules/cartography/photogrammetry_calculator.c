@@ -66,57 +66,60 @@ int photogrammetry_radius_min;
 
 void init_photogrammetry_calculator(void)
 {
-  photogrammetry_sweep_angle = PHOTOGRAMMETRY_SWEEP_ANGLE;
+    photogrammetry_sweep_angle = PHOTOGRAMMETRY_SWEEP_ANGLE;
 
-  photogrammetry_sidelap     = PHOTOGRAMMETRY_SIDELAP;
-  photogrammetry_overlap     = PHOTOGRAMMETRY_OVERLAP;
-  photogrammetry_resolution  = PHOTOGRAMMETRY_RESOLUTION;
+    photogrammetry_sidelap     = PHOTOGRAMMETRY_SIDELAP;
+    photogrammetry_overlap     = PHOTOGRAMMETRY_OVERLAP;
+    photogrammetry_resolution  = PHOTOGRAMMETRY_RESOLUTION;
 
-  photogrammetry_height_min  = PHOTOGRAMMETRY_HEIGHT_MIN;
-  photogrammetry_height_max  = PHOTOGRAMMETRY_HEIGHT_MAX;
-  photogrammetry_radius_min  = PHOTOGRAMMETRY_RADIUS_MIN;
+    photogrammetry_height_min  = PHOTOGRAMMETRY_HEIGHT_MIN;
+    photogrammetry_height_max  = PHOTOGRAMMETRY_HEIGHT_MAX;
+    photogrammetry_radius_min  = PHOTOGRAMMETRY_RADIUS_MIN;
 
-  photogrammetry_calculator_update_camera2flightplan();
+    photogrammetry_calculator_update_camera2flightplan();
 }
 
 void photogrammetry_calculator_update_camera2flightplan(void)
 {
 
-  // Photogrammetry Goals
-  float photogrammetry_sidelap_f = ((float) photogrammetry_sidelap) / 100.0f;
-  float photogrammetry_overlap_f = ((float) photogrammetry_overlap) / 100.0f;
+    // Photogrammetry Goals
+    float photogrammetry_sidelap_f = ((float) photogrammetry_sidelap) / 100.0f;
+    float photogrammetry_overlap_f = ((float) photogrammetry_overlap) / 100.0f;
 
-  // Linear Projection Camera Model
-  float viewing_ratio_height = ((float) PHOTOGRAMMETRY_SENSOR_HEIGHT) / ((float)PHOTOGRAMMETRY_FOCAL_LENGTH);
-  float viewing_ratio_width = ((float) PHOTOGRAMMETRY_SENSOR_WIDTH) / ((float)PHOTOGRAMMETRY_FOCAL_LENGTH);
-  float pixel_projection_width = viewing_ratio_width / ((float)PHOTOGRAMMETRY_PIXELS_WIDTH);
+    // Linear Projection Camera Model
+    float viewing_ratio_height = ((float) PHOTOGRAMMETRY_SENSOR_HEIGHT) / ((float)PHOTOGRAMMETRY_FOCAL_LENGTH);
+    float viewing_ratio_width = ((float) PHOTOGRAMMETRY_SENSOR_WIDTH) / ((float)PHOTOGRAMMETRY_FOCAL_LENGTH);
+    float pixel_projection_width = viewing_ratio_width / ((float)PHOTOGRAMMETRY_PIXELS_WIDTH);
 
-  // Flightplan Variables
-  photogrammetry_height = ((float) photogrammetry_resolution) / pixel_projection_width / 1000.0f;
+    // Flightplan Variables
+    photogrammetry_height = ((float) photogrammetry_resolution) / pixel_projection_width / 1000.0f;
 
-  if (photogrammetry_height > photogrammetry_height_max) {
-    photogrammetry_height = photogrammetry_height_max;
-  } else if (photogrammetry_height < photogrammetry_height_min) {
-    photogrammetry_height = photogrammetry_height_min;
-  }
+    if (photogrammetry_height > photogrammetry_height_max)
+    {
+        photogrammetry_height = photogrammetry_height_max;
+    }
+    else if (photogrammetry_height < photogrammetry_height_min)
+    {
+        photogrammetry_height = photogrammetry_height_min;
+    }
 
-  photogrammetry_sidestep = viewing_ratio_width * photogrammetry_height * (1.0f - photogrammetry_sidelap_f);
-  photogrammetry_triggerstep = viewing_ratio_height * photogrammetry_height * (1.0f - photogrammetry_overlap_f);
+    photogrammetry_sidestep = viewing_ratio_width * photogrammetry_height * (1.0f - photogrammetry_sidelap_f);
+    photogrammetry_triggerstep = viewing_ratio_height * photogrammetry_height * (1.0f - photogrammetry_overlap_f);
 }
 
 void photogrammetry_calculator_update_flightplan2camera(void)
 {
-  // Linear Projection Camera Model
-  float viewing_ratio_height = ((float) PHOTOGRAMMETRY_SENSOR_HEIGHT) / ((float)PHOTOGRAMMETRY_FOCAL_LENGTH);
-  float viewing_ratio_width = ((float) PHOTOGRAMMETRY_SENSOR_WIDTH) / ((float)PHOTOGRAMMETRY_FOCAL_LENGTH);
-  float pixel_projection_width = viewing_ratio_width / ((float)PHOTOGRAMMETRY_PIXELS_WIDTH);
+    // Linear Projection Camera Model
+    float viewing_ratio_height = ((float) PHOTOGRAMMETRY_SENSOR_HEIGHT) / ((float)PHOTOGRAMMETRY_FOCAL_LENGTH);
+    float viewing_ratio_width = ((float) PHOTOGRAMMETRY_SENSOR_WIDTH) / ((float)PHOTOGRAMMETRY_FOCAL_LENGTH);
+    float pixel_projection_width = viewing_ratio_width / ((float)PHOTOGRAMMETRY_PIXELS_WIDTH);
 
-  // Resolution <-> Height
-  photogrammetry_resolution = photogrammetry_height * 1000.0f * pixel_projection_width;
+    // Resolution <-> Height
+    photogrammetry_resolution = photogrammetry_height * 1000.0f * pixel_projection_width;
 
-  // Overlap <-> track width
-  photogrammetry_sidelap = 100.0f - photogrammetry_sidestep / viewing_ratio_width / photogrammetry_height * 100.0f;
-  photogrammetry_overlap = 100.0f - photogrammetry_triggerstep / viewing_ratio_height / photogrammetry_height * 100.0f;
+    // Overlap <-> track width
+    photogrammetry_sidelap = 100.0f - photogrammetry_sidestep / viewing_ratio_width / photogrammetry_height * 100.0f;
+    photogrammetry_overlap = 100.0f - photogrammetry_triggerstep / viewing_ratio_height / photogrammetry_height * 100.0f;
 }
 
 

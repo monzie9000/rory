@@ -38,15 +38,16 @@
 #include "std.h"
 #include "mcu_periph/i2c.h"
 
-struct PBNState {
-  uint16_t altitude_adc;
-  uint16_t airspeed_adc;
-  uint16_t altitude_offset;
-  uint16_t airspeed_offset;
-  float altitude;
-  float airspeed;
-  float airspeed_filter;
-  bool_t data_valid;
+struct PBNState
+{
+    uint16_t altitude_adc;
+    uint16_t airspeed_adc;
+    uint16_t altitude_offset;
+    uint16_t airspeed_offset;
+    float altitude;
+    float airspeed;
+    float airspeed_filter;
+    bool_t data_valid;
 };
 
 extern struct PBNState pbn;

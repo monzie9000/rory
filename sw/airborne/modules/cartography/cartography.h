@@ -37,7 +37,7 @@ extern bool_t nav_survey_computefourth_corner(uint8_t wp1, uint8_t wp2,  uint8_t
 extern bool_t nav_survey_losange_carto_init(uint8_t wp1, uint8_t wp2,  uint8_t wp3, float distrail, float distplus);
 
 extern bool_t nav_survey_losange_carto(
-  void);   // !!!! important il faut mettre void en parametres d'entrée, sinon le compilo dit: attention : function declaration isn»t a prototype
+    void);   // !!!! important il faut mettre void en parametres d'entrée, sinon le compilo dit: attention : function declaration isn»t a prototype
 
 //(uint8_t wp1, uint8_t wp2, uint8_t wp3);
 

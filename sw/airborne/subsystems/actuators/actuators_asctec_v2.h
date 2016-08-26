@@ -42,13 +42,14 @@ enum actuators_asctec_v2_addr { FRONT,
                                 RIGHT
                               };
 
-struct ActuatorsAsctecV2 {
-  enum actuators_asctec_v2_cmd cmd;
-  enum actuators_asctec_v2_addr cur_addr;
-  enum actuators_asctec_v2_addr new_addr;
-  int32_t cmds[4];
-  struct i2c_transaction i2c_trans;
-  volatile uint32_t nb_err;
+struct ActuatorsAsctecV2
+{
+    enum actuators_asctec_v2_cmd cmd;
+    enum actuators_asctec_v2_addr cur_addr;
+    enum actuators_asctec_v2_addr new_addr;
+    int32_t cmds[4];
+    struct i2c_transaction i2c_trans;
+    volatile uint32_t nb_err;
 };
 
 

@@ -29,11 +29,12 @@
 #include "subsystems/radio_control.h"
 #include "firmwares/rotorcraft/stabilization.h"
 
-struct ctrl_module_demo_struct {
-  int rc_x;
-  int rc_y;
-  int rc_z;
-  int rc_t;
+struct ctrl_module_demo_struct
+{
+    int rc_x;
+    int rc_y;
+    int rc_z;
+    int rc_t;
 
 } ctrl_module_demo;
 
@@ -47,30 +48,33 @@ void ctrl_module_run(bool_t in_flight);
 
 void ctrl_module_init(void)
 {
-  ctrl_module_demo.rc_x = 0;
-  ctrl_module_demo.rc_y = 0;
-  ctrl_module_demo.rc_z = 0;
-  ctrl_module_demo.rc_t = 0;
+    ctrl_module_demo.rc_x = 0;
+    ctrl_module_demo.rc_y = 0;
+    ctrl_module_demo.rc_z = 0;
+    ctrl_module_demo.rc_t = 0;
 }
 
 // simple rate control without reference model nor attitude
 void ctrl_module_run(bool_t in_flight)
 {
-  if (!in_flight) {
-    // Reset integrators
-    stabilization_cmd[COMMAND_ROLL] = 0;
-    stabilization_cmd[COMMAND_PITCH] = 0;
-    stabilization_cmd[COMMAND_YAW] = 0;
-    stabilization_cmd[COMMAND_THRUST] = 0;
-  } else {
-    stabilization_cmd[COMMAND_ROLL]   = ctrl_module_demo.rc_x * ctrl_module_demo_pr_ff_gain -
-      stateGetBodyRates_i()->p * ctrl_module_demo_pr_d_gain;
-    stabilization_cmd[COMMAND_PITCH]  = ctrl_module_demo.rc_y * ctrl_module_demo_pr_ff_gain -
-      stateGetBodyRates_i()->q * ctrl_module_demo_pr_d_gain;
-    stabilization_cmd[COMMAND_YAW]    = ctrl_module_demo.rc_z * ctrl_module_demo_y_ff_gain -
-      stateGetBodyRates_i()->r * ctrl_module_demo_y_d_gain;
-    stabilization_cmd[COMMAND_THRUST] = ctrl_module_demo.rc_t;
-  }
+    if (!in_flight)
+    {
+        // Reset integrators
+        stabilization_cmd[COMMAND_ROLL] = 0;
+        stabilization_cmd[COMMAND_PITCH] = 0;
+        stabilization_cmd[COMMAND_YAW] = 0;
+        stabilization_cmd[COMMAND_THRUST] = 0;
+    }
+    else
+    {
+        stabilization_cmd[COMMAND_ROLL]   = ctrl_module_demo.rc_x * ctrl_module_demo_pr_ff_gain -
+                                            stateGetBodyRates_i()->p * ctrl_module_demo_pr_d_gain;
+        stabilization_cmd[COMMAND_PITCH]  = ctrl_module_demo.rc_y * ctrl_module_demo_pr_ff_gain -
+                                            stateGetBodyRates_i()->q * ctrl_module_demo_pr_d_gain;
+        stabilization_cmd[COMMAND_YAW]    = ctrl_module_demo.rc_z * ctrl_module_demo_y_ff_gain -
+                                            stateGetBodyRates_i()->r * ctrl_module_demo_y_d_gain;
+        stabilization_cmd[COMMAND_THRUST] = ctrl_module_demo.rc_t;
+    }
 }
 
 
@@ -79,41 +83,41 @@ void ctrl_module_run(bool_t in_flight)
 // Implement own Horizontal loops
 void guidance_h_module_init(void)
 {
-  ctrl_module_init();
+    ctrl_module_init();
 }
 
 void guidance_h_module_enter(void)
 {
-  ctrl_module_init();
+    ctrl_module_init();
 }
 
 void guidance_h_module_read_rc(void)
 {
-  // -MAX_PPRZ to MAX_PPRZ
-  ctrl_module_demo.rc_t = radio_control.values[RADIO_THROTTLE];
-  ctrl_module_demo.rc_x = radio_control.values[RADIO_ROLL];
-  ctrl_module_demo.rc_y = radio_control.values[RADIO_PITCH];
-  ctrl_module_demo.rc_z = radio_control.values[RADIO_YAW];
+    // -MAX_PPRZ to MAX_PPRZ
+    ctrl_module_demo.rc_t = radio_control.values[RADIO_THROTTLE];
+    ctrl_module_demo.rc_x = radio_control.values[RADIO_ROLL];
+    ctrl_module_demo.rc_y = radio_control.values[RADIO_PITCH];
+    ctrl_module_demo.rc_z = radio_control.values[RADIO_YAW];
 }
 
 void guidance_h_module_run(bool_t in_flight)
 {
-  // Call full inner-/outerloop / horizontal-/vertical controller:
-  ctrl_module_run(in_flight);
+    // Call full inner-/outerloop / horizontal-/vertical controller:
+    ctrl_module_run(in_flight);
 }
 
 void guidance_v_module_init(void)
 {
-  // initialization of your custom vertical controller goes here
+    // initialization of your custom vertical controller goes here
 }
 
 // Implement own Vertical loops
 void guidance_v_module_enter(void)
 {
-  // your code that should be executed when entering this vertical mode goes here
+    // your code that should be executed when entering this vertical mode goes here
 }
 
 void guidance_v_module_run(UNUSED bool_t in_flight)
 {
-  // your vertical controller goes here
+    // your vertical controller goes here
 }

@@ -35,8 +35,9 @@
 #include "peripherals/mpu60x0_spi.h"
 
 
-struct ImuMpu6000 {
-  struct Mpu60x0_Spi mpu;
+struct ImuMpu6000
+{
+    struct Mpu60x0_Spi mpu;
 };
 
 extern struct ImuMpu6000 imu_mpu_spi;

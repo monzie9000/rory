@@ -35,11 +35,12 @@
 #include "std.h"
 
 // Main viewvideo structure
-struct viewvideo_t {
-  volatile bool_t is_streaming;   ///< When the device is streaming
-  uint8_t downsize_factor;        ///< Downsize factor during the stream
-  uint8_t quality_factor;         ///< Quality factor during the stream
-  bool_t use_rtp;                 ///< Stream over RTP
+struct viewvideo_t
+{
+    volatile bool_t is_streaming;   ///< When the device is streaming
+    uint8_t downsize_factor;        ///< Downsize factor during the stream
+    uint8_t quality_factor;         ///< Quality factor during the stream
+    bool_t use_rtp;                 ///< Stream over RTP
 };
 extern struct viewvideo_t viewvideo;
 

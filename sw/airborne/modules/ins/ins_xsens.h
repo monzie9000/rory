@@ -31,14 +31,15 @@
 
 #include "ins_module.h"
 
-struct XsensTime {
-  int8_t hour;
-  int8_t min;
-  int8_t sec;
-  int32_t nanosec;
-  int16_t year;
-  int8_t month;
-  int8_t day;
+struct XsensTime
+{
+    int8_t hour;
+    int8_t min;
+    int8_t sec;
+    int32_t nanosec;
+    int16_t year;
+    int8_t month;
+    int8_t day;
 };
 
 extern struct XsensTime xsens_time;
@@ -55,10 +56,11 @@ extern void xsens_periodic(void);
 #include "subsystems/imu.h"
 #include "subsystems/abi.h"
 
-struct ImuXsens {
-  bool_t gyro_available;
-  bool_t accel_available;
-  bool_t mag_available;
+struct ImuXsens
+{
+    bool_t gyro_available;
+    bool_t accel_available;
+    bool_t mag_available;
 };
 extern struct ImuXsens imu_xsens;
 

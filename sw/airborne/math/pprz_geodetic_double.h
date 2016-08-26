@@ -46,47 +46,52 @@ extern "C" {
  * the x-axis intersects the sphere of the earth at 0° latitude (Equator)
  * and 0° longitude (Greenwich). Y-axis completes it to right-hand system.
  * Units: meters */
-struct EcefCoor_d {
-  double x; ///< in meters
-  double y; ///< in meters
-  double z; ///< in meters
+struct EcefCoor_d
+{
+    double x; ///< in meters
+    double y; ///< in meters
+    double z; ///< in meters
 };
 
 /**
  * @brief vector in Latitude, Longitude and Altitude
  */
-struct LlaCoor_d {
-  double lat; ///< in radians
-  double lon; ///< in radians
-  double alt; ///< in meters above WGS84 reference ellipsoid
+struct LlaCoor_d
+{
+    double lat; ///< in radians
+    double lon; ///< in radians
+    double alt; ///< in meters above WGS84 reference ellipsoid
 };
 
 /**
  * @brief vector in North East Down coordinates
  * Units: meters */
-struct NedCoor_d {
-  double x; ///< in meters
-  double y; ///< in meters
-  double z; ///< in meters
+struct NedCoor_d
+{
+    double x; ///< in meters
+    double y; ///< in meters
+    double z; ///< in meters
 };
 
 /**
  * @brief vector in East North Up coordinates
  * Units: meters */
-struct EnuCoor_d {
-  double x; ///< in meters
-  double y; ///< in meters
-  double z; ///< in meters
+struct EnuCoor_d
+{
+    double x; ///< in meters
+    double y; ///< in meters
+    double z; ///< in meters
 };
 
 /**
  * @brief position in UTM coordinates
  * Units: meters */
-struct UtmCoor_d {
-  double north; ///< in meters
-  double east; ///< in meters
-  double alt; ///< in meters above WGS84 reference ellipsoid
-  uint8_t zone; ///< UTM zone number
+struct UtmCoor_d
+{
+    double north; ///< in meters
+    double east; ///< in meters
+    double alt; ///< in meters above WGS84 reference ellipsoid
+    uint8_t zone; ///< UTM zone number
 };
 
 /**
@@ -94,11 +99,12 @@ struct UtmCoor_d {
  * @details Defines the origin of the local coordinate system
  * in ECEF and LLA coordinates and the roation matrix from
  * ECEF to local frame */
-struct LtpDef_d {
-  struct EcefCoor_d  ecef; ///< origin of local frame in ECEF
-  struct LlaCoor_d   lla; ///< origin of local frame in LLA
-  struct DoubleRMat ltp_of_ecef; ///< rotation from ECEF to local frame
-  double hmsl; ///< height in meters above mean sea level
+struct LtpDef_d
+{
+    struct EcefCoor_d  ecef; ///< origin of local frame in ECEF
+    struct LlaCoor_d   lla; ///< origin of local frame in LLA
+    struct DoubleRMat ltp_of_ecef; ///< rotation from ECEF to local frame
+    double hmsl; ///< height in meters above mean sea level
 };
 
 extern void lla_of_utm_d(struct LlaCoor_d *out, struct UtmCoor_d *in);

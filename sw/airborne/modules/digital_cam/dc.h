@@ -93,27 +93,28 @@ extern float dc_cam_angle;
 extern uint8_t dc_cam_tracing;
 
 /** Generic Set of Digital Camera Commands */
-typedef enum {
-  DC_GET_STATUS = 0,
+typedef enum
+{
+    DC_GET_STATUS = 0,
 
-  DC_HOLD = 13,
-  DC_SHOOT = 32,
+    DC_HOLD = 13,
+    DC_SHOOT = 32,
 
-  DC_WIDER = 'w',
-  DC_TALLER = 't',
+    DC_WIDER = 'w',
+    DC_TALLER = 't',
 
-  DC_UP = 'u',
-  DC_DOWN = 'd',
-  DC_CENTER = 'c',
-  DC_LEFT = 'l',
-  DC_RIGHT = 'r',
+    DC_UP = 'u',
+    DC_DOWN = 'd',
+    DC_CENTER = 'c',
+    DC_LEFT = 'l',
+    DC_RIGHT = 'r',
 
-  DC_MENU = 'm',
-  DC_HOME = 'h',
-  DC_PLAY = 'p',
+    DC_MENU = 'm',
+    DC_HOME = 'h',
+    DC_PLAY = 'p',
 
-  DC_ON = 'O',
-  DC_OFF = 'o',
+    DC_ON = 'O',
+    DC_OFF = 'o',
 
 } dc_command_type;
 
@@ -121,13 +122,14 @@ typedef enum {
 extern void dc_send_command(uint8_t cmd);
 
 /** Auotmatic Digital Camera Photo Triggering modes */
-typedef enum {
-  DC_AUTOSHOOT_STOP = 0,
-  DC_AUTOSHOOT_PERIODIC = 1,
-  DC_AUTOSHOOT_DISTANCE = 2,
-  DC_AUTOSHOOT_EXT_TRIG = 3,
-  DC_AUTOSHOOT_SURVEY = 4,
-  DC_AUTOSHOOT_CIRCLE = 5
+typedef enum
+{
+    DC_AUTOSHOOT_STOP = 0,
+    DC_AUTOSHOOT_PERIODIC = 1,
+    DC_AUTOSHOOT_DISTANCE = 2,
+    DC_AUTOSHOOT_EXT_TRIG = 3,
+    DC_AUTOSHOOT_SURVEY = 4,
+    DC_AUTOSHOOT_CIRCLE = 5
 } dc_autoshoot_type;
 extern dc_autoshoot_type dc_autoshoot;
 

@@ -32,13 +32,14 @@
 
 #include "mcu_periph/i2c.h"
 
-struct config_mkk_v2_struct {
-  uint8_t read_config;
-  uint8_t addr;
+struct config_mkk_v2_struct
+{
+    uint8_t read_config;
+    uint8_t addr;
 
-  int nb_err;
+    int nb_err;
 
-  struct i2c_transaction trans;
+    struct i2c_transaction trans;
 };
 
 extern struct config_mkk_v2_struct config_mkk_v2;
@@ -50,15 +51,16 @@ void config_mkk_v2_periodic_telemetry(void);
 //////////////////////////////////////////////////////////////////
 // MKK Config
 
-typedef struct {
-  uint8_t revision;
-  uint8_t SetMask;
-  uint8_t PwmScaling;
-  uint8_t CurrentLimit;
-  uint8_t TempLimit;
-  uint8_t CurrentScaling;
-  uint8_t BitConfig;
-  uint8_t crc;
+typedef struct
+{
+    uint8_t revision;
+    uint8_t SetMask;
+    uint8_t PwmScaling;
+    uint8_t CurrentLimit;
+    uint8_t TempLimit;
+    uint8_t CurrentScaling;
+    uint8_t BitConfig;
+    uint8_t crc;
 } config_mkk_v2_eeprom_t;
 
 extern config_mkk_v2_eeprom_t config_mkk_v2_eeprom;

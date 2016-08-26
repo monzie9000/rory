@@ -36,16 +36,17 @@
  */
 static inline unsigned short calculateCRC(unsigned char data[], unsigned int length)
 {
-  unsigned int i;
-  unsigned short crc = 0;
-  for (i = 0; i < length; i++) {
-    crc = (unsigned char)(crc >> 8) | (crc << 8);
-    crc ^= data[i];
-    crc ^= (unsigned char)(crc & 0xff) >> 4;
-    crc ^= crc << 12;
-    crc ^= (crc & 0x00ff) << 5;
-  }
-  return crc;
+    unsigned int i;
+    unsigned short crc = 0;
+    for (i = 0; i < length; i++)
+    {
+        crc = (unsigned char)(crc >> 8) | (crc << 8);
+        crc ^= data[i];
+        crc ^= (unsigned char)(crc & 0xff) >> 4;
+        crc ^= crc << 12;
+        crc ^= (crc & 0x00ff) << 5;
+    }
+    return crc;
 }
 
 
@@ -54,31 +55,36 @@ static inline unsigned short calculateCRC(unsigned char data[], unsigned int len
  */
 static inline bool verify_chk(unsigned char data[], unsigned int length, uint16_t *calc_chk, uint16_t *rec_chk)
 {
-  unsigned short calc_crc = calculateCRC(data, length);
-  unsigned short rec_crc = (unsigned short)(data[length] << 8 | data[length + 1]);
-  *calc_chk = (uint16_t) calc_crc;
-  *rec_chk = (uint16_t) rec_crc;
-  if (calc_crc == rec_crc) {
-    return 1;
-  } else {
-    return 0;
-  }
+    unsigned short calc_crc = calculateCRC(data, length);
+    unsigned short rec_crc = (unsigned short)(data[length] << 8 | data[length + 1]);
+    *calc_chk = (uint16_t) calc_crc;
+    *rec_chk = (uint16_t) rec_crc;
+    if (calc_crc == rec_crc)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 
 static inline void vn200_read_buffer(struct VNPacket *vnp)
 {
-  while (uart_char_available(&VN_PORT) && !(vnp->msg_available)) {
-    vn200_parse(vnp, uart_getch(&VN_PORT));
-  }
+    while (uart_char_available(&VN_PORT) && !(vnp->msg_available))
+    {
+        vn200_parse(vnp, uart_getch(&VN_PORT));
+    }
 }
 
 
 void vn200_event(struct VNPacket *vnp)
 {
-  if (uart_char_available(&VN_PORT)) {
-    vn200_read_buffer(vnp);
-  }
+    if (uart_char_available(&VN_PORT))
+    {
+        vn200_read_buffer(vnp);
+    }
 }
 
 /**
@@ -86,55 +92,67 @@ void vn200_event(struct VNPacket *vnp)
  */
 void vn200_parse(struct VNPacket *vnp, uint8_t c)
 {
-  switch (vnp->status) {
+    switch (vnp->status)
+    {
     case VNMsgSync:
-      // sync the header
-      vnp->msg_idx = 0;
-      if (c == VN_SYNC) {
-        vnp->status = VNMsgHeader;
-      } else {
-        vnp->hdr_error++;
-      }
-      break;
+        // sync the header
+        vnp->msg_idx = 0;
+        if (c == VN_SYNC)
+        {
+            vnp->status = VNMsgHeader;
+        }
+        else
+        {
+            vnp->hdr_error++;
+        }
+        break;
     case VNMsgHeader:
-      // read header data (we expect 0x39)
-      if (c == VN_OUTPUT_GROUP) {
-        // increment idx and save current byte for checksum
-        vnp->status = VNMsgGroup;
+        // read header data (we expect 0x39)
+        if (c == VN_OUTPUT_GROUP)
+        {
+            // increment idx and save current byte for checksum
+            vnp->status = VNMsgGroup;
+            vnp->msg_buf[vnp->msg_idx] = c;
+            vnp->msg_idx++;
+        }
+        else
+        {
+            vnp->hdr_error++;
+            vnp->status = VNMsgSync;
+        }
+        break;
+        break;
+    case VNMsgGroup:
+        // read header data
         vnp->msg_buf[vnp->msg_idx] = c;
         vnp->msg_idx++;
-      } else {
-        vnp->hdr_error++;
-        vnp->status = VNMsgSync;
-      }
-      break;
-      break;
-    case VNMsgGroup:
-      // read header data
-      vnp->msg_buf[vnp->msg_idx] = c;
-      vnp->msg_idx++;
-      if (vnp->msg_idx == VN_GROUP_BYTES) {
-        vnp->datalength = VN_PAYLOAD_SIZE + VN_HEADER_SIZE;
-        vnp->status = VNMsgData;
-      }
-      break;
-    case VNMsgData:
-      vnp->msg_buf[vnp->msg_idx] =  c;
-      vnp->msg_idx++;
-      if (vnp->msg_idx == (vnp->datalength + 2)) {
-        if (verify_chk(vnp->msg_buf, vnp->datalength, &(vnp->calc_chk), &(vnp->rec_chk))) {
-          vnp->msg_available = TRUE;
-          vnp->counter++;
-        } else {
-          vnp->msg_available = FALSE;
-          vnp->chksm_error++;
+        if (vnp->msg_idx == VN_GROUP_BYTES)
+        {
+            vnp->datalength = VN_PAYLOAD_SIZE + VN_HEADER_SIZE;
+            vnp->status = VNMsgData;
         }
-        vnp->status = VNMsgSync;
-      }
-      break;
+        break;
+    case VNMsgData:
+        vnp->msg_buf[vnp->msg_idx] =  c;
+        vnp->msg_idx++;
+        if (vnp->msg_idx == (vnp->datalength + 2))
+        {
+            if (verify_chk(vnp->msg_buf, vnp->datalength, &(vnp->calc_chk), &(vnp->rec_chk)))
+            {
+                vnp->msg_available = TRUE;
+                vnp->counter++;
+            }
+            else
+            {
+                vnp->msg_available = FALSE;
+                vnp->chksm_error++;
+            }
+            vnp->status = VNMsgSync;
+        }
+        break;
     default:
-      vnp->status = VNMsgSync;
-      vnp->msg_idx = 0;
-      break;
-  }
+        vnp->status = VNMsgSync;
+        vnp->msg_idx = 0;
+        break;
+    }
 }

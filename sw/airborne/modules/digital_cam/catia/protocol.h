@@ -49,21 +49,23 @@
 // 7 * 4 bytes int32_t
 // nr, lat, lon, h, phi, theta, psi
 
-union dc_shot_union {
-  struct {
-    int32_t nr;
-    int32_t lat;
-    int32_t lon;
-    int32_t alt;
-    int32_t phi;
-    int32_t theta;
-    int32_t psi;
-    int32_t vground;
-    int32_t course;
-    int32_t groundalt;
-  } data;
-  uint8_t bin[MORA_SHOOT_MSG_SIZE];
-  int32_t i[10];
+union dc_shot_union
+{
+    struct
+    {
+        int32_t nr;
+        int32_t lat;
+        int32_t lon;
+        int32_t alt;
+        int32_t phi;
+        int32_t theta;
+        int32_t psi;
+        int32_t vground;
+        int32_t course;
+        int32_t groundalt;
+    } data;
+    uint8_t bin[MORA_SHOOT_MSG_SIZE];
+    int32_t i[10];
 };
 
 #define MORA_BUFFER_EMPTY       2
@@ -80,14 +82,16 @@ union dc_shot_union {
 #define MORA_STATUS_MSG_SIZE    (4*2)
 
 // 4*2 bytes
-union mora_status_union {
-  struct mora_status_struct {
-    uint16_t cpu;
-    uint16_t threads;
-    uint16_t shots;
-    uint16_t extra;
-  } data;
-  uint8_t bin[MORA_STATUS_MSG_SIZE];
+union mora_status_union
+{
+    struct mora_status_struct
+    {
+        uint16_t cpu;
+        uint16_t threads;
+        uint16_t shots;
+        uint16_t extra;
+    } data;
+    uint8_t bin[MORA_STATUS_MSG_SIZE];
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -126,17 +130,18 @@ extern uint8_t mora_ck_a, mora_ck_b;
 /////////////////////////////////////////////////////////////////////
 // PARSING
 
-struct mora_transport {
-  // generic interface
-  uint8_t payload[256];
-  uint8_t error;
-  uint8_t msg_id;
-  uint8_t msg_received;
-  uint8_t payload_len;
-  // specific pprz transport variables
-  uint8_t status;
-  uint8_t payload_idx;
-  uint8_t ck_a, ck_b;
+struct mora_transport
+{
+    // generic interface
+    uint8_t payload[256];
+    uint8_t error;
+    uint8_t msg_id;
+    uint8_t msg_received;
+    uint8_t payload_len;
+    // specific pprz transport variables
+    uint8_t status;
+    uint8_t payload_idx;
+    uint8_t ck_a, ck_b;
 };
 
 extern struct mora_transport mora_protocol;

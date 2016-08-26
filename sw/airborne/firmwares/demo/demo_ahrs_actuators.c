@@ -76,119 +76,129 @@ uint16_t datalink_time = 0;
 
 int main(void)
 {
-  main_init();
-  while (1) {
-    if (sys_time_check_and_ack_timer(0)) {
-      main_periodic_task();
+    main_init();
+    while (1)
+    {
+        if (sys_time_check_and_ack_timer(0))
+        {
+            main_periodic_task();
+        }
+        main_event_task();
     }
-    main_event_task();
-  }
-  return 0;
+    return 0;
 }
 
 static inline void main_init(void)
 {
-  mcu_init();
-  sys_time_register_timer((1. / PERIODIC_FREQUENCY), NULL);
+    mcu_init();
+    sys_time_register_timer((1. / PERIODIC_FREQUENCY), NULL);
 
-  stateInit();
-  actuators_init();
+    stateInit();
+    actuators_init();
 
-  imu_init();
+    imu_init();
 #if USE_AHRS_ALIGNER
-  ahrs_aligner_init();
+    ahrs_aligner_init();
 #endif
-  ahrs_init();
+    ahrs_init();
 
-  settings_init();
+    settings_init();
 
-  mcu_int_enable();
+    mcu_int_enable();
 
-  downlink_init();
+    downlink_init();
 
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AUTOPILOT_VERSION, send_autopilot_version);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_ALIVE, send_alive);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_COMMANDS, send_commands);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_ACTUATORS, send_actuators);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AUTOPILOT_VERSION, send_autopilot_version);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_ALIVE, send_alive);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_COMMANDS, send_commands);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_ACTUATORS, send_actuators);
 
-  // send body_to_imu from here for now
-  AbiSendMsgBODY_TO_IMU_QUAT(1, orientationGetQuat_f(&imu.body_to_imu));
+    // send body_to_imu from here for now
+    AbiSendMsgBODY_TO_IMU_QUAT(1, orientationGetQuat_f(&imu.body_to_imu));
 }
 
 static inline void main_periodic_task(void)
 {
-  /* Simply set current roll/pitch as commands.
-   * Scale DEMO_MAX_ROLL/PITCH to MAX_PPRZ (the max commands)
-   */
-  commands[COMMAND_ROLL] = stateGetNedToBodyEulers_f()->phi * MAX_PPRZ / DEMO_MAX_ROLL;
-  commands[COMMAND_PITCH] = stateGetNedToBodyEulers_f()->theta * MAX_PPRZ / DEMO_MAX_ROLL;
+    /* Simply set current roll/pitch as commands.
+     * Scale DEMO_MAX_ROLL/PITCH to MAX_PPRZ (the max commands)
+     */
+    commands[COMMAND_ROLL] = stateGetNedToBodyEulers_f()->phi * MAX_PPRZ / DEMO_MAX_ROLL;
+    commands[COMMAND_PITCH] = stateGetNedToBodyEulers_f()->theta * MAX_PPRZ / DEMO_MAX_ROLL;
 
-  /* generated macro from airframe file, seconds AP_MODE param not used */
-  SetActuatorsFromCommands(commands, 0);
+    /* generated macro from airframe file, seconds AP_MODE param not used */
+    SetActuatorsFromCommands(commands, 0);
 
-  if (sys_time.nb_sec > 1) {
-    imu_periodic();
-  }
-  RunOnceEvery(10, { LED_PERIODIC();});
-  RunOnceEvery(PERIODIC_FREQUENCY, { datalink_time++; });
-  periodic_telemetry_send_Main(DefaultPeriodic, &(DefaultChannel).trans_tx, &(DefaultDevice).device);
+    if (sys_time.nb_sec > 1)
+    {
+        imu_periodic();
+    }
+    RunOnceEvery(10, { LED_PERIODIC();});
+    RunOnceEvery(PERIODIC_FREQUENCY, { datalink_time++; });
+    periodic_telemetry_send_Main(DefaultPeriodic, &(DefaultChannel).trans_tx, &(DefaultDevice).device);
 }
 
 static inline void main_event_task(void)
 {
-  mcu_event();
-  ImuEvent();
-  DatalinkEvent();
+    mcu_event();
+    ImuEvent();
+    DatalinkEvent();
 }
 
 
 void dl_parse_msg(void)
 {
-  uint8_t msg_id = dl_buffer[1];
-  switch (msg_id) {
+    uint8_t msg_id = dl_buffer[1];
+    switch (msg_id)
+    {
 
-    case  DL_PING: {
-      DOWNLINK_SEND_PONG(DefaultChannel, DefaultDevice);
+    case  DL_PING:
+    {
+        DOWNLINK_SEND_PONG(DefaultChannel, DefaultDevice);
     }
     break;
     case DL_SETTING:
-      if (DL_SETTING_ac_id(dl_buffer) == AC_ID) {
-        uint8_t i = DL_SETTING_index(dl_buffer);
-        float val = DL_SETTING_value(dl_buffer);
-        DlSetting(i, val);
+        if (DL_SETTING_ac_id(dl_buffer) == AC_ID)
+        {
+            uint8_t i = DL_SETTING_index(dl_buffer);
+            float val = DL_SETTING_value(dl_buffer);
+            DlSetting(i, val);
+            DOWNLINK_SEND_DL_VALUE(DefaultChannel, DefaultDevice, &i, &val);
+        }
+        break;
+    case DL_GET_SETTING :
+    {
+        if (DL_GET_SETTING_ac_id(dl_buffer) != AC_ID)
+        {
+            break;
+        }
+        uint8_t i = DL_GET_SETTING_index(dl_buffer);
+        float val = settings_get_value(i);
         DOWNLINK_SEND_DL_VALUE(DefaultChannel, DefaultDevice, &i, &val);
-      }
-      break;
-    case DL_GET_SETTING : {
-      if (DL_GET_SETTING_ac_id(dl_buffer) != AC_ID) { break; }
-      uint8_t i = DL_GET_SETTING_index(dl_buffer);
-      float val = settings_get_value(i);
-      DOWNLINK_SEND_DL_VALUE(DefaultChannel, DefaultDevice, &i, &val);
     }
     break;
     default:
-      break;
-  }
+        break;
+    }
 }
 
 static void send_alive(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_ALIVE(trans, dev, AC_ID, 16, MD5SUM);
+    pprz_msg_send_ALIVE(trans, dev, AC_ID, 16, MD5SUM);
 }
 
 void send_autopilot_version(struct transport_tx *trans, struct link_device *dev)
 {
-  static uint32_t ap_version = PPRZ_VERSION_INT;
-  static char *ver_desc = PPRZ_VERSION_DESC;
-  pprz_msg_send_AUTOPILOT_VERSION(trans, dev, AC_ID, &ap_version, strlen(ver_desc), ver_desc);
+    static uint32_t ap_version = PPRZ_VERSION_INT;
+    static char *ver_desc = PPRZ_VERSION_DESC;
+    pprz_msg_send_AUTOPILOT_VERSION(trans, dev, AC_ID, &ap_version, strlen(ver_desc), ver_desc);
 }
 
 static void send_actuators(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_ACTUATORS(trans, dev, AC_ID , ACTUATORS_NB, actuators);
+    pprz_msg_send_ACTUATORS(trans, dev, AC_ID , ACTUATORS_NB, actuators);
 }
 
 static void send_commands(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_COMMANDS(trans, dev, AC_ID, COMMANDS_NB, commands);
+    pprz_msg_send_COMMANDS(trans, dev, AC_ID, COMMANDS_NB, commands);
 }

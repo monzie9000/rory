@@ -29,9 +29,10 @@
 #include "std.h"
 #include "math/pprz_algebra_int.h"
 
-struct MedianFilterInt {
-  int32_t data[MEDIAN_DATASIZE], sortData[MEDIAN_DATASIZE];
-  int8_t dataIndex;
+struct MedianFilterInt
+{
+    int32_t data[MEDIAN_DATASIZE], sortData[MEDIAN_DATASIZE];
+    int8_t dataIndex;
 };
 
 inline void init_median_filter(struct MedianFilterInt *filter);
@@ -40,49 +41,56 @@ inline int32_t get_median_filter(struct MedianFilterInt *filter);
 
 inline void init_median_filter(struct MedianFilterInt *filter)
 {
-  int i;
-  for (i = 0; i < MEDIAN_DATASIZE; i++) {
-    filter->data[i] = 0;
-    filter->sortData[i] = 0;
-  }
-  filter->dataIndex = 0;
+    int i;
+    for (i = 0; i < MEDIAN_DATASIZE; i++)
+    {
+        filter->data[i] = 0;
+        filter->sortData[i] = 0;
+    }
+    filter->dataIndex = 0;
 }
 
 inline int32_t update_median_filter(struct MedianFilterInt *filter, int32_t new_data)
 {
-  int temp, i, j; // used to sort array
+    int temp, i, j; // used to sort array
 
-  // Insert new data into raw data array round robin style
-  filter->data[filter->dataIndex] = new_data;
-  if (filter->dataIndex < (MEDIAN_DATASIZE - 1)) {
-    filter->dataIndex++;
-  } else {
-    filter->dataIndex = 0;
-  }
-
-  // Copy raw data to sort data array
-  memcpy(filter->sortData, filter->data, sizeof(filter->data));
-
-  // Insertion Sort
-  for (i = 1; i <= (MEDIAN_DATASIZE - 1); i++) {
-    temp = filter->sortData[i];
-    j = i - 1;
-    while (temp < filter->sortData[j] && j >= 0) {
-      filter->sortData[j + 1] = filter->sortData[j];
-      j = j - 1;
+    // Insert new data into raw data array round robin style
+    filter->data[filter->dataIndex] = new_data;
+    if (filter->dataIndex < (MEDIAN_DATASIZE - 1))
+    {
+        filter->dataIndex++;
     }
-    filter->sortData[j + 1] = temp;
-  }
-  return filter->sortData[(MEDIAN_DATASIZE) >> 1]; // return data value in middle of sorted array
+    else
+    {
+        filter->dataIndex = 0;
+    }
+
+    // Copy raw data to sort data array
+    memcpy(filter->sortData, filter->data, sizeof(filter->data));
+
+    // Insertion Sort
+    for (i = 1; i <= (MEDIAN_DATASIZE - 1); i++)
+    {
+        temp = filter->sortData[i];
+        j = i - 1;
+        while (temp < filter->sortData[j] && j >= 0)
+        {
+            filter->sortData[j + 1] = filter->sortData[j];
+            j = j - 1;
+        }
+        filter->sortData[j + 1] = temp;
+    }
+    return filter->sortData[(MEDIAN_DATASIZE) >> 1]; // return data value in middle of sorted array
 }
 
 inline int32_t get_median_filter(struct MedianFilterInt *filter)
 {
-  return filter->sortData[(MEDIAN_DATASIZE) >> 1];
+    return filter->sortData[(MEDIAN_DATASIZE) >> 1];
 }
 
-struct MedianFilter3Int {
-  struct MedianFilterInt mf[3];
+struct MedianFilter3Int
+{
+    struct MedianFilterInt mf[3];
 };
 
 #define InitMedianFilterVect3Int(_f) {  \

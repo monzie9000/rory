@@ -57,91 +57,93 @@ uint8_t ac_id;
 /** needs to be called at SYS_TIME_FREQUENCY */
 value sim_sys_time_task(value unit)
 {
-  sys_tick_handler();
-  return unit;
+    sys_tick_handler();
+    return unit;
 }
 
 value sim_periodic_task(value unit)
 {
-  sensors_task();
-  attitude_loop();
-  reporting_task();
-  modules_periodic_task();
-  periodic_task_fbw();
-  electrical_periodic();
-  event_task_ap();
-  event_task_fbw();
-  return unit;
+    sensors_task();
+    attitude_loop();
+    reporting_task();
+    modules_periodic_task();
+    periodic_task_fbw();
+    electrical_periodic();
+    event_task_ap();
+    event_task_fbw();
+    return unit;
 }
 
 value sim_monitor_task(value unit)
 {
-  monitor_task();
-  return unit;
+    monitor_task();
+    return unit;
 }
 
 value sim_nav_task(value unit)
 {
-  navigation_task();
-  return unit;
+    navigation_task();
+    return unit;
 }
 
 
 float ftimeofday(void)
 {
-  struct timeval t;
-  struct timezone z;
-  gettimeofday(&t, &z);
-  return (t.tv_sec + t.tv_usec / 1e6);
+    struct timeval t;
+    struct timezone z;
+    gettimeofday(&t, &z);
+    return (t.tv_sec + t.tv_usec / 1e6);
 }
 
 value sim_init(value unit)
 {
-  init_fbw();
-  init_ap();
+    init_fbw();
+    init_ap();
 
-  return unit;
+    return unit;
 }
 
 value update_bat(value bat)
 {
-  electrical.vsupply = Int_val(bat);
-  return Val_unit;
+    electrical.vsupply = Int_val(bat);
+    return Val_unit;
 }
 
 value update_dl_status(value dl_enabled)
 {
-  ivy_tp.ivy_dl_enabled = Int_val(dl_enabled);
-  return Val_unit;
+    ivy_tp.ivy_dl_enabled = Int_val(dl_enabled);
+    return Val_unit;
 }
 
 
 value get_commands(value val_commands)
 {
-  int i;
+    int i;
 
-  for (i = 0; i < COMMANDS_NB; i++) {
-    Store_field(val_commands, i, Val_int(commands[i]));
-  }
+    for (i = 0; i < COMMANDS_NB; i++)
+    {
+        Store_field(val_commands, i, Val_int(commands[i]));
+    }
 
-  return Val_int(commands[COMMAND_THROTTLE]);
+    return Val_int(commands[COMMAND_THROTTLE]);
 }
 
 value set_datalink_message(value s)
 {
-  int n = string_length(s);
-  char *ss = String_val(s);
-  assert(n <= MSG_SIZE);
+    int n = string_length(s);
+    char *ss = String_val(s);
+    assert(n <= MSG_SIZE);
 
-  int i;
-  for (i = 0; i < n; i++) {
-    dl_buffer[i] = ss[i];
-  }
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        dl_buffer[i] = ss[i];
+    }
 
-  dl_msg_available = TRUE;
-  DlCheckAndParse();
+    dl_msg_available = TRUE;
+    DlCheckAndParse();
 
-  return Val_unit;
+    return Val_unit;
 }
 
 /** Required by electrical */

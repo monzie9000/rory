@@ -39,35 +39,39 @@
 
 #define MPU9250_BUFFER_EXT_LEN 16
 
-enum Mpu9250I2cSlaveInitStatus {
-  MPU9250_I2C_CONF_UNINIT,
-  MPU9250_I2C_CONF_I2C_MST_DIS,
-  MPU9250_I2C_CONF_I2C_BYPASS_EN,
-  MPU9250_I2C_CONF_SLAVES_CONFIGURE,
-  MPU9250_I2C_CONF_I2C_BYPASS_DIS,
-  MPU9250_I2C_CONF_I2C_MST_CLK,
-  MPU9250_I2C_CONF_I2C_MST_DELAY,
-  MPU9250_I2C_CONF_I2C_SMPLRT,
-  MPU9250_I2C_CONF_I2C_MST_EN,
-  MPU9250_I2C_CONF_DONE
+enum Mpu9250I2cSlaveInitStatus
+{
+    MPU9250_I2C_CONF_UNINIT,
+    MPU9250_I2C_CONF_I2C_MST_DIS,
+    MPU9250_I2C_CONF_I2C_BYPASS_EN,
+    MPU9250_I2C_CONF_SLAVES_CONFIGURE,
+    MPU9250_I2C_CONF_I2C_BYPASS_DIS,
+    MPU9250_I2C_CONF_I2C_MST_CLK,
+    MPU9250_I2C_CONF_I2C_MST_DELAY,
+    MPU9250_I2C_CONF_I2C_SMPLRT,
+    MPU9250_I2C_CONF_I2C_MST_EN,
+    MPU9250_I2C_CONF_DONE
 };
 
-struct Mpu9250_I2c {
-  struct i2c_periph *i2c_p;
-  struct i2c_transaction i2c_trans;
-  volatile bool_t data_available;     ///< data ready flag
-  union {
-    struct Int16Vect3 vect;           ///< accel data vector in accel coordinate system
-    int16_t value[3];                 ///< accel data values accessible by channel index
-  } data_accel;
-  union {
-    struct Int16Rates rates;          ///< rates data as angular rates in gyro coordinate system
-    int16_t value[3];                 ///< rates data values accessible by channel index
-  } data_rates;
-  uint8_t data_ext[MPU9250_BUFFER_EXT_LEN];
-  struct Mpu9250Config config;
-  enum Mpu9250I2cSlaveInitStatus slave_init_status;
-  struct Ak8963 akm;                  ///< "internal" magnetometer
+struct Mpu9250_I2c
+{
+    struct i2c_periph *i2c_p;
+    struct i2c_transaction i2c_trans;
+    volatile bool_t data_available;     ///< data ready flag
+    union
+    {
+        struct Int16Vect3 vect;           ///< accel data vector in accel coordinate system
+        int16_t value[3];                 ///< accel data values accessible by channel index
+    } data_accel;
+    union
+    {
+        struct Int16Rates rates;          ///< rates data as angular rates in gyro coordinate system
+        int16_t value[3];                 ///< rates data values accessible by channel index
+    } data_rates;
+    uint8_t data_ext[MPU9250_BUFFER_EXT_LEN];
+    struct Mpu9250Config config;
+    enum Mpu9250I2cSlaveInitStatus slave_init_status;
+    struct Ak8963 akm;                  ///< "internal" magnetometer
 };
 
 // Functions
@@ -79,11 +83,14 @@ extern void mpu9250_i2c_event(struct Mpu9250_I2c *mpu);
 /// convenience function: read or start configuration if not already initialized
 static inline void mpu9250_i2c_periodic(struct Mpu9250_I2c *mpu)
 {
-  if (mpu->config.initialized) {
-    mpu9250_i2c_read(mpu);
-  } else {
-    mpu9250_i2c_start_configure(mpu);
-  }
+    if (mpu->config.initialized)
+    {
+        mpu9250_i2c_read(mpu);
+    }
+    else
+    {
+        mpu9250_i2c_start_configure(mpu);
+    }
 }
 
 #endif // MPU9250_I2C_H

@@ -52,19 +52,19 @@ static struct chibios_sdlog flightrecorder_sdlog;
 void flight_recorder_init()
 {
 #if FLIGHTRECORDER_SDLOG
-  chibios_sdlog_init(&flightrecorder_sdlog, &flightRecorderLogFile);
+    chibios_sdlog_init(&flightrecorder_sdlog, &flightRecorderLogFile);
 #endif
 }
 
 void flight_recorder_periodic()
 {
 #if FLIGHTRECORDER_SDLOG
-  // test if sd log is ready
-  if (flightRecorderLogFile == -1) return;
+    // test if sd log is ready
+    if (flightRecorderLogFile == -1) return;
 #endif
 
 #if PERIODIC_TELEMETRY
-  periodic_telemetry_send_FlightRecorder(DefaultPeriodic, &pprzlog_tp.trans_tx, &(FLIGHTRECORDER_DEVICE).device);
+    periodic_telemetry_send_FlightRecorder(DefaultPeriodic, &pprzlog_tp.trans_tx, &(FLIGHTRECORDER_DEVICE).device);
 #endif
 }
 

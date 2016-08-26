@@ -29,9 +29,10 @@
 #include "modules/ins/ins_module.h"
 #include "subsystems/ahrs.h"
 
-struct AhrsChimu {
-  bool_t is_enabled;
-  bool_t is_aligned;
+struct AhrsChimu
+{
+    bool_t is_enabled;
+    bool_t is_aligned;
 };
 
 extern struct AhrsChimu ahrs_chimu;

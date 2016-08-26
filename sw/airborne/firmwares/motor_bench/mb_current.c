@@ -8,12 +8,12 @@ float mb_current_amp;
 
 void mb_current_init(void)
 {
-  adc_buf_channel(4, &mb_current_buf, 16);
+    adc_buf_channel(4, &mb_current_buf, 16);
 
 }
 
 
 void mb_current_periodic(void)
 {
-  mb_current_amp = (float)mb_current_buf.sum * 0.00113607  - 2.8202;
+    mb_current_amp = (float)mb_current_buf.sum * 0.00113607  - 2.8202;
 }

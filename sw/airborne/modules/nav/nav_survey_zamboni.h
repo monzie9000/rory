@@ -33,40 +33,41 @@
 
 typedef enum {Z_ERR, Z_ENTRY, Z_SEG, Z_TURN1, Z_RET, Z_TURN2} z_survey_stage;
 
-struct ZamboniSurvey {
-  /* variables used to store values from the flight plan */
-  struct FloatVect2 wp_center;
-  struct FloatVect2 wp_dir;
-  struct FloatVect2 sweep_width;
-  float altitude;
+struct ZamboniSurvey
+{
+    /* variables used to store values from the flight plan */
+    struct FloatVect2 wp_center;
+    struct FloatVect2 wp_dir;
+    struct FloatVect2 sweep_width;
+    float altitude;
 
-  /** in degrees. Leave turncircles a small angle before the 180deg turns are completed
-   * to get a smoother transition to flight-lines
-   */
-  int pre_leave_angle;
-  float flight_angle; ///< in degrees
-  float return_angle; ///< in degrees
-  int current_laps;
-  int total_laps;
-  float turnradius1;
-  float turnradius2;
-  struct FloatVect2 turn_center1;
-  struct FloatVect2 turn_center2;
-  struct FloatVect2 seg_start;
-  struct FloatVect2 seg_end;
-  struct FloatVect2 ret_start;
-  struct FloatVect2 ret_end;
-  /**
-   * z_stage starts at ENTRY and than circles trought the other
-   * states until to rectangle is completely covered
-   * ENTRY : getting in the right position and height for the first flyover
-   * SEG   : fly from seg_start to seg_end and take pictures,
-   * then calculate navigation points of next flyover
-   * TURN1 : do a 180° turn around seg_center1
-   * RET   : fly from ret_start to ret_end
-   * TURN2 : do a 180° turn around seg_center2
-   */
-  z_survey_stage stage;
+    /** in degrees. Leave turncircles a small angle before the 180deg turns are completed
+     * to get a smoother transition to flight-lines
+     */
+    int pre_leave_angle;
+    float flight_angle; ///< in degrees
+    float return_angle; ///< in degrees
+    int current_laps;
+    int total_laps;
+    float turnradius1;
+    float turnradius2;
+    struct FloatVect2 turn_center1;
+    struct FloatVect2 turn_center2;
+    struct FloatVect2 seg_start;
+    struct FloatVect2 seg_end;
+    struct FloatVect2 ret_start;
+    struct FloatVect2 ret_end;
+    /**
+     * z_stage starts at ENTRY and than circles trought the other
+     * states until to rectangle is completely covered
+     * ENTRY : getting in the right position and height for the first flyover
+     * SEG   : fly from seg_start to seg_end and take pictures,
+     * then calculate navigation points of next flyover
+     * TURN1 : do a 180° turn around seg_center1
+     * RET   : fly from ret_start to ret_end
+     * TURN2 : do a 180° turn around seg_center2
+     */
+    z_survey_stage stage;
 };
 
 

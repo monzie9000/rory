@@ -45,27 +45,29 @@ int32_t  charge_cnt;
 
 void charge_sens_init(void)
 {
-  charge_cnt = 0;
+    charge_cnt = 0;
 }
 
 void charge_sens_periodic(void)
 {
-  i2c_receive(&CHARGE_SENS_DEV, &charge_trans, CHARGE_SENS_I2C_ADDR, 2);
+    i2c_receive(&CHARGE_SENS_DEV, &charge_trans, CHARGE_SENS_I2C_ADDR, 2);
 }
 
 void charge_sens_event(void)
 {
-  if (charge_trans.status == I2CTransSuccess) {
-    /* read two byte atmosphere charge */
-    charge[charge_cnt]  = charge_trans.buf[1] << 8;
-    charge[charge_cnt] |= charge_trans.buf[0];
-    charge_trans.status = I2CTransDone;
+    if (charge_trans.status == I2CTransSuccess)
+    {
+        /* read two byte atmosphere charge */
+        charge[charge_cnt]  = charge_trans.buf[1] << 8;
+        charge[charge_cnt] |= charge_trans.buf[0];
+        charge_trans.status = I2CTransDone;
 
-    if (++charge_cnt >= CHARGE_NB) {
-      DOWNLINK_SEND_ATMOSPHERE_CHARGE(DefaultChannel, DefaultDevice,
-                                      &charge[0], &charge[1], &charge[2], &charge[3], &charge[4],
-                                      &charge[5], &charge[6], &charge[7], &charge[8], &charge[9]);
-      charge_cnt = 0;
+        if (++charge_cnt >= CHARGE_NB)
+        {
+            DOWNLINK_SEND_ATMOSPHERE_CHARGE(DefaultChannel, DefaultDevice,
+                                            &charge[0], &charge[1], &charge[2], &charge[3], &charge[4],
+                                            &charge[5], &charge[6], &charge[7], &charge[8], &charge[9]);
+            charge_cnt = 0;
+        }
     }
-  }
 }

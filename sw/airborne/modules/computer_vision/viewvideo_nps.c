@@ -28,10 +28,11 @@
 #include "viewvideo.h"
 
 // Initialize the viewvideo structure with the defaults
-struct viewvideo_t viewvideo = {
-  .is_streaming = FALSE,
-  .downsize_factor = 1,
-  .quality_factor = 99,
+struct viewvideo_t viewvideo =
+{
+    .is_streaming = FALSE,
+    .downsize_factor = 1,
+    .quality_factor = 99,
 };
 
 // All dummy functions

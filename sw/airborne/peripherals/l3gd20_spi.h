@@ -35,19 +35,21 @@
 /* Include common L3GD20 options and definitions */
 #include "peripherals/l3gd20.h"
 
-struct L3gd20_Spi {
-  struct spi_periph *spi_p;
-  struct spi_transaction spi_trans;
-  volatile uint8_t tx_buf[2];
-  volatile uint8_t rx_buf[8];
-  enum L3gd20ConfStatus init_status; ///< init status
-  bool_t initialized;                  ///< config done flag
-  volatile bool_t data_available;      ///< data ready flag
-  union {
-    struct Int16Rates rates;           ///< data vector in accel coordinate system
-    int16_t value[3];                 ///< data values accessible by channel index
-  } data_rates;
-  struct L3gd20Config config;
+struct L3gd20_Spi
+{
+    struct spi_periph *spi_p;
+    struct spi_transaction spi_trans;
+    volatile uint8_t tx_buf[2];
+    volatile uint8_t rx_buf[8];
+    enum L3gd20ConfStatus init_status; ///< init status
+    bool_t initialized;                  ///< config done flag
+    volatile bool_t data_available;      ///< data ready flag
+    union
+    {
+        struct Int16Rates rates;           ///< data vector in accel coordinate system
+        int16_t value[3];                 ///< data values accessible by channel index
+    } data_rates;
+    struct L3gd20Config config;
 };
 
 // Functions
@@ -59,11 +61,14 @@ extern void l3gd20_spi_event(struct L3gd20_Spi *l3g);
 /// convenience function: read or start configuration if not already initialized
 static inline void l3gd20_spi_periodic(struct L3gd20_Spi *l3g)
 {
-  if (l3g->initialized) {
-    l3gd20_spi_read(l3g);
-  } else {
-    l3gd20_spi_start_configure(l3g);
-  }
+    if (l3g->initialized)
+    {
+        l3gd20_spi_read(l3g);
+    }
+    else
+    {
+        l3gd20_spi_start_configure(l3g);
+    }
 }
 
 #endif // L3GD20_SPI_H

@@ -48,18 +48,18 @@ static struct adc_buf buf_light_temt;
 
 void light_temt_init(void)
 {
-  adc_buf_channel(ADC_CHANNEL_LIGHT_TEMT, &buf_light_temt, ADC_CHANNEL_LIGHT_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_LIGHT_TEMT, &buf_light_temt, ADC_CHANNEL_LIGHT_NB_SAMPLES);
 }
 
 void light_temt_periodic(void)
 {
-  float f_light_temt;
+    float f_light_temt;
 
-  adc_light_temt = buf_light_temt.sum / buf_light_temt.av_nb_sample;
+    adc_light_temt = buf_light_temt.sum / buf_light_temt.av_nb_sample;
 
-  /* 3.6k/6.8k voltage divider, 10 bits adc */
-  f_light_temt = (adc_light_temt / 1024.) * 100.;
+    /* 3.6k/6.8k voltage divider, 10 bits adc */
+    f_light_temt = (adc_light_temt / 1024.) * 100.;
 
-  DOWNLINK_SEND_TEMT_STATUS(DefaultChannel, DefaultDevice, &adc_light_temt, &f_light_temt);
+    DOWNLINK_SEND_TEMT_STATUS(DefaultChannel, DefaultDevice, &adc_light_temt, &f_light_temt);
 }
 

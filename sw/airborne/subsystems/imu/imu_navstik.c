@@ -78,15 +78,15 @@ struct ImuNavstik imu_navstik;
  */
 void imu_impl_init(void)
 {
-  /* MPU-60X0 */
-  mpu60x0_i2c_init(&imu_navstik.mpu, &(NAVSTIK_MPU_I2C_DEV), MPU60X0_ADDR_ALT);
-  imu_navstik.mpu.config.smplrt_div = NAVSTIK_SMPLRT_DIV;
-  imu_navstik.mpu.config.dlpf_cfg = NAVSTIK_LOWPASS_FILTER;
-  imu_navstik.mpu.config.gyro_range = NAVSTIK_GYRO_RANGE;
-  imu_navstik.mpu.config.accel_range = NAVSTIK_ACCEL_RANGE;
+    /* MPU-60X0 */
+    mpu60x0_i2c_init(&imu_navstik.mpu, &(NAVSTIK_MPU_I2C_DEV), MPU60X0_ADDR_ALT);
+    imu_navstik.mpu.config.smplrt_div = NAVSTIK_SMPLRT_DIV;
+    imu_navstik.mpu.config.dlpf_cfg = NAVSTIK_LOWPASS_FILTER;
+    imu_navstik.mpu.config.gyro_range = NAVSTIK_GYRO_RANGE;
+    imu_navstik.mpu.config.accel_range = NAVSTIK_ACCEL_RANGE;
 
-  /* HMC58XX */
-  hmc58xx_init(&imu_navstik.hmc, &(NAVSTIK_MAG_I2C_DEV), HMC58XX_ADDR);
+    /* HMC58XX */
+    hmc58xx_init(&imu_navstik.hmc, &(NAVSTIK_MAG_I2C_DEV), HMC58XX_ADDR);
 }
 
 /**
@@ -95,11 +95,11 @@ void imu_impl_init(void)
  */
 void imu_periodic(void)
 {
-  // Start reading the latest gyroscope data
-  mpu60x0_i2c_periodic(&imu_navstik.mpu);
+    // Start reading the latest gyroscope data
+    mpu60x0_i2c_periodic(&imu_navstik.mpu);
 
-  // Read HMC58XX at 50Hz (main loop for rotorcraft: 512Hz)
-  RunOnceEvery(10, hmc58xx_periodic(&imu_navstik.hmc));
+    // Read HMC58XX at 50Hz (main loop for rotorcraft: 512Hz)
+    RunOnceEvery(10, hmc58xx_periodic(&imu_navstik.hmc));
 }
 
 /**
@@ -108,31 +108,33 @@ void imu_periodic(void)
  */
 void imu_navstik_event(void)
 {
-  uint32_t now_ts = get_sys_time_usec();
+    uint32_t now_ts = get_sys_time_usec();
 
-  /* MPU-60x0 event taks */
-  mpu60x0_i2c_event(&imu_navstik.mpu);
+    /* MPU-60x0 event taks */
+    mpu60x0_i2c_event(&imu_navstik.mpu);
 
-  if (imu_navstik.mpu.data_available) {
-    /* default orientation as should be printed on the pcb, z-down, ICs down */
-    RATES_COPY(imu.gyro_unscaled, imu_navstik.mpu.data_rates.rates);
-    VECT3_COPY(imu.accel_unscaled, imu_navstik.mpu.data_accel.vect);
+    if (imu_navstik.mpu.data_available)
+    {
+        /* default orientation as should be printed on the pcb, z-down, ICs down */
+        RATES_COPY(imu.gyro_unscaled, imu_navstik.mpu.data_rates.rates);
+        VECT3_COPY(imu.accel_unscaled, imu_navstik.mpu.data_accel.vect);
 
-    imu_navstik.mpu.data_available = FALSE;
-    imu_scale_gyro(&imu);
-    imu_scale_accel(&imu);
-    AbiSendMsgIMU_GYRO_INT32(IMU_BOARD_ID, now_ts, &imu.gyro);
-    AbiSendMsgIMU_ACCEL_INT32(IMU_BOARD_ID, now_ts, &imu.accel);
-  }
+        imu_navstik.mpu.data_available = FALSE;
+        imu_scale_gyro(&imu);
+        imu_scale_accel(&imu);
+        AbiSendMsgIMU_GYRO_INT32(IMU_BOARD_ID, now_ts, &imu.gyro);
+        AbiSendMsgIMU_ACCEL_INT32(IMU_BOARD_ID, now_ts, &imu.accel);
+    }
 
-  /* HMC58XX event task */
-  hmc58xx_event(&imu_navstik.hmc);
-  if (imu_navstik.hmc.data_available) {
-    imu.mag_unscaled.x =  imu_navstik.hmc.data.vect.y;
-    imu.mag_unscaled.y = -imu_navstik.hmc.data.vect.x;
-    imu.mag_unscaled.z =  imu_navstik.hmc.data.vect.z;
-    imu_navstik.hmc.data_available = FALSE;
-    imu_scale_mag(&imu);
-    AbiSendMsgIMU_MAG_INT32(IMU_BOARD_ID, now_ts, &imu.mag);
-  }
+    /* HMC58XX event task */
+    hmc58xx_event(&imu_navstik.hmc);
+    if (imu_navstik.hmc.data_available)
+    {
+        imu.mag_unscaled.x =  imu_navstik.hmc.data.vect.y;
+        imu.mag_unscaled.y = -imu_navstik.hmc.data.vect.x;
+        imu.mag_unscaled.z =  imu_navstik.hmc.data.vect.z;
+        imu_navstik.hmc.data_available = FALSE;
+        imu_scale_mag(&imu);
+        AbiSendMsgIMU_MAG_INT32(IMU_BOARD_ID, now_ts, &imu.mag);
+    }
 }

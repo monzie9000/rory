@@ -3,11 +3,12 @@
 
 #include "std.h"
 
-enum htm_type {
-  HTM_IDLE,
-  HTM_MR,
-  HTM_MR_OK,
-  HTM_READ_DATA
+enum htm_type
+{
+    HTM_IDLE,
+    HTM_MR,
+    HTM_MR_OK,
+    HTM_READ_DATA
 };
 
 void humid_htm_init(void);

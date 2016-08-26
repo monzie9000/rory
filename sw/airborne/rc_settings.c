@@ -48,5 +48,5 @@ float slider_1_val, slider_2_val;
 
 void rc_settings(bool_t mode_changed __attribute__((unused)))
 {
-  RCSettings(mode_changed);
+    RCSettings(mode_changed);
 }

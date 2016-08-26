@@ -41,16 +41,16 @@
 #include "modules/stereocam/stereocam.h"
 void stereo_avoid_init(void)
 {
-  // Navigation Code
-  init_avoid_navigation();
+    // Navigation Code
+    init_avoid_navigation();
 }
 
 
 void stereo_avoid_run(void)
 {
-	if(stereocam_data.fresh)
-	{
-		stereocam_data.fresh=0;
-		run_avoid_navigation_onvision();
-	}
+    if(stereocam_data.fresh)
+    {
+        stereocam_data.fresh=0;
+        run_avoid_navigation_onvision();
+    }
 }

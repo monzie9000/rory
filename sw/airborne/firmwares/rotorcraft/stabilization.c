@@ -29,7 +29,8 @@ int32_t stabilization_cmd[COMMANDS_NB];
 
 void stabilization_init(void)
 {
-  for (uint8_t i = 0; i < COMMANDS_NB; i++) {
-    stabilization_cmd[i] = 0;
-  }
+    for (uint8_t i = 0; i < COMMANDS_NB; i++)
+    {
+        stabilization_cmd[i] = 0;
+    }
 }

@@ -82,8 +82,8 @@ void mavlink_event(void);
  */
 static inline void comm_send_ch(mavlink_channel_t chan __attribute__((unused)), uint8_t ch)
 {
-  // Send bytes
-  MAVLinkTransmit(ch);
+    // Send bytes
+    MAVLinkTransmit(ch);
 }
 
 #endif // DATALINK_MAVLINK_H

@@ -44,34 +44,37 @@
 #define VN_PAYLOAD_SIZE 144
 
 
-enum VNMsgStatus {
-  VNMsgSync,
-  VNMsgHeader,
-  VNMsgGroup,
-  VNMsgData,
-  VNMsgCheck
+enum VNMsgStatus
+{
+    VNMsgSync,
+    VNMsgHeader,
+    VNMsgGroup,
+    VNMsgData,
+    VNMsgCheck
 };
 
-struct VNPacket {
-  bool_t  msg_available;
-  uint32_t chksm_error;
-  uint32_t hdr_error;
-  uint8_t msg_buf[VN_BUFFER_SIZE];
-  enum VNMsgStatus status;
-  uint8_t  msg_idx;
-  uint16_t datalength;
-  uint16_t overrun_error;
-  uint16_t noise_error;
-  uint16_t framing_error;
-  uint16_t calc_chk;
-  uint16_t rec_chk;
-  uint16_t counter;
+struct VNPacket
+{
+    bool_t  msg_available;
+    uint32_t chksm_error;
+    uint32_t hdr_error;
+    uint8_t msg_buf[VN_BUFFER_SIZE];
+    enum VNMsgStatus status;
+    uint8_t  msg_idx;
+    uint16_t datalength;
+    uint16_t overrun_error;
+    uint16_t noise_error;
+    uint16_t framing_error;
+    uint16_t calc_chk;
+    uint16_t rec_chk;
+    uint16_t counter;
 };
 
-enum VNStatus {
-  VNNotTracking,
-  VNOutOfSpecs,
-  VNOK
+enum VNStatus
+{
+    VNNotTracking,
+    VNOutOfSpecs,
+    VNOK
 };
 
 void vn200_event(struct VNPacket *vnp);

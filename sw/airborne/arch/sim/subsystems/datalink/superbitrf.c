@@ -33,10 +33,10 @@ struct SuperbitRF superbitrf;
 
 void superbitrf_set_mfg_id(uint32_t id)
 {
-  superbitrf.bind_mfg_id32 = id;
+    superbitrf.bind_mfg_id32 = id;
 }
 
 void superbitrf_set_protocol(uint8_t protocol)
 {
-  superbitrf.protocol = protocol;
+    superbitrf.protocol = protocol;
 }

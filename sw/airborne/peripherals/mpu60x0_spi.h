@@ -39,33 +39,37 @@
 #define MPU60X0_BUFFER_LEN 32
 #define MPU60X0_BUFFER_EXT_LEN 16
 
-enum Mpu60x0SpiSlaveInitStatus {
-  MPU60X0_SPI_CONF_UNINIT,
-  MPU60X0_SPI_CONF_I2C_MST_CLK,
-  MPU60X0_SPI_CONF_I2C_MST_DELAY,
-  MPU60X0_SPI_CONF_I2C_MST_EN,
-  MPU60X0_SPI_CONF_SLAVES_CONFIGURE,
-  MPU60X0_SPI_CONF_DONE
+enum Mpu60x0SpiSlaveInitStatus
+{
+    MPU60X0_SPI_CONF_UNINIT,
+    MPU60X0_SPI_CONF_I2C_MST_CLK,
+    MPU60X0_SPI_CONF_I2C_MST_DELAY,
+    MPU60X0_SPI_CONF_I2C_MST_EN,
+    MPU60X0_SPI_CONF_SLAVES_CONFIGURE,
+    MPU60X0_SPI_CONF_DONE
 };
 
-struct Mpu60x0_Spi {
-  struct spi_periph *spi_p;
-  struct spi_transaction spi_trans;
-  volatile uint8_t tx_buf[2];
-  volatile uint8_t rx_buf[MPU60X0_BUFFER_LEN];
-  volatile bool_t data_available;     ///< data ready flag
-  union {
-    struct Int16Vect3 vect;           ///< accel data vector in accel coordinate system
-    int16_t value[3];                 ///< accel data values accessible by channel index
-  } data_accel;
-  union {
-    struct Int16Rates rates;          ///< rates data as angular rates in gyro coordinate system
-    int16_t value[3];                 ///< rates data values accessible by channel index
-  } data_rates;
-  float temp;                         ///< temperature in degrees Celcius
-  uint8_t data_ext[MPU60X0_BUFFER_EXT_LEN];
-  struct Mpu60x0Config config;
-  enum Mpu60x0SpiSlaveInitStatus slave_init_status;
+struct Mpu60x0_Spi
+{
+    struct spi_periph *spi_p;
+    struct spi_transaction spi_trans;
+    volatile uint8_t tx_buf[2];
+    volatile uint8_t rx_buf[MPU60X0_BUFFER_LEN];
+    volatile bool_t data_available;     ///< data ready flag
+    union
+    {
+        struct Int16Vect3 vect;           ///< accel data vector in accel coordinate system
+        int16_t value[3];                 ///< accel data values accessible by channel index
+    } data_accel;
+    union
+    {
+        struct Int16Rates rates;          ///< rates data as angular rates in gyro coordinate system
+        int16_t value[3];                 ///< rates data values accessible by channel index
+    } data_rates;
+    float temp;                         ///< temperature in degrees Celcius
+    uint8_t data_ext[MPU60X0_BUFFER_EXT_LEN];
+    struct Mpu60x0Config config;
+    enum Mpu60x0SpiSlaveInitStatus slave_init_status;
 };
 
 // Functions
@@ -77,11 +81,14 @@ extern void mpu60x0_spi_event(struct Mpu60x0_Spi *mpu);
 /// convenience function: read or start configuration if not already initialized
 static inline void mpu60x0_spi_periodic(struct Mpu60x0_Spi *mpu)
 {
-  if (mpu->config.initialized) {
-    mpu60x0_spi_read(mpu);
-  } else {
-    mpu60x0_spi_start_configure(mpu);
-  }
+    if (mpu->config.initialized)
+    {
+        mpu60x0_spi_read(mpu);
+    }
+    else
+    {
+        mpu60x0_spi_start_configure(mpu);
+    }
 }
 
 #endif // MPU60X0_SPI_H

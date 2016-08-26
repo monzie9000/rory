@@ -76,56 +76,60 @@ bool_t log_ptu_started;
 
 void mf_ptu_init(void)
 {
-  adc_buf_channel(ADC_CHANNEL_PRESSURE, &pressure_buf, ADC_CHANNEL_PTU_NB_SAMPLES);
-  adc_buf_channel(ADC_CHANNEL_TEMPERATURE, &temp_buf, ADC_CHANNEL_PTU_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_PRESSURE, &pressure_buf, ADC_CHANNEL_PTU_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_TEMPERATURE, &temp_buf, ADC_CHANNEL_PTU_NB_SAMPLES);
 
 #ifdef PTU_POWER_GPIO
-  gpio_setup_output(PTU_POWER_GPIO);
-  gpio_set(PTU_POWER_GPIO);
+    gpio_setup_output(PTU_POWER_GPIO);
+    gpio_set(PTU_POWER_GPIO);
 #endif
 
-  pressure_adc = 0;
-  temp_adc = 0;
-  humid_period = 0;
+    pressure_adc = 0;
+    temp_adc = 0;
+    humid_period = 0;
 
 #if LOG_PTU
-  log_ptu_started = FALSE;
+    log_ptu_started = FALSE;
 #endif
 }
 
 void mf_ptu_periodic(void)
 {
-  // Read ADC
-  pressure_adc = pressure_buf.sum / pressure_buf.av_nb_sample;
-  temp_adc = temp_buf.sum / temp_buf.av_nb_sample;
-  // Read PWM
-  humid_period = USEC_OF_PWM_INPUT_TICKS(pwm_input_period_tics[PWM_INPUT_CHANNEL_HUMIDITY]);
+    // Read ADC
+    pressure_adc = pressure_buf.sum / pressure_buf.av_nb_sample;
+    temp_adc = temp_buf.sum / temp_buf.av_nb_sample;
+    // Read PWM
+    humid_period = USEC_OF_PWM_INPUT_TICKS(pwm_input_period_tics[PWM_INPUT_CHANNEL_HUMIDITY]);
 
-  // Log data
+    // Log data
 #if LOG_PTU
-  if (pprzLogFile != -1) {
-    if (!log_ptu_started) {
-      sdLogWriteLog(pprzLogFile,
-                    "P(adc) T(adc) H(usec) GPS_fix TOW(ms) Week Lat(1e7rad) Lon(1e7rad) HMSL(mm) gpseed(cm/s) course(1e7rad) climb(cm/s)\n");
-      log_ptu_started = TRUE;
-    } else {
-      sdLogWriteLog(pprzLogFile, "%d %d %d %d %d %d %d %d %d %d %d %d\n",
-                    pressure_adc, temp_adc, humid_period,
-                    gps.fix, gps.tow, gps.week,
-                    gps.lla_pos.lat, gps.lla_pos.lon, gps.hmsl,
-                    gps.gspeed, gps.course, -gps.ned_vel.z);
+    if (pprzLogFile != -1)
+    {
+        if (!log_ptu_started)
+        {
+            sdLogWriteLog(pprzLogFile,
+                          "P(adc) T(adc) H(usec) GPS_fix TOW(ms) Week Lat(1e7rad) Lon(1e7rad) HMSL(mm) gpseed(cm/s) course(1e7rad) climb(cm/s)\n");
+            log_ptu_started = TRUE;
+        }
+        else
+        {
+            sdLogWriteLog(pprzLogFile, "%d %d %d %d %d %d %d %d %d %d %d %d\n",
+                          pressure_adc, temp_adc, humid_period,
+                          gps.fix, gps.tow, gps.week,
+                          gps.lla_pos.lat, gps.lla_pos.lon, gps.hmsl,
+                          gps.gspeed, gps.course, -gps.ned_vel.z);
+        }
     }
-  }
 #endif
 
-  // Send data
+    // Send data
 #if SEND_PTU
 #define PTU_DATA_SIZE 3
-  float ptu_data[PTU_DATA_SIZE];
-  ptu_data[0] = (float)(PTU_PRESSURE_SCALE * ((int16_t)pressure_adc - PTU_PRESSURE_OFFSET));
-  ptu_data[1] = (float)(PTU_TEMPERATURE_SCALE * ((int16_t)temp_adc - PTU_TEMPERATURE_OFFSET));
-  ptu_data[2] = (float)(PTU_HUMIDTY_SCALE * ((int16_t)humid_period - PTU_HUMIDTY_OFFSET));
-  DOWNLINK_SEND_PAYLOAD_FLOAT(DefaultChannel, DefaultDevice, PTU_DATA_SIZE, ptu_data);
+    float ptu_data[PTU_DATA_SIZE];
+    ptu_data[0] = (float)(PTU_PRESSURE_SCALE * ((int16_t)pressure_adc - PTU_PRESSURE_OFFSET));
+    ptu_data[1] = (float)(PTU_TEMPERATURE_SCALE * ((int16_t)temp_adc - PTU_TEMPERATURE_OFFSET));
+    ptu_data[2] = (float)(PTU_HUMIDTY_SCALE * ((int16_t)humid_period - PTU_HUMIDTY_OFFSET));
+    DOWNLINK_SEND_PAYLOAD_FLOAT(DefaultChannel, DefaultDevice, PTU_DATA_SIZE, ptu_data);
 #endif
 }
 

@@ -33,26 +33,29 @@
 #include "math/pprz_algebra_int.h"
 
 
-enum Ms2100Status {
-  MS2100_IDLE,
-  MS2100_SENDING_REQ,
-  MS2100_GOT_EOC,
-  MS2100_READING_RES,
-  MS2100_DATA_AVAILABLE
+enum Ms2100Status
+{
+    MS2100_IDLE,
+    MS2100_SENDING_REQ,
+    MS2100_GOT_EOC,
+    MS2100_READING_RES,
+    MS2100_DATA_AVAILABLE
 };
 
-struct Ms2100 {
-  struct spi_periph *spi_p;
-  struct spi_transaction req_trans;
-  struct spi_transaction read_trans;
-  volatile uint8_t req_buf[1];        ///< SPI buffer for the command byte
-  volatile uint8_t read_buf[2];       ///< SPI buffer for reading a single axis
-  volatile enum Ms2100Status status;
-  volatile uint8_t cur_axe;
-  union {
-    struct Int16Vect3 vect;           ///< data vector in mag coordinate system
-    int16_t value[3];                 ///< data values accessible by channel index
-  } data;
+struct Ms2100
+{
+    struct spi_periph *spi_p;
+    struct spi_transaction req_trans;
+    struct spi_transaction read_trans;
+    volatile uint8_t req_buf[1];        ///< SPI buffer for the command byte
+    volatile uint8_t read_buf[2];       ///< SPI buffer for reading a single axis
+    volatile enum Ms2100Status status;
+    volatile uint8_t cur_axe;
+    union
+    {
+        struct Int16Vect3 vect;           ///< data vector in mag coordinate system
+        int16_t value[3];                 ///< data values accessible by channel index
+    } data;
 };
 
 // keep gobal var for now...
@@ -64,9 +67,10 @@ extern void ms2100_event(struct Ms2100 *ms);
 
 static inline void ms2100_periodic(struct Ms2100 *ms)
 {
-  if (ms->status == MS2100_IDLE) {
-    ms2100_read(ms);
-  }
+    if (ms->status == MS2100_IDLE)
+    {
+        ms2100_read(ms);
+    }
 }
 
 /* underlying architecture */

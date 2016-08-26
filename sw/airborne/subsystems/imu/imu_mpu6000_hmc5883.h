@@ -37,9 +37,10 @@
 #include "peripherals/hmc58xx.h"
 
 
-struct ImuMpu6000Hmc5883 {
-  struct Mpu60x0_Spi mpu;
-  struct Hmc58xx hmc;
+struct ImuMpu6000Hmc5883
+{
+    struct Mpu60x0_Spi mpu;
+    struct Hmc58xx hmc;
 };
 
 extern struct ImuMpu6000Hmc5883 imu_mpu_hmc;

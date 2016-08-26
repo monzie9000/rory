@@ -31,5 +31,5 @@
 
 void imu_impl_init(void)
 {
-  navdata_init();
+    navdata_init();
 }

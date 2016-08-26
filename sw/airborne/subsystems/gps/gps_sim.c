@@ -24,17 +24,18 @@
 
 void gps_impl_init(void)
 {
-  gps.fix = GPS_FIX_NONE;
+    gps.fix = GPS_FIX_NONE;
 }
 
 void gps_sim_publish(void)
 {
-  uint32_t now_ts = get_sys_time_usec();
-  gps.last_msg_ticks = sys_time.nb_sec_rem;
-  gps.last_msg_time = sys_time.nb_sec;
-  if (gps.fix == GPS_FIX_3D) {
-    gps.last_3dfix_ticks = sys_time.nb_sec_rem;
-    gps.last_3dfix_time = sys_time.nb_sec;
-  }
-  AbiSendMsgGPS(GPS_SIM_ID, now_ts, &gps);
+    uint32_t now_ts = get_sys_time_usec();
+    gps.last_msg_ticks = sys_time.nb_sec_rem;
+    gps.last_msg_time = sys_time.nb_sec;
+    if (gps.fix == GPS_FIX_3D)
+    {
+        gps.last_3dfix_ticks = sys_time.nb_sec_rem;
+        gps.last_3dfix_time = sys_time.nb_sec;
+    }
+    AbiSendMsgGPS(GPS_SIM_ID, now_ts, &gps);
 }

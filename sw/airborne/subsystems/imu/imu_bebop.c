@@ -78,15 +78,15 @@ struct ImuBebop imu_bebop;
  */
 void imu_impl_init(void)
 {
-  /* MPU-60X0 */
-  mpu60x0_i2c_init(&imu_bebop.mpu, &(BEBOP_MPU_I2C_DEV), MPU60X0_ADDR);
-  imu_bebop.mpu.config.smplrt_div = BEBOP_SMPLRT_DIV;
-  imu_bebop.mpu.config.dlpf_cfg = BEBOP_LOWPASS_FILTER;
-  imu_bebop.mpu.config.gyro_range = BEBOP_GYRO_RANGE;
-  imu_bebop.mpu.config.accel_range = BEBOP_ACCEL_RANGE;
+    /* MPU-60X0 */
+    mpu60x0_i2c_init(&imu_bebop.mpu, &(BEBOP_MPU_I2C_DEV), MPU60X0_ADDR);
+    imu_bebop.mpu.config.smplrt_div = BEBOP_SMPLRT_DIV;
+    imu_bebop.mpu.config.dlpf_cfg = BEBOP_LOWPASS_FILTER;
+    imu_bebop.mpu.config.gyro_range = BEBOP_GYRO_RANGE;
+    imu_bebop.mpu.config.accel_range = BEBOP_ACCEL_RANGE;
 
-  /* AKM8963 */
-  ak8963_init(&imu_bebop.ak, &(BEBOP_MAG_I2C_DEV), AK8963_ADDR);
+    /* AKM8963 */
+    ak8963_init(&imu_bebop.ak, &(BEBOP_MAG_I2C_DEV), AK8963_ADDR);
 }
 
 /**
@@ -95,11 +95,11 @@ void imu_impl_init(void)
  */
 void imu_periodic(void)
 {
-  // Start reading the latest gyroscope data
-  mpu60x0_i2c_periodic(&imu_bebop.mpu);
+    // Start reading the latest gyroscope data
+    mpu60x0_i2c_periodic(&imu_bebop.mpu);
 
-  // AKM8963
-  ak8963_periodic(&imu_bebop.ak);
+    // AKM8963
+    ak8963_periodic(&imu_bebop.ak);
 }
 
 /**
@@ -108,38 +108,40 @@ void imu_periodic(void)
  */
 void imu_bebop_event(void)
 {
-  uint32_t now_ts = get_sys_time_usec();
+    uint32_t now_ts = get_sys_time_usec();
 
-  /* MPU-60x0 event taks */
-  mpu60x0_i2c_event(&imu_bebop.mpu);
+    /* MPU-60x0 event taks */
+    mpu60x0_i2c_event(&imu_bebop.mpu);
 
-  if (imu_bebop.mpu.data_available) {
-    /* default orientation of the MPU is upside down sor corrigate this here */
-    RATES_ASSIGN(imu.gyro_unscaled, imu_bebop.mpu.data_rates.rates.p, -imu_bebop.mpu.data_rates.rates.q,
-                 -imu_bebop.mpu.data_rates.rates.r);
-    VECT3_ASSIGN(imu.accel_unscaled, imu_bebop.mpu.data_accel.vect.x, -imu_bebop.mpu.data_accel.vect.y,
-                 -imu_bebop.mpu.data_accel.vect.z);
+    if (imu_bebop.mpu.data_available)
+    {
+        /* default orientation of the MPU is upside down sor corrigate this here */
+        RATES_ASSIGN(imu.gyro_unscaled, imu_bebop.mpu.data_rates.rates.p, -imu_bebop.mpu.data_rates.rates.q,
+                     -imu_bebop.mpu.data_rates.rates.r);
+        VECT3_ASSIGN(imu.accel_unscaled, imu_bebop.mpu.data_accel.vect.x, -imu_bebop.mpu.data_accel.vect.y,
+                     -imu_bebop.mpu.data_accel.vect.z);
 
-    imu_bebop.mpu.data_available = FALSE;
-    imu_scale_gyro(&imu);
-    imu_scale_accel(&imu);
-    AbiSendMsgIMU_GYRO_INT32(IMU_BOARD_ID, now_ts, &imu.gyro);
-    AbiSendMsgIMU_ACCEL_INT32(IMU_BOARD_ID, now_ts, &imu.accel);
-  }
+        imu_bebop.mpu.data_available = FALSE;
+        imu_scale_gyro(&imu);
+        imu_scale_accel(&imu);
+        AbiSendMsgIMU_GYRO_INT32(IMU_BOARD_ID, now_ts, &imu.gyro);
+        AbiSendMsgIMU_ACCEL_INT32(IMU_BOARD_ID, now_ts, &imu.accel);
+    }
 
-  /* AKM8963 event task */
-  ak8963_event(&imu_bebop.ak);
+    /* AKM8963 event task */
+    ak8963_event(&imu_bebop.ak);
 
-  if (imu_bebop.ak.data_available) {
+    if (imu_bebop.ak.data_available)
+    {
 #if BEBOP_VERSION2
-    // In the second bebop version the magneto is turned 90 degrees
-    VECT3_ASSIGN(imu.mag_unscaled, -imu_bebop.ak.data.vect.x, -imu_bebop.ak.data.vect.y, imu_bebop.ak.data.vect.z);
+        // In the second bebop version the magneto is turned 90 degrees
+        VECT3_ASSIGN(imu.mag_unscaled, -imu_bebop.ak.data.vect.x, -imu_bebop.ak.data.vect.y, imu_bebop.ak.data.vect.z);
 #else //BEBOP regular first verion
-    VECT3_ASSIGN(imu.mag_unscaled, -imu_bebop.ak.data.vect.y, imu_bebop.ak.data.vect.x, imu_bebop.ak.data.vect.z);
+        VECT3_ASSIGN(imu.mag_unscaled, -imu_bebop.ak.data.vect.y, imu_bebop.ak.data.vect.x, imu_bebop.ak.data.vect.z);
 #endif
 
-    imu_bebop.ak.data_available = FALSE;
-    imu_scale_mag(&imu);
-    AbiSendMsgIMU_MAG_INT32(IMU_BOARD_ID, now_ts, &imu.mag);
-  }
+        imu_bebop.ak.data_available = FALSE;
+        imu_scale_mag(&imu);
+        AbiSendMsgIMU_MAG_INT32(IMU_BOARD_ID, now_ts, &imu.mag);
+    }
 }

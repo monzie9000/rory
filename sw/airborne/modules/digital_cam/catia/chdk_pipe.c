@@ -19,7 +19,7 @@
 
 
 const char *setup =
-  "lua props=require(\"propcase\");print(\"SetupScript\");set_prop(props.ISO_MODE,3200);set_prop(props.FLASH_MODE,2);set_prop(props.RESOLUTION,0);set_prop(props.DATE_STAMP,0);set_prop(props.AF_ASSIST_BEAM,0);set_prop(props.QUALITY,0);print(\"Ready\");\n";
+    "lua props=require(\"propcase\");print(\"SetupScript\");set_prop(props.ISO_MODE,3200);set_prop(props.FLASH_MODE,2);set_prop(props.RESOLUTION,0);set_prop(props.DATE_STAMP,0);set_prop(props.AF_ASSIST_BEAM,0);set_prop(props.QUALITY,0);print(\"Ready\");\n";
 
 static int fo, fi;
 static void wait_for_cmd(int timeout);
@@ -49,28 +49,29 @@ static pid_t popen2(const char *command, int *infp, int *outfp);
  */
 void chdk_pipe_init(void)
 {
-  /* Check if SHELL is started */
-  if (popen2(SHELL, &fi, &fo) <= 0) {
-    perror("Can't start SHELL");
-    exit(1);
-  }
-  wait_for_cmd(10);
+    /* Check if SHELL is started */
+    if (popen2(SHELL, &fi, &fo) <= 0)
+    {
+        perror("Can't start SHELL");
+        exit(1);
+    }
+    wait_for_cmd(10);
 
-  /* Connect to the camera */
-  write(fi, "connect\n", 8);
-  wait_for_cmd(10);
+    /* Connect to the camera */
+    write(fi, "connect\n", 8);
+    wait_for_cmd(10);
 
-  /* Kill all running scripts */
-  //write(fi, "killscript\n", 11);
-  //wait_for_cmd(10);
+    /* Kill all running scripts */
+    //write(fi, "killscript\n", 11);
+    //wait_for_cmd(10);
 
-  /* Start recording mode */
-  write(fi, "rec\n", 4);
-  wait_for_cmd(10);
+    /* Start recording mode */
+    write(fi, "rec\n", 4);
+    wait_for_cmd(10);
 
-  /* Start rsint mode */
-  write(fi, setup, strlen(setup));
-  wait_for_cmd(strlen(setup));
+    /* Start rsint mode */
+    write(fi, setup, strlen(setup));
+    wait_for_cmd(strlen(setup));
 }
 
 /**
@@ -78,12 +79,12 @@ void chdk_pipe_init(void)
  */
 void chdk_pipe_deinit(void)
 {
-  /* Stop rsint mode */
-  //write(fi, "q\n", 2);
-  //wait_for_cmd(10);
+    /* Stop rsint mode */
+    //write(fi, "q\n", 2);
+    //wait_for_cmd(10);
 
-  /* Quit SHELL */
-  write(fi, "quit\n", 3);
+    /* Quit SHELL */
+    write(fi, "quit\n", 3);
 }
 
 /**
@@ -91,8 +92,8 @@ void chdk_pipe_deinit(void)
  */
 void chdk_pipe_shoot(char *filename)
 {
-  write(fi, "rs /root\n", 9);
-  wait_for_img(filename, 10);
+    write(fi, "rs /root\n", 9);
+    wait_for_img(filename, 10);
 }
 
 /**
@@ -101,22 +102,27 @@ void chdk_pipe_shoot(char *filename)
  */
 static void wait_for_img(char *filename, int timeout)
 {
-  int hash_cnt = 0;
-  char ch;
-  int filename_idx = 0;
+    int hash_cnt = 0;
+    char ch;
+    int filename_idx = 0;
 
-  while (hash_cnt < 4) {
-    if (read(fo, &ch, 1)) {
-      if (ch == '#') {
-        hash_cnt++;
-      } else if (hash_cnt >= 2 && ch != '#') {
-        filename[filename_idx++] = ch;
-      }
+    while (hash_cnt < 4)
+    {
+        if (read(fo, &ch, 1))
+        {
+            if (ch == '#')
+            {
+                hash_cnt++;
+            }
+            else if (hash_cnt >= 2 && ch != '#')
+            {
+                filename[filename_idx++] = ch;
+            }
+        }
     }
-  }
 
-  filename[filename_idx] = 0;
-  wait_for_cmd(timeout);
+    filename[filename_idx] = 0;
+    wait_for_cmd(timeout);
 }
 
 /**
@@ -125,10 +131,12 @@ static void wait_for_img(char *filename, int timeout)
  */
 static void wait_for_cmd(int timeout)
 {
-  char ch;
-  do {
-    read(fo, &ch, 1);
-  } while (ch != '>');
+    char ch;
+    do
+    {
+        read(fo, &ch, 1);
+    }
+    while (ch != '>');
 }
 
 /**
@@ -136,39 +144,49 @@ static void wait_for_cmd(int timeout)
  */
 static pid_t popen2(const char *command, int *infp, int *outfp)
 {
-  int p_stdin[2], p_stdout[2];
-  pid_t pid;
+    int p_stdin[2], p_stdout[2];
+    pid_t pid;
 
-  if (pipe(p_stdin) != 0 || pipe(p_stdout) != 0) {
-    return -1;
-  }
+    if (pipe(p_stdin) != 0 || pipe(p_stdout) != 0)
+    {
+        return -1;
+    }
 
-  pid = fork();
+    pid = fork();
 
-  if (pid < 0) {
+    if (pid < 0)
+    {
+        return pid;
+    }
+    else if (pid == 0)
+    {
+        close(p_stdin[WRITE]);
+        dup2(p_stdin[READ], READ);
+        close(p_stdout[READ]);
+        dup2(p_stdout[WRITE], WRITE);
+
+        execl("/bin/sh", "sh", "-c", command, NULL);
+        perror("execl");
+        exit(1);
+    }
+
+    if (infp == NULL)
+    {
+        close(p_stdin[WRITE]);
+    }
+    else
+    {
+        *infp = p_stdin[WRITE];
+    }
+
+    if (outfp == NULL)
+    {
+        close(p_stdout[READ]);
+    }
+    else
+    {
+        *outfp = p_stdout[READ];
+    }
+
     return pid;
-  } else if (pid == 0) {
-    close(p_stdin[WRITE]);
-    dup2(p_stdin[READ], READ);
-    close(p_stdout[READ]);
-    dup2(p_stdout[WRITE], WRITE);
-
-    execl("/bin/sh", "sh", "-c", command, NULL);
-    perror("execl");
-    exit(1);
-  }
-
-  if (infp == NULL) {
-    close(p_stdin[WRITE]);
-  } else {
-    *infp = p_stdin[WRITE];
-  }
-
-  if (outfp == NULL) {
-    close(p_stdout[READ]);
-  } else {
-    *outfp = p_stdout[READ];
-  }
-
-  return pid;
 }

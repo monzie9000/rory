@@ -32,11 +32,12 @@
 #include "mcu_periph/sys_time.h"
 #include "subsystems/datalink/transport.h"
 
-struct pprzlog_transport {
-  // generic transmission interface
-  struct transport_tx trans_tx;
-  // specific pprz transport_tx variables
-  uint8_t ck;
+struct pprzlog_transport
+{
+    // generic transmission interface
+    struct transport_tx trans_tx;
+    // specific pprz transport_tx variables
+    uint8_t ck;
 };
 
 extern struct pprzlog_transport pprzlog_tp;

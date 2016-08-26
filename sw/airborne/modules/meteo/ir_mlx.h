@@ -11,18 +11,19 @@
 #define MLX90614_ID_2 0x3E
 #define MLX90614_ID_3 0x3F
 
-enum mlx_type {
-  IR_MLX_ADDR_CHANGE,
-  IR_MLX_ADDR_ERASE,
-  IR_MLX_ADDR_SET,
-  IR_MLX_UNINIT,
-  IR_MLX_RD_ID_0,
-  IR_MLX_RD_ID_1,
-  IR_MLX_RD_ID_2,
-  IR_MLX_RD_ID_3,
-  IR_MLX_IDLE,
-  IR_MLX_RD_CASE_TEMP,
-  IR_MLX_RD_OBJ_TEMP
+enum mlx_type
+{
+    IR_MLX_ADDR_CHANGE,
+    IR_MLX_ADDR_ERASE,
+    IR_MLX_ADDR_SET,
+    IR_MLX_UNINIT,
+    IR_MLX_RD_ID_0,
+    IR_MLX_RD_ID_1,
+    IR_MLX_RD_ID_2,
+    IR_MLX_RD_ID_3,
+    IR_MLX_IDLE,
+    IR_MLX_RD_CASE_TEMP,
+    IR_MLX_RD_OBJ_TEMP
 };
 
 void ir_mlx_crc(unsigned char addr, volatile unsigned char *data);

@@ -46,18 +46,20 @@ typedef const char telemetry_msg[64];
 /** number of callbacks that can be registered per msg */
 #define TELEMETRY_NB_CBS 4
 
-struct telemetry_cb_slots {
-  uint8_t id;  ///< id of telemetry message
-  telemetry_cb slots[TELEMETRY_NB_CBS];
+struct telemetry_cb_slots
+{
+    uint8_t id;  ///< id of telemetry message
+    telemetry_cb slots[TELEMETRY_NB_CBS];
 };
 
 /** Periodic telemetry structure.
  *  Contains the total number of messages (from generated telemetry file)
  *  and the list of registered callbacks
  */
-struct periodic_telemetry {
-  uint8_t nb;                     ///< number of messages
-  struct telemetry_cb_slots *cbs; ///< array of callbacks defined through TELEMETRY_MSG
+struct periodic_telemetry
+{
+    uint8_t nb;                     ///< number of messages
+    struct telemetry_cb_slots *cbs; ///< array of callbacks defined through TELEMETRY_MSG
 };
 
 /** Register a telemetry callback function.
@@ -71,7 +73,10 @@ struct periodic_telemetry {
 extern int8_t register_periodic_telemetry(struct periodic_telemetry *_pt, uint8_t _id, telemetry_cb _cb);
 #else
 static inline int8_t register_periodic_telemetry(struct periodic_telemetry *_pt __attribute__((unused)),
-    uint8_t _id __attribute__((unused)), telemetry_cb _cb __attribute__((unused))) { return -1; }
+        uint8_t _id __attribute__((unused)), telemetry_cb _cb __attribute__((unused)))
+{
+    return -1;
+}
 #endif
 
 #if USE_PERIODIC_TELEMETRY_REPORT

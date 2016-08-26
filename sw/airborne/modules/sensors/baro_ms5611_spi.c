@@ -58,23 +58,23 @@ float baro_ms5611_sigma2;
 
 void baro_ms5611_init(void)
 {
-  ms5611_spi_init(&baro_ms5611, &MS5611_SPI_DEV, MS5611_SLAVE_IDX, FALSE);
+    ms5611_spi_init(&baro_ms5611, &MS5611_SPI_DEV, MS5611_SLAVE_IDX, FALSE);
 
-  baro_ms5611_enabled = TRUE;
-  baro_ms5611_alt_valid = FALSE;
+    baro_ms5611_enabled = TRUE;
+    baro_ms5611_alt_valid = FALSE;
 
-  baro_ms5611_r = BARO_MS5611_R;
-  baro_ms5611_sigma2 = BARO_MS5611_SIGMA2;
+    baro_ms5611_r = BARO_MS5611_R;
+    baro_ms5611_sigma2 = BARO_MS5611_SIGMA2;
 }
 
 void baro_ms5611_periodic_check(void)
 {
 
-  ms5611_spi_periodic_check(&baro_ms5611);
+    ms5611_spi_periodic_check(&baro_ms5611);
 
 #if SENSOR_SYNC_SEND
-  // send coeff every 30s
-  RunOnceEvery((5 * BARO_MS5611_PERIODIC_CHECK_FREQ), baro_ms5611_send_coeff());
+    // send coeff every 30s
+    RunOnceEvery((5 * BARO_MS5611_PERIODIC_CHECK_FREQ), baro_ms5611_send_coeff());
 #endif
 
 }
@@ -82,46 +82,49 @@ void baro_ms5611_periodic_check(void)
 /// trigger new measurement or initialize if needed
 void baro_ms5611_read(void)
 {
-  if (sys_time.nb_sec > 1) {
-    ms5611_spi_read(&baro_ms5611);
-  }
+    if (sys_time.nb_sec > 1)
+    {
+        ms5611_spi_read(&baro_ms5611);
+    }
 }
 
 void baro_ms5611_event(void)
 {
 
-  ms5611_spi_event(&baro_ms5611);
+    ms5611_spi_event(&baro_ms5611);
 
-  if (baro_ms5611.data_available) {
-    float pressure = (float)baro_ms5611.data.pressure;
-    AbiSendMsgBARO_ABS(BARO_MS5611_SENDER_ID, pressure);
-    float temp = baro_ms5611.data.temperature / 100.0f;
-    AbiSendMsgTEMPERATURE(BARO_MS5611_SENDER_ID, temp);
-    baro_ms5611.data_available = FALSE;
+    if (baro_ms5611.data_available)
+    {
+        float pressure = (float)baro_ms5611.data.pressure;
+        AbiSendMsgBARO_ABS(BARO_MS5611_SENDER_ID, pressure);
+        float temp = baro_ms5611.data.temperature / 100.0f;
+        AbiSendMsgTEMPERATURE(BARO_MS5611_SENDER_ID, temp);
+        baro_ms5611.data_available = FALSE;
 
-    baro_ms5611_alt = pprz_isa_altitude_of_pressure(pressure);
-    baro_ms5611_alt_valid = TRUE;
+        baro_ms5611_alt = pprz_isa_altitude_of_pressure(pressure);
+        baro_ms5611_alt_valid = TRUE;
 
 #ifdef SENSOR_SYNC_SEND
-    fbaroms = baro_ms5611.data.pressure / 100.;
-    DOWNLINK_SEND_BARO_MS5611(DefaultChannel, DefaultDevice,
-                              &baro_ms5611.data.d1, &baro_ms5611.data.d2,
-                              &fbaroms, &temp);
+        fbaroms = baro_ms5611.data.pressure / 100.;
+        DOWNLINK_SEND_BARO_MS5611(DefaultChannel, DefaultDevice,
+                                  &baro_ms5611.data.d1, &baro_ms5611.data.d2,
+                                  &fbaroms, &temp);
 #endif
-  }
+    }
 }
 
 void baro_ms5611_send_coeff(void)
 {
-  if (baro_ms5611.initialized) {
-    DOWNLINK_SEND_MS5611_COEFF(DefaultChannel, DefaultDevice,
-                               &baro_ms5611.data.c[0],
-                               &baro_ms5611.data.c[1],
-                               &baro_ms5611.data.c[2],
-                               &baro_ms5611.data.c[3],
-                               &baro_ms5611.data.c[4],
-                               &baro_ms5611.data.c[5],
-                               &baro_ms5611.data.c[6],
-                               &baro_ms5611.data.c[7]);
-  }
+    if (baro_ms5611.initialized)
+    {
+        DOWNLINK_SEND_MS5611_COEFF(DefaultChannel, DefaultDevice,
+                                   &baro_ms5611.data.c[0],
+                                   &baro_ms5611.data.c[1],
+                                   &baro_ms5611.data.c[2],
+                                   &baro_ms5611.data.c[3],
+                                   &baro_ms5611.data.c[4],
+                                   &baro_ms5611.data.c[5],
+                                   &baro_ms5611.data.c[6],
+                                   &baro_ms5611.data.c[7]);
+    }
 }

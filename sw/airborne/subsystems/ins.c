@@ -44,25 +44,26 @@ PRINT_CONFIG_VAR(DefaultInsImpl)
 #define DefaultInsRegister() _DefaultInsRegister(DefaultInsImpl)
 
 /** Inertial Navigation System state */
-struct Ins {
-  InsInit init;
+struct Ins
+{
+    InsInit init;
 };
 
 struct Ins ins;
 
 void ins_register_impl(InsInit init)
 {
-  ins.init = init;
+    ins.init = init;
 
-  ins.init();
+    ins.init();
 }
 
 void ins_init(void)
 {
-  ins.init = NULL;
+    ins.init = NULL;
 
 #ifdef DefaultInsImpl
-  DefaultInsRegister();
+    DefaultInsRegister();
 #endif
 }
 
@@ -72,23 +73,23 @@ void ins_init(void)
 void WEAK ins_reset_local_origin(void)
 {
 #if USE_GPS
-  struct UtmCoor_f utm;
+    struct UtmCoor_f utm;
 #ifdef GPS_USE_LATLONG
-  /* Recompute UTM coordinates in this zone */
-  struct LlaCoor_f lla;
-  LLA_FLOAT_OF_BFP(lla, gps.lla_pos);
-  utm.zone = (gps.lla_pos.lon / 1e7 + 180) / 6 + 1;
-  utm_of_lla_f(&utm, &lla);
+    /* Recompute UTM coordinates in this zone */
+    struct LlaCoor_f lla;
+    LLA_FLOAT_OF_BFP(lla, gps.lla_pos);
+    utm.zone = (gps.lla_pos.lon / 1e7 + 180) / 6 + 1;
+    utm_of_lla_f(&utm, &lla);
 #else
-  utm.zone = gps.utm_pos.zone;
-  utm.east = gps.utm_pos.east / 100.0f;
-  utm.north = gps.utm_pos.north / 100.0f;
+    utm.zone = gps.utm_pos.zone;
+    utm.east = gps.utm_pos.east / 100.0f;
+    utm.north = gps.utm_pos.north / 100.0f;
 #endif
-  // ground_alt
-  utm.alt = gps.hmsl  / 1000.0f;
+    // ground_alt
+    utm.alt = gps.hmsl  / 1000.0f;
 
-  // reset state UTM ref
-  stateSetLocalUtmOrigin_f(&utm);
+    // reset state UTM ref
+    stateSetLocalUtmOrigin_f(&utm);
 #endif
 }
 
@@ -97,16 +98,16 @@ void WEAK ins_reset_altitude_ref(void) {}
 #if USE_GPS
 void WEAK ins_reset_utm_zone(struct UtmCoor_f *utm)
 {
-  struct LlaCoor_f lla0;
-  lla_of_utm_f(&lla0, utm);
+    struct LlaCoor_f lla0;
+    lla_of_utm_f(&lla0, utm);
 #ifdef GPS_USE_LATLONG
-  utm->zone = (gps.lla_pos.lon / 1e7 + 180) / 6 + 1;
+    utm->zone = (gps.lla_pos.lon / 1e7 + 180) / 6 + 1;
 #else
-  utm->zone = gps.utm_pos.zone;
+    utm->zone = gps.utm_pos.zone;
 #endif
-  utm_of_lla_f(utm, &lla0);
+    utm_of_lla_f(utm, &lla0);
 
-  stateSetLocalUtmOrigin_f(utm);
+    stateSetLocalUtmOrigin_f(utm);
 }
 #else
 void WEAK ins_reset_utm_zone(struct UtmCoor_f *utm __attribute__((unused))) {}

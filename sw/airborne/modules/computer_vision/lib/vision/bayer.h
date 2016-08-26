@@ -31,18 +31,20 @@
 
 static inline uint8_t clip(uint16_t x)
 {
-  if (x < 0) {
-    return 0;
-  }
-  if (x > 255) {
-    return 255;
-  }
-  return (uint8_t) x;
+    if (x < 0)
+    {
+        return 0;
+    }
+    if (x > 255)
+    {
+        return 255;
+    }
+    return (uint8_t) x;
 }
 
 
 void BayerToYUV(struct image_t *Input, struct image_t *out,
-                 int RedX, int RedY);
+                int RedX, int RedY);
 
 
 /**
@@ -53,50 +55,55 @@ void BayerToYUV(struct image_t *Input, struct image_t *out,
  */
 
 void BayerToYUV(struct image_t *in, struct image_t *out,
-                 int RedX, int RedY)
+                int RedX, int RedY)
 {
-  uint16_t *ii = (uint16_t *) in->buf;
-  uint8_t *oi = (uint8_t *) out->buf;
-  int x, y;
+    uint16_t *ii = (uint16_t *) in->buf;
+    uint8_t *oi = (uint8_t *) out->buf;
+    int x, y;
 
 
-  for (y = 0; y < out->h; y++) {
-    for (x = 0; x < out->w; x += 2) {
-      /* RGB Bayer:
-       * RBRBRBRBRBRBRBRB
-       * GRGRGRGRGRGRGRGR
-       */
-      int i = 2 * (out->h - y) + RedX;
-      int j = 2 * x + RedY;
-      if ((i < in->w) && (j < in->h)) {
-        uint16_t G1 = ii[i + j * in->w] / 2;
-        uint16_t R1 = ii[i + j * in->w + 1] / 2;
-        uint16_t B1 = ii[i + (j + 1) * in->w] / 2;
-        j += 2;
-        uint16_t G2 = ii[i + j * in->w] / 2;
-        uint16_t R2 = ii[i + j * in->w + 1] / 2;
-        uint16_t B2 = ii[i + (j + 1) * in->w] / 2;
+    for (y = 0; y < out->h; y++)
+    {
+        for (x = 0; x < out->w; x += 2)
+        {
+            /* RGB Bayer:
+             * RBRBRBRBRBRBRBRB
+             * GRGRGRGRGRGRGRGR
+             */
+            int i = 2 * (out->h - y) + RedX;
+            int j = 2 * x + RedY;
+            if ((i < in->w) && (j < in->h))
+            {
+                uint16_t G1 = ii[i + j * in->w] / 2;
+                uint16_t R1 = ii[i + j * in->w + 1] / 2;
+                uint16_t B1 = ii[i + (j + 1) * in->w] / 2;
+                j += 2;
+                uint16_t G2 = ii[i + j * in->w] / 2;
+                uint16_t R2 = ii[i + j * in->w + 1] / 2;
+                uint16_t B2 = ii[i + (j + 1) * in->w] / 2;
 
-        uint32_t u, y1, v, y2;
+                uint32_t u, y1, v, y2;
 
-        y1 = (0.256788 * R1 + 0.504129 * G1 + 0.097906 * B1) / 128 +  16;
-        y2 = (0.256788 * R2 + 0.504129 * G2 + 0.097906 * B2) / 128 +  16;
-        u = (-0.148223 * (R1 + R2) - 0.290993 * (G1 + G2) + 0.439216 * (B1 + B2)) / 256 + 128;
-        v = (0.439216 * (R1 + R2) - 0.367788 * (G1 + G2) - 0.071427 * (B1 + B2)) / 256 + 128;
+                y1 = (0.256788 * R1 + 0.504129 * G1 + 0.097906 * B1) / 128 +  16;
+                y2 = (0.256788 * R2 + 0.504129 * G2 + 0.097906 * B2) / 128 +  16;
+                u = (-0.148223 * (R1 + R2) - 0.290993 * (G1 + G2) + 0.439216 * (B1 + B2)) / 256 + 128;
+                v = (0.439216 * (R1 + R2) - 0.367788 * (G1 + G2) - 0.071427 * (B1 + B2)) / 256 + 128;
 
 
-        oi[(x + y * out->w) * 2] = clip(u);
-        oi[(x + y * out->w) * 2 + 1] = clip(y1);
-        oi[(x + y * out->w) * 2 + 2] = clip(v);
-        oi[(x + y * out->w) * 2 + 3] = clip(y2);
-      } else {
-        oi[(x + y * out->w) * 2] = 0;
-        oi[(x + y * out->w) * 2 + 1] = 0;
-        oi[(x + y * out->w) * 2 + 2] = 0;
-        oi[(x + y * out->w) * 2 + 3] = 0;
-      }
+                oi[(x + y * out->w) * 2] = clip(u);
+                oi[(x + y * out->w) * 2 + 1] = clip(y1);
+                oi[(x + y * out->w) * 2 + 2] = clip(v);
+                oi[(x + y * out->w) * 2 + 3] = clip(y2);
+            }
+            else
+            {
+                oi[(x + y * out->w) * 2] = 0;
+                oi[(x + y * out->w) * 2 + 1] = 0;
+                oi[(x + y * out->w) * 2 + 2] = 0;
+                oi[(x + y * out->w) * 2 + 3] = 0;
+            }
+        }
     }
-  }
 }
 
 #endif /* Bayer_H */

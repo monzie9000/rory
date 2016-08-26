@@ -12,37 +12,37 @@
 extern "C" {
 #endif
 
-  /*
-    This module is highly coupled with fatfs, and mcuconf.h
-    several MACRO should be defined before use
+/*
+  This module is highly coupled with fatfs, and mcuconf.h
+  several MACRO should be defined before use
 
-    FATFS (ffconf.h) :
-    ° _FS_SHARE : number of simultaneously open file
-    ° _FS_REENTRANT : If you need to open / close file during log, this should be set to 1 at
-                       the expense of more used cam and cpu.
-                    If you open all files prior to log data on them, it should be left to 0
+  FATFS (ffconf.h) :
+  ° _FS_SHARE : number of simultaneously open file
+  ° _FS_REENTRANT : If you need to open / close file during log, this should be set to 1 at
+                     the expense of more used cam and cpu.
+                  If you open all files prior to log data on them, it should be left to 0
 
-   MCUCONF.H (or any other header included before sdLog.h
-   ° SDLOG_ALL_BUFFERS_SIZE : (in bytes) performance ram buffer size shared between all opened log file
-   ° SDLOG_MAX_MESSAGE_LEN  : (in bytes) maximum length of a message
-   ° SDLOG_QUEUE_SIZE       : (in bytes) size of the message queue
-   ° SDLOG_QUEUE_BUCKETS    : number of entries in queue
-
-
-   use of the api :
-   sdLogInit (initialize peripheral,  verify sdCard availibility)
-   sdLogOpenLog : open file
-   sdLogWriteXXX
-   sdLogFlushLog : flush buffer (optional)
-   sdLogCloseLog
-   sdLogFinish
+ MCUCONF.H (or any other header included before sdLog.h
+ ° SDLOG_ALL_BUFFERS_SIZE : (in bytes) performance ram buffer size shared between all opened log file
+ ° SDLOG_MAX_MESSAGE_LEN  : (in bytes) maximum length of a message
+ ° SDLOG_QUEUE_SIZE       : (in bytes) size of the message queue
+ ° SDLOG_QUEUE_BUCKETS    : number of entries in queue
 
 
-   and asynchronous emergency close (power outage detection by example) :
-   sdLogCloseAllLogs
-   sdLogFinish
+ use of the api :
+ sdLogInit (initialize peripheral,  verify sdCard availibility)
+ sdLogOpenLog : open file
+ sdLogWriteXXX
+ sdLogFlushLog : flush buffer (optional)
+ sdLogCloseLog
+ sdLogFinish
 
-   */
+
+ and asynchronous emergency close (power outage detection by example) :
+ sdLogCloseAllLogs
+ sdLogFinish
+
+ */
 
 
 #if SDLOG_ALL_BUFFERS_SIZE == 0 || SDLOG_MAX_MESSAGE_LEN == 0 || \
@@ -57,16 +57,17 @@ extern "C" {
 typedef struct LogMessage LogMessage;
 #endif
 
-typedef enum {
-  SDLOG_OK,
-  SDLOG_NOCARD,
-  SDLOG_FATFS_ERROR,
-  SDLOG_FSFULL,
-  SDLOG_FDFULL,
-  SDLOG_QUEUEFULL,
-  SDLOG_NOTHREAD,
-  SDLOG_INTERNAL_ERROR,
-  SDLOG_LOGNUM_ERROR
+typedef enum
+{
+    SDLOG_OK,
+    SDLOG_NOCARD,
+    SDLOG_FATFS_ERROR,
+    SDLOG_FSFULL,
+    SDLOG_FDFULL,
+    SDLOG_QUEUEFULL,
+    SDLOG_NOTHREAD,
+    SDLOG_INTERNAL_ERROR,
+    SDLOG_LOGNUM_ERROR
 } SdioError;
 
 
@@ -96,7 +97,7 @@ SdioError sdLogInit (uint32_t* freeSpaceInKo);
  * @param[in]	indexOffset : use 0 to retrieve last existent filename, 1 for next filename
  */
 SdioError getFileName(const char* prefix, const char* directoryName,
-		      char* nextFileName, const size_t nameLength, const int indexOffset);
+                      char* nextFileName, const size_t nameLength, const int indexOffset);
 
 /**
  * @brief	unmount filesystem
@@ -119,7 +120,7 @@ SdioError sdLogFinish (void);
  *		files.
  */
 SdioError sdLogOpenLog (FileDes *fileObject, const char* directoryName, const char* fileName,
-			bool_t appendTagAtClose);
+                        bool_t appendTagAtClose);
 
 
 /**

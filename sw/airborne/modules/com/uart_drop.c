@@ -29,19 +29,27 @@
 static uint8_t drop_string[] = "<Drop_Paintball_Now";
 #define DROP_STRINGLEN 19
 
-void drop_ball(uint8_t number) {
-  for(uint8_t i = 0; i < DROP_STRINGLEN; i++)
-    uart_put_byte(&UART_DROP_PORT, drop_string[i]);
+void drop_ball(uint8_t number)
+{
+    for(uint8_t i = 0; i < DROP_STRINGLEN; i++)
+        uart_put_byte(&UART_DROP_PORT, drop_string[i]);
 
-  uint8_t last = '>';
-  if(number == 1) {
-    last = '1';
-  } else if(number == 2) {
-    last = '2';
-  } else if(number == 3) {
-    last = '3';
-  } else if(number == 4) {
-    last = '4';
-  }
-  uart_put_byte(&UART_DROP_PORT, last);
+    uint8_t last = '>';
+    if(number == 1)
+    {
+        last = '1';
+    }
+    else if(number == 2)
+    {
+        last = '2';
+    }
+    else if(number == 3)
+    {
+        last = '3';
+    }
+    else if(number == 4)
+    {
+        last = '4';
+    }
+    uart_put_byte(&UART_DROP_PORT, last);
 }

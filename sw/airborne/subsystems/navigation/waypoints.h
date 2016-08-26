@@ -35,11 +35,12 @@
 #define WP_FLAG_ENU_F 2
 #define WP_FLAG_LLA_I 3
 
-struct Waypoint {
-  uint8_t flags; ///< bitmask encoding valid representations and if local or global
-  struct EnuCoor_i enu_i;  ///< with #INT32_POS_FRAC
-  struct EnuCoor_f enu_f;
-  struct LlaCoor_i lla;
+struct Waypoint
+{
+    uint8_t flags; ///< bitmask encoding valid representations and if local or global
+    struct EnuCoor_i enu_i;  ///< with #INT32_POS_FRAC
+    struct EnuCoor_f enu_f;
+    struct LlaCoor_i lla;
 };
 
 extern const uint8_t nb_waypoint;

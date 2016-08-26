@@ -43,9 +43,10 @@
  */
 
 // FIXME how to use this properly ?
-enum SPIMode {
-  SPIMaster,
-  SPISlave
+enum SPIMode
+{
+    SPIMaster,
+    SPISlave
 };
 
 /** SPI slave selection behavior options.
@@ -53,72 +54,80 @@ enum SPIMode {
  * might need some special control.
  * Use non-default control only if you know what you're doing.
  */
-enum SPISlaveSelect {
-  SPISelectUnselect, ///< slave is selected before transaction and unselected after
-  SPISelect,         ///< slave is selected before transaction but not unselected
-  SPIUnselect,       ///< slave is not selected but unselected after transaction
-  SPINoSelect        ///< slave is not selected nor unselected
+enum SPISlaveSelect
+{
+    SPISelectUnselect, ///< slave is selected before transaction and unselected after
+    SPISelect,         ///< slave is selected before transaction but not unselected
+    SPIUnselect,       ///< slave is not selected but unselected after transaction
+    SPINoSelect        ///< slave is not selected nor unselected
 };
 
 /** SPI CPHA (clock phase) options.
  * Control whether data line is sampled
  * at first or second edge of clock signal.
  */
-enum SPIClockPhase {
-  SPICphaEdge1,  ///< CPHA = 0
-  SPICphaEdge2   ///< CPHA = 1
+enum SPIClockPhase
+{
+    SPICphaEdge1,  ///< CPHA = 0
+    SPICphaEdge2   ///< CPHA = 1
 };
 
 /** SPI CPOL (clock polarity) options.
  * Control whether clock line is held
  * low or high in idle state.
  */
-enum SPIClockPolarity {
-  SPICpolIdleLow,  ///< CPOL = 0
-  SPICpolIdleHigh  ///< CPOL = 1
+enum SPIClockPolarity
+{
+    SPICpolIdleLow,  ///< CPOL = 0
+    SPICpolIdleHigh  ///< CPOL = 1
 };
 
 /** SPI data word size of transfer.
  */
-enum SPIDataSizeSelect {
-  SPIDss8bit,
-  SPIDss16bit
+enum SPIDataSizeSelect
+{
+    SPIDss8bit,
+    SPIDss16bit
 };
 
 /** SPI transaction status.
  */
-enum SPITransactionStatus {
-  SPITransPending,
-  SPITransRunning,
-  SPITransSuccess,
-  SPITransFailed,
-  SPITransDone
+enum SPITransactionStatus
+{
+    SPITransPending,
+    SPITransRunning,
+    SPITransSuccess,
+    SPITransFailed,
+    SPITransDone
 };
 
 /** SPI peripheral status.
  */
-enum SPIStatus {
-  SPIIdle,
-  SPIRunning
+enum SPIStatus
+{
+    SPIIdle,
+    SPIRunning
 };
 
-enum SPIBitOrder {
-  SPIMSBFirst,
-  SPILSBFirst
+enum SPIBitOrder
+{
+    SPIMSBFirst,
+    SPILSBFirst
 };
 
 /** Peripheral clock divider.
  * Defines the SPI baudrate
  */
-enum SPIClockDiv {
-  SPIDiv2,
-  SPIDiv4,
-  SPIDiv8,
-  SPIDiv16,
-  SPIDiv32,
-  SPIDiv64,
-  SPIDiv128,
-  SPIDiv256
+enum SPIClockDiv
+{
+    SPIDiv2,
+    SPIDiv4,
+    SPIDiv8,
+    SPIDiv16,
+    SPIDiv32,
+    SPIDiv64,
+    SPIDiv128,
+    SPIDiv256
 };
 
 struct spi_transaction;
@@ -139,21 +148,22 @@ typedef void (*SPICallback)(struct spi_transaction *trans);
  * - if input_length is larger than output length,
  *   0 is sent for the remaining words
  */
-struct spi_transaction {
-  volatile uint8_t *input_buf;  ///< pointer to receive buffer for DMA
-  volatile uint8_t *output_buf; ///< pointer to transmit buffer for DMA
-  uint16_t input_length;        ///< number of data words to read
-  uint16_t output_length;       ///< number of data words to write
-  uint8_t slave_idx;            ///< slave id: #SPI_SLAVE0 to #SPI_SLAVE4
-  enum SPISlaveSelect select;   ///< slave selection behavior
-  enum SPIClockPolarity cpol;   ///< clock polarity control
-  enum SPIClockPhase cpha;      ///< clock phase control
-  enum SPIDataSizeSelect dss;   ///< data transfer word size
-  enum SPIBitOrder bitorder;    ///< MSB/LSB order
-  enum SPIClockDiv cdiv;        ///< prescaler of main clock to use as SPI clock
-  SPICallback before_cb;        ///< NULL or function called before the transaction
-  SPICallback after_cb;         ///< NULL or function called after the transaction
-  volatile enum SPITransactionStatus status;
+struct spi_transaction
+{
+    volatile uint8_t *input_buf;  ///< pointer to receive buffer for DMA
+    volatile uint8_t *output_buf; ///< pointer to transmit buffer for DMA
+    uint16_t input_length;        ///< number of data words to read
+    uint16_t output_length;       ///< number of data words to write
+    uint8_t slave_idx;            ///< slave id: #SPI_SLAVE0 to #SPI_SLAVE4
+    enum SPISlaveSelect select;   ///< slave selection behavior
+    enum SPIClockPolarity cpol;   ///< clock polarity control
+    enum SPIClockPhase cpha;      ///< clock phase control
+    enum SPIDataSizeSelect dss;   ///< data transfer word size
+    enum SPIBitOrder bitorder;    ///< MSB/LSB order
+    enum SPIClockDiv cdiv;        ///< prescaler of main clock to use as SPI clock
+    SPICallback before_cb;        ///< NULL or function called before the transaction
+    SPICallback after_cb;         ///< NULL or function called after the transaction
+    volatile enum SPITransactionStatus status;
 };
 
 /** SPI transaction queue length.
@@ -165,20 +175,21 @@ struct spi_transaction {
 
 /** SPI peripheral structure.
  */
-struct spi_periph {
-  /** circular buffer holding transactions */
-  struct spi_transaction *trans[SPI_TRANSACTION_QUEUE_LEN];
-  uint8_t trans_insert_idx;
-  uint8_t trans_extract_idx;
-  /** internal state of the peripheral */
-  volatile enum SPIStatus status;
-  volatile uint8_t tx_idx_buf;
-  volatile uint8_t rx_idx_buf;
-  void *reg_addr;
-  void *init_struct;
-  enum SPIMode mode;
-  /** control for stop/resume of the fifo */
-  volatile uint8_t suspend;
+struct spi_periph
+{
+    /** circular buffer holding transactions */
+    struct spi_transaction *trans[SPI_TRANSACTION_QUEUE_LEN];
+    uint8_t trans_insert_idx;
+    uint8_t trans_extract_idx;
+    /** internal state of the peripheral */
+    volatile enum SPIStatus status;
+    volatile uint8_t tx_idx_buf;
+    volatile uint8_t rx_idx_buf;
+    void *reg_addr;
+    void *init_struct;
+    enum SPIMode mode;
+    /** control for stop/resume of the fifo */
+    volatile uint8_t suspend;
 };
 
 #if SPI_MASTER

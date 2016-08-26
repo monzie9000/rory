@@ -37,86 +37,91 @@ typedef void (*SDCardCallback)(void);
 
 #define SD_BLOCK_SIZE 512
 
-enum SdResponseType {
-  SdResponseNone,
-  SdResponseR1,
-  SdResponseR3,
-  SdResponseR7
+enum SdResponseType
+{
+    SdResponseNone,
+    SdResponseR1,
+    SdResponseR3,
+    SdResponseR7
 };
 
-enum SDCardType {
-  SDCardType_Unknown,
-  SDCardType_MmcV3,
-  SDCardType_SdV1,
-  SDCardType_SdV2byte,
-  SDCardType_SdV2block
+enum SDCardType
+{
+    SDCardType_Unknown,
+    SDCardType_MmcV3,
+    SDCardType_SdV1,
+    SDCardType_SdV2byte,
+    SDCardType_SdV2block
 };
 
-enum SDCardStatus {
-  SDCard_UnInit,                            /**< SDCard is not initialized */
-  SDCard_Error,                             /**< An error has occured, sending debug message */
-  SDCard_Idle,                              /**< Initialization sequence succesful */
-  SDCard_Busy,                              /**< SDCard is busy with internal process */
-  SDCard_BeforeDummyClock,                  /**< About to send dummy clock cycles to initialize spi mode */
-  SDCard_SendingDummyClock,                 /**< Busy sending dummy clock cycles */
-  SDCard_SendingCMD0,                       /**< Busy sending CMD0 */
-  SDCard_ReadingCMD0Resp,                   /**< Reading R1 response to CMD0 byte by byte */
-  SDCard_SendingCMD8,                       /**< Busy sending CMD8 */
-  SDCard_ReadingCMD8Resp,                   /**< Reading R7 response to CMD8 byte by byte */
-  SDCard_ReadingCMD8Parameter,              /**< Reading the 32-bit parameter after receiving 0x01 */
-  SDCard_SendingACMD41v2,                   /**< Busy sending ACMD41 */
-  SDCard_ReadingACMD41v2Resp,               /**< Reading R1 response to ACMD41 byte by byte */
-  SDCard_SendingCMD58,                      /**< Busy sending CMD58 */
-  SDCard_ReadingCMD58Resp,                  /**< Reading R3 response to CMD58 byte by byte */
-  SDCard_ReadingCMD58Parameter,             /**< Reading the 32-bit parameter after receiving 0x00 from CMD58 */
-  SDCard_SendingCMD16,                      /**< Busy sending CMD16 */
-  SDCard_ReadingCMD16Resp,                  /**< Reading R1 response to CMD16 byte by byte */
-  SDCard_SendingCMD24,                      /**< Busy sending CMD24 */
-  SDCard_ReadingCMD24Resp,                  /**< Reading R1 response to CMD24 byte by byte */
-  SDCard_BeforeSendingDataBlock,            /**< Start data block transfer */
-  SDCard_SendingDataBlock,                  /**< Busy sending data block */
-  SDCard_SendingCMD17,                      /**< Busy sending CMD17 (block read request) */
-  SDCard_ReadingCMD17Resp,                  /**< Reading R1 response to CMD17 byte by byte */
-  SDCard_WaitingForDataToken,               /**< Reading a byte each period until there is a data token or error */
-  SDCard_ReadingDataBlock,                  /**< Busy reading data block */
-  SDCard_SendingCMD25,                      /**< Busy sending CMD25 (multiwrite start command) */
-  SDCard_ReadingCMD25Resp,                  /**< Reading R1 response to CMD25 byte by byte */
-  SDCard_MultiWriteIdle,                    /**< CMD25 complete, ready to sent blocks */
-  SDCard_MultiWriteWriting,                 /**< Busy with the SPI transfer in multiwrite */
-  SDCard_MultiWriteBusy,                    /**< Busy flag after sending data block in multiwrite */
-  SDCard_MultiWriteStopping,                /**< Busy sending the stop token */
+enum SDCardStatus
+{
+    SDCard_UnInit,                            /**< SDCard is not initialized */
+    SDCard_Error,                             /**< An error has occured, sending debug message */
+    SDCard_Idle,                              /**< Initialization sequence succesful */
+    SDCard_Busy,                              /**< SDCard is busy with internal process */
+    SDCard_BeforeDummyClock,                  /**< About to send dummy clock cycles to initialize spi mode */
+    SDCard_SendingDummyClock,                 /**< Busy sending dummy clock cycles */
+    SDCard_SendingCMD0,                       /**< Busy sending CMD0 */
+    SDCard_ReadingCMD0Resp,                   /**< Reading R1 response to CMD0 byte by byte */
+    SDCard_SendingCMD8,                       /**< Busy sending CMD8 */
+    SDCard_ReadingCMD8Resp,                   /**< Reading R7 response to CMD8 byte by byte */
+    SDCard_ReadingCMD8Parameter,              /**< Reading the 32-bit parameter after receiving 0x01 */
+    SDCard_SendingACMD41v2,                   /**< Busy sending ACMD41 */
+    SDCard_ReadingACMD41v2Resp,               /**< Reading R1 response to ACMD41 byte by byte */
+    SDCard_SendingCMD58,                      /**< Busy sending CMD58 */
+    SDCard_ReadingCMD58Resp,                  /**< Reading R3 response to CMD58 byte by byte */
+    SDCard_ReadingCMD58Parameter,             /**< Reading the 32-bit parameter after receiving 0x00 from CMD58 */
+    SDCard_SendingCMD16,                      /**< Busy sending CMD16 */
+    SDCard_ReadingCMD16Resp,                  /**< Reading R1 response to CMD16 byte by byte */
+    SDCard_SendingCMD24,                      /**< Busy sending CMD24 */
+    SDCard_ReadingCMD24Resp,                  /**< Reading R1 response to CMD24 byte by byte */
+    SDCard_BeforeSendingDataBlock,            /**< Start data block transfer */
+    SDCard_SendingDataBlock,                  /**< Busy sending data block */
+    SDCard_SendingCMD17,                      /**< Busy sending CMD17 (block read request) */
+    SDCard_ReadingCMD17Resp,                  /**< Reading R1 response to CMD17 byte by byte */
+    SDCard_WaitingForDataToken,               /**< Reading a byte each period until there is a data token or error */
+    SDCard_ReadingDataBlock,                  /**< Busy reading data block */
+    SDCard_SendingCMD25,                      /**< Busy sending CMD25 (multiwrite start command) */
+    SDCard_ReadingCMD25Resp,                  /**< Reading R1 response to CMD25 byte by byte */
+    SDCard_MultiWriteIdle,                    /**< CMD25 complete, ready to sent blocks */
+    SDCard_MultiWriteWriting,                 /**< Busy with the SPI transfer in multiwrite */
+    SDCard_MultiWriteBusy,                    /**< Busy flag after sending data block in multiwrite */
+    SDCard_MultiWriteStopping,                /**< Busy sending the stop token */
 };
 
-enum SDCardErrorStatus {
-  SDCardError_None,
-  SDCardError_InitializationNoResponse,
-  SDCardError_CardInfoNoResponse,
-  SDCardError_InvalidCardInfo,
-  SDCardError_ACMD41Timeout,
-  SDCardError_ACMD41NoResponse,
-  SDCardError_CMD58NoResponse,
-  SDCardError_CCSBitInvalid,
-  SDCardError_SetBlockSizeNoResponse,
-  SDCardError_WriteBlockNoResponse,
-  SDCardError_SpiDriverError,
-  SDCardError_BlockWriteError,
-  SDCardError_ReadBlockNoResponse,
-  SDCardError_ReadBlockTimeout,
-  SDCardError_MultiWriteNoResponse,
-  SDCardError_MultiWriteError,
+enum SDCardErrorStatus
+{
+    SDCardError_None,
+    SDCardError_InitializationNoResponse,
+    SDCardError_CardInfoNoResponse,
+    SDCardError_InvalidCardInfo,
+    SDCardError_ACMD41Timeout,
+    SDCardError_ACMD41NoResponse,
+    SDCardError_CMD58NoResponse,
+    SDCardError_CCSBitInvalid,
+    SDCardError_SetBlockSizeNoResponse,
+    SDCardError_WriteBlockNoResponse,
+    SDCardError_SpiDriverError,
+    SDCardError_BlockWriteError,
+    SDCardError_ReadBlockNoResponse,
+    SDCardError_ReadBlockTimeout,
+    SDCardError_MultiWriteNoResponse,
+    SDCardError_MultiWriteError,
 };
 
-struct SDCard {
-  struct spi_periph *spi_p;                 /**< The SPI peripheral for the connection */
-  struct spi_transaction spi_t;             /**< The SPI transaction used for the writing and reading of registers */
-  volatile enum SDCardStatus status;        /**< The status of the SD card */
-  uint8_t input_buf[SD_BLOCK_SIZE + 10];    /**< The input buffer for the SPI transaction */
-  uint8_t output_buf[SD_BLOCK_SIZE + 10];   /**< The output buffer for the SPI transaction */
-  uint8_t response_counter;                 /**< Response counter used at various locations */
-  uint32_t timeout_counter;                 /**< Timeout counter used for initialization checks with ACMD41 */
-  enum SDCardType card_type;                /**< Type of SDCard */
-  enum SDCardErrorStatus error_status;      /**< Contains information on where the error has occured */
-  SDCardCallback external_callback;         /**< Callback to call when external operation finishes */
+struct SDCard
+{
+    struct spi_periph *spi_p;                 /**< The SPI peripheral for the connection */
+    struct spi_transaction spi_t;             /**< The SPI transaction used for the writing and reading of registers */
+    volatile enum SDCardStatus status;        /**< The status of the SD card */
+    uint8_t input_buf[SD_BLOCK_SIZE + 10];    /**< The input buffer for the SPI transaction */
+    uint8_t output_buf[SD_BLOCK_SIZE + 10];   /**< The output buffer for the SPI transaction */
+    uint8_t response_counter;                 /**< Response counter used at various locations */
+    uint32_t timeout_counter;                 /**< Timeout counter used for initialization checks with ACMD41 */
+    enum SDCardType card_type;                /**< Type of SDCard */
+    enum SDCardErrorStatus error_status;      /**< Contains information on where the error has occured */
+    SDCardCallback external_callback;         /**< Callback to call when external operation finishes */
 };
 
 extern struct SDCard sdcard1;

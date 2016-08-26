@@ -49,29 +49,30 @@ struct Mpl3115 baro_mpl;
 
 void baro_mpl3115_init(void)
 {
-  mpl3115_init(&baro_mpl, &BARO_MPL3115_I2C_DEV, BARO_MPL3115_I2C_SLAVE_ADDR);
+    mpl3115_init(&baro_mpl, &BARO_MPL3115_I2C_DEV, BARO_MPL3115_I2C_SLAVE_ADDR);
 }
 
 
 void baro_mpl3115_read_periodic(void)
 {
-  mpl3115_periodic(&baro_mpl);
+    mpl3115_periodic(&baro_mpl);
 }
 
 
 void baro_mpl3115_read_event(void)
 {
-  mpl3115_event(&baro_mpl);
-  if (baro_mpl.data_available) {
-    float pressure = (float)baro_mpl.pressure / (1 << 2);
-    AbiSendMsgBARO_ABS(BARO_MPL3115_SENDER_ID, pressure);
-    float temp = (float)baro_mpl.pressure / 16.0f;
-    AbiSendMsgTEMPERATURE(BARO_MPL3115_SENDER_ID, temp);
+    mpl3115_event(&baro_mpl);
+    if (baro_mpl.data_available)
+    {
+        float pressure = (float)baro_mpl.pressure / (1 << 2);
+        AbiSendMsgBARO_ABS(BARO_MPL3115_SENDER_ID, pressure);
+        float temp = (float)baro_mpl.pressure / 16.0f;
+        AbiSendMsgTEMPERATURE(BARO_MPL3115_SENDER_ID, temp);
 #ifdef SENSOR_SYNC_SEND
-    DOWNLINK_SEND_MPL3115_BARO(DefaultChannel, DefaultDevice, &baro_mpl.pressure, &baro_mpl.temperature, &baro_mpl.alt);
+        DOWNLINK_SEND_MPL3115_BARO(DefaultChannel, DefaultDevice, &baro_mpl.pressure, &baro_mpl.temperature, &baro_mpl.alt);
 #endif
-    baro_mpl.data_available = FALSE;
-  }
+        baro_mpl.data_available = FALSE;
+    }
 }
 
 

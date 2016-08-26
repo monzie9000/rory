@@ -65,124 +65,124 @@
 
 void WEAK board_init(void)
 {
-  // default board init function does nothing...
+    // default board init function does nothing...
 }
 
 void mcu_init(void)
 {
 
-  mcu_arch_init();
-  /* If we have a board specific init function, call it.
-   * Otherwise it will simply call the empty weak function.
-   */
-  board_init();
+    mcu_arch_init();
+    /* If we have a board specific init function, call it.
+     * Otherwise it will simply call the empty weak function.
+     */
+    board_init();
 
 #ifdef PERIPHERALS_AUTO_INIT
-  sys_time_init();
+    sys_time_init();
 #ifdef USE_LED
-  led_init();
+    led_init();
 #endif
-  /* for now this means using spektrum */
+    /* for now this means using spektrum */
 #if defined RADIO_CONTROL & defined RADIO_CONTROL_SPEKTRUM_PRIMARY_PORT & defined RADIO_CONTROL_BIND_IMPL_FUNC
-  RADIO_CONTROL_BIND_IMPL_FUNC();
+    RADIO_CONTROL_BIND_IMPL_FUNC();
 #endif
 #if USE_UART0
-  uart0_init();
+    uart0_init();
 #endif
 #if USE_UART1
-  uart1_init();
+    uart1_init();
 #endif
 #if USE_UART2
-  uart2_init();
+    uart2_init();
 #endif
 #if USE_UART3
-  uart3_init();
+    uart3_init();
 #endif
 #if USE_UART4
-  uart4_init();
+    uart4_init();
 #endif
 #if USE_UART5
-  uart5_init();
+    uart5_init();
 #endif
 #if USE_UART6
-  uart6_init();
+    uart6_init();
 #endif
 #if USE_UART7
-  uart7_init();
+    uart7_init();
 #endif
 #if USE_UART8
-  uart8_init();
+    uart8_init();
 #endif
 #if USING_UART
-  uart_arch_init();
+    uart_arch_init();
 #endif
 #ifdef USE_I2C0
-  i2c0_init();
+    i2c0_init();
 #endif
 #ifdef USE_I2C1
-  i2c1_init();
+    i2c1_init();
 #endif
 #ifdef USE_I2C2
-  i2c2_init();
+    i2c2_init();
 #endif
 #ifdef USE_I2C3
-  i2c3_init();
+    i2c3_init();
 #endif
 #if USE_ADC
-  adc_init();
+    adc_init();
 #endif
 #if USE_USB_SERIAL
-  VCOM_init();
+    VCOM_init();
 #endif
 
 #if USE_SPI
 #if SPI_MASTER
 
 #if USE_SPI0
-  spi0_init();
+    spi0_init();
 #endif
 #if USE_SPI1
-  spi1_init();
+    spi1_init();
 #endif
 #if USE_SPI2
-  spi2_init();
+    spi2_init();
 #endif
 #if USE_SPI3
-  spi3_init();
+    spi3_init();
 #endif
-  spi_init_slaves();
+    spi_init_slaves();
 #endif // SPI_MASTER
 
 #if SPI_SLAVE
 #if USE_SPI0_SLAVE
-  spi0_slave_init();
+    spi0_slave_init();
 #endif
 #if USE_SPI1_SLAVE
-  spi1_slave_init();
+    spi1_slave_init();
 #endif
 #if USE_SPI2_SLAVE
-  spi2_slave_init();
+    spi2_slave_init();
 #endif
 #if USE_SPI3_SLAVE
-  spi3_slave_init();
+    spi3_slave_init();
 #endif
 #endif // SPI_SLAVE
 
 #if SPI_SLAVE_HS
-  spi_slave_hs_init();
+    spi_slave_hs_init();
 #endif
 #endif // USE_SPI
 
 #ifdef USE_DAC
-  dac_init();
+    dac_init();
 #endif
 
 #if USE_UDP0 || USE_UDP1 || USE_UDP2
-  udp_arch_init();
+    udp_arch_init();
 #endif
 
 #else
-  INFO("PERIPHERALS_AUTO_INIT not enabled! Peripherals (including sys_time) need explicit initialization.")
+    INFO("PERIPHERALS_AUTO_INIT not enabled! Peripherals (including sys_time) need explicit initialization.")
 #endif /* PERIPHERALS_AUTO_INIT */
 
 }
@@ -192,10 +192,10 @@ void mcu_init(void)
 void mcu_event(void)
 {
 #if USING_I2C
-  i2c_event();
+    i2c_event();
 #endif
 
 #if USE_USB_SERIAL
-  VCOM_event();
+    VCOM_event();
 #endif
 }

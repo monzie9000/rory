@@ -41,17 +41,18 @@ typedef uint8_t (*get_byte_t)(void *);
 
 /** Device structure
  */
-struct link_device {
-  check_free_space_t check_free_space;  ///< check if transmit buffer is not full
-  put_byte_t put_byte;                  ///< put one byte
-  send_message_t send_message;          ///< send completed buffer
-  char_available_t char_available;      ///< check if a new character is available
-  get_byte_t get_byte;                  ///< get a new char
-  void *periph;                         ///< pointer to parent implementation
+struct link_device
+{
+    check_free_space_t check_free_space;  ///< check if transmit buffer is not full
+    put_byte_t put_byte;                  ///< put one byte
+    send_message_t send_message;          ///< send completed buffer
+    char_available_t char_available;      ///< check if a new character is available
+    get_byte_t get_byte;                  ///< get a new char
+    void *periph;                         ///< pointer to parent implementation
 
-  uint16_t nb_msgs;                     ///< The number of messages send
-  uint8_t nb_ovrn;                      ///< The number of overruns
-  uint32_t nb_bytes;                    ///< The number of bytes send
+    uint16_t nb_msgs;                     ///< The number of messages send
+    uint8_t nb_ovrn;                      ///< The number of overruns
+    uint32_t nb_bytes;                    ///< The number of bytes send
 };
 
 #endif // LINK_DEVICE_H

@@ -139,88 +139,94 @@ static Butterworth2LowPass ms45xx_filter;
 
 static void ms45xx_downlink(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_AIRSPEED_MS45XX(trans, dev, AC_ID,
-                                &ms45xx.diff_pressure,
-                                &ms45xx.temperature, &ms45xx.airspeed);
+    pprz_msg_send_AIRSPEED_MS45XX(trans, dev, AC_ID,
+                                  &ms45xx.diff_pressure,
+                                  &ms45xx.temperature, &ms45xx.airspeed);
 }
 
 void ms45xx_i2c_init(void)
 {
-  ms45xx.diff_pressure = 0;
-  ms45xx.temperature = 0;
-  ms45xx.airspeed = 0.;
-  ms45xx.pressure_scale = MS45XX_PRESSURE_SCALE;
-  ms45xx.pressure_offset = MS45XX_PRESSURE_OFFSET;
-  ms45xx.airspeed_scale = MS45XX_AIRSPEED_SCALE;
-  ms45xx.sync_send = MS45XX_SYNC_SEND;
+    ms45xx.diff_pressure = 0;
+    ms45xx.temperature = 0;
+    ms45xx.airspeed = 0.;
+    ms45xx.pressure_scale = MS45XX_PRESSURE_SCALE;
+    ms45xx.pressure_offset = MS45XX_PRESSURE_OFFSET;
+    ms45xx.airspeed_scale = MS45XX_AIRSPEED_SCALE;
+    ms45xx.sync_send = MS45XX_SYNC_SEND;
 
-  ms45xx_trans.status = I2CTransDone;
-  // setup low pass filter with time constant and 100Hz sampling freq
-  init_butterworth_2_low_pass(&ms45xx_filter, MS45XX_LOWPASS_TAU,
-                              MS45XX_I2C_PERIODIC_PERIOD, 0);
+    ms45xx_trans.status = I2CTransDone;
+    // setup low pass filter with time constant and 100Hz sampling freq
+    init_butterworth_2_low_pass(&ms45xx_filter, MS45XX_LOWPASS_TAU,
+                                MS45XX_I2C_PERIODIC_PERIOD, 0);
 
 #if PERIODIC_TELEMETRY
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AIRSPEED_MS45XX, ms45xx_downlink);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AIRSPEED_MS45XX, ms45xx_downlink);
 #endif
 }
 
 void ms45xx_i2c_periodic(void)
 {
-  // Initiate next read
-  if (ms45xx_trans.status == I2CTransDone) {
-    i2c_receive(&MS45XX_I2C_DEV, &ms45xx_trans, MS45XX_I2C_ADDR, 4);
-  }
+    // Initiate next read
+    if (ms45xx_trans.status == I2CTransDone)
+    {
+        i2c_receive(&MS45XX_I2C_DEV, &ms45xx_trans, MS45XX_I2C_ADDR, 4);
+    }
 }
 
 void ms45xx_i2c_event(void)
 {
-  /* Check if transaction is succesfull */
-  if (ms45xx_trans.status == I2CTransSuccess) {
+    /* Check if transaction is succesfull */
+    if (ms45xx_trans.status == I2CTransSuccess)
+    {
 
-    /* 2 MSB of data are status bits, 0 = good data, 2 = already fetched, 3 = fault */
-    uint8_t status = (0xC0 & ms45xx_trans.buf[0]) >> 6;
+        /* 2 MSB of data are status bits, 0 = good data, 2 = already fetched, 3 = fault */
+        uint8_t status = (0xC0 & ms45xx_trans.buf[0]) >> 6;
 
-    if (status == 0) {
-      /* 14bit raw pressure */
-      uint16_t p_raw = 0x3FFF & (((uint16_t)(ms45xx_trans.buf[0]) << 8) |
-                                 (uint16_t)(ms45xx_trans.buf[1]));
-      /* Output is proportional to the difference between Port 1 and Port 2. Output
-       * swings positive when Port 1> Port 2. Output is 50% of total counts
-       * when Port 1=Port 2.
-       * p_diff = p_raw * scale - offset
-       */
-      float p_diff = p_raw * ms45xx.pressure_scale - ms45xx.pressure_offset;
-      ms45xx.diff_pressure = update_butterworth_2_low_pass(&ms45xx_filter, p_diff);
+        if (status == 0)
+        {
+            /* 14bit raw pressure */
+            uint16_t p_raw = 0x3FFF & (((uint16_t)(ms45xx_trans.buf[0]) << 8) |
+                                       (uint16_t)(ms45xx_trans.buf[1]));
+            /* Output is proportional to the difference between Port 1 and Port 2. Output
+             * swings positive when Port 1> Port 2. Output is 50% of total counts
+             * when Port 1=Port 2.
+             * p_diff = p_raw * scale - offset
+             */
+            float p_diff = p_raw * ms45xx.pressure_scale - ms45xx.pressure_offset;
+            ms45xx.diff_pressure = update_butterworth_2_low_pass(&ms45xx_filter, p_diff);
 
-      /* 11bit raw temperature, 5 LSB bits not used */
-      uint16_t temp_raw = 0xFFE0 & (((uint16_t)(ms45xx_trans.buf[2]) << 8) |
-                                    (uint16_t)(ms45xx_trans.buf[3]));
-      temp_raw = temp_raw >> 5;
-      /* 0 = -50degC, 20147 = 150degC
-       * ms45xx_temperature in 0.1 deg Celcius
-       */
-      ms45xx.temperature = ((uint32_t)temp_raw * 2000) / 2047 - 500;
+            /* 11bit raw temperature, 5 LSB bits not used */
+            uint16_t temp_raw = 0xFFE0 & (((uint16_t)(ms45xx_trans.buf[2]) << 8) |
+                                          (uint16_t)(ms45xx_trans.buf[3]));
+            temp_raw = temp_raw >> 5;
+            /* 0 = -50degC, 20147 = 150degC
+             * ms45xx_temperature in 0.1 deg Celcius
+             */
+            ms45xx.temperature = ((uint32_t)temp_raw * 2000) / 2047 - 500;
 
-      // Send differential pressure via ABI
-      AbiSendMsgBARO_DIFF(MS45XX_SENDER_ID, ms45xx.diff_pressure);
-      // Send temperature as float in deg Celcius via ABI
-      float temp = ms45xx.temperature / 10.0f;
-      AbiSendMsgTEMPERATURE(MS45XX_SENDER_ID, temp);
+            // Send differential pressure via ABI
+            AbiSendMsgBARO_DIFF(MS45XX_SENDER_ID, ms45xx.diff_pressure);
+            // Send temperature as float in deg Celcius via ABI
+            float temp = ms45xx.temperature / 10.0f;
+            AbiSendMsgTEMPERATURE(MS45XX_SENDER_ID, temp);
 
-      // Compute airspeed
-      ms45xx.airspeed = sqrtf(Max(ms45xx.diff_pressure * ms45xx.airspeed_scale, 0));
+            // Compute airspeed
+            ms45xx.airspeed = sqrtf(Max(ms45xx.diff_pressure * ms45xx.airspeed_scale, 0));
 #if USE_AIRSPEED_MS45XX
-      stateSetAirspeed_f(ms45xx.airspeed);
+            stateSetAirspeed_f(ms45xx.airspeed);
 #endif
-      if (ms45xx.sync_send) {
-        ms45xx_downlink(&(DefaultChannel).trans_tx, &(DefaultDevice).device);
-      }
-    }
+            if (ms45xx.sync_send)
+            {
+                ms45xx_downlink(&(DefaultChannel).trans_tx, &(DefaultDevice).device);
+            }
+        }
 
-    // Set to done
-    ms45xx_trans.status = I2CTransDone;
-  } else if (ms45xx_trans.status == I2CTransFailed) {
-    // Just retry if failed
-    ms45xx_trans.status = I2CTransDone;
-  }
+        // Set to done
+        ms45xx_trans.status = I2CTransDone;
+    }
+    else if (ms45xx_trans.status == I2CTransFailed)
+    {
+        // Just retry if failed
+        ms45xx_trans.status = I2CTransDone;
+    }
 }

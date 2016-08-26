@@ -56,56 +56,66 @@ uint8_t  pcf_status;
 
 void wind_gfi_init(void)
 {
-  pcf_trans.status = I2CTransDone;
-  pcf_status = PCF_IDLE;
+    pcf_trans.status = I2CTransDone;
+    pcf_status = PCF_IDLE;
 }
 
 void wind_gfi_periodic(void)
 {
-  /* OE low, SEL high (for low data) */
-  pcf_trans.buf[0] = 0xFF;
-  pcf_trans.buf[1] = 0xBF;
-  pcf_status = PCF_SET_OE_LSB;
-  i2c_transmit(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
+    /* OE low, SEL high (for low data) */
+    pcf_trans.buf[0] = 0xFF;
+    pcf_trans.buf[1] = 0xBF;
+    pcf_status = PCF_SET_OE_LSB;
+    i2c_transmit(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
 }
 
 void wind_gfi_event(void)
 {
-  if (pcf_trans.status == I2CTransSuccess) {
+    if (pcf_trans.status == I2CTransSuccess)
+    {
 
-    if (pcf_status == PCF_SET_OE_LSB) {
-      pcf_status = PCF_READ_LSB;
-      i2c_receive(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
-    } else if (pcf_status == PCF_READ_LSB) {
-      /* read lower byte direction info */
-      pcf_direction = pcf_trans.buf[0];
+        if (pcf_status == PCF_SET_OE_LSB)
+        {
+            pcf_status = PCF_READ_LSB;
+            i2c_receive(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
+        }
+        else if (pcf_status == PCF_READ_LSB)
+        {
+            /* read lower byte direction info */
+            pcf_direction = pcf_trans.buf[0];
 
-      /* OE low, SEL low (for high data) */
-      pcf_trans.buf[0] = 0xFF;
-      pcf_trans.buf[1] = 0x3F;
-      pcf_status = PCF_SET_OE_MSB;
-      i2c_transmit(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
-    } else if (pcf_status == PCF_SET_OE_MSB) {
-      pcf_status = PCF_READ_MSB;
-      i2c_receive(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
-    } else if (pcf_status == PCF_READ_MSB) {
-      float fpcf_direction;
+            /* OE low, SEL low (for high data) */
+            pcf_trans.buf[0] = 0xFF;
+            pcf_trans.buf[1] = 0x3F;
+            pcf_status = PCF_SET_OE_MSB;
+            i2c_transmit(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
+        }
+        else if (pcf_status == PCF_SET_OE_MSB)
+        {
+            pcf_status = PCF_READ_MSB;
+            i2c_receive(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
+        }
+        else if (pcf_status == PCF_READ_MSB)
+        {
+            float fpcf_direction;
 
-      /* read higher byte direction info */
-      pcf_direction |= pcf_trans.buf[0] << 8;
+            /* read higher byte direction info */
+            pcf_direction |= pcf_trans.buf[0] << 8;
 
-      /* OE high, SEL high */
-      pcf_trans.buf[0] = 0xFF;
-      pcf_trans.buf[1] = 0xFF;
-      pcf_status = PCF_IDLE;
-      i2c_transmit(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
+            /* OE high, SEL high */
+            pcf_trans.buf[0] = 0xFF;
+            pcf_trans.buf[1] = 0xFF;
+            pcf_status = PCF_IDLE;
+            i2c_transmit(&PCF_I2C_DEV, &pcf_trans, PCF_SLAVE_ADDR, 2);
 
-      /* 2048 digits per 360 degrees */
-      fpcf_direction = fmod((pcf_direction * (360. / 2048.)) + ZERO_OFFSET_DEGREES, 360.);
+            /* 2048 digits per 360 degrees */
+            fpcf_direction = fmod((pcf_direction * (360. / 2048.)) + ZERO_OFFSET_DEGREES, 360.);
 
-      DOWNLINK_SEND_TMP_STATUS(DefaultChannel, DefaultDevice, &pcf_direction, &fpcf_direction);
-    } else if (pcf_status == PCF_IDLE) {
-      pcf_trans.status = I2CTransDone;
+            DOWNLINK_SEND_TMP_STATUS(DefaultChannel, DefaultDevice, &pcf_direction, &fpcf_direction);
+        }
+        else if (pcf_status == PCF_IDLE)
+        {
+            pcf_trans.status = I2CTransDone;
+        }
     }
-  }
 }

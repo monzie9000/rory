@@ -80,13 +80,14 @@ PRINT_CONFIG_VAR(VISION_DESIRED_VY)
 #endif
 
 /* Initialize the default gains and settings */
-struct opticflow_stab_t opticflow_stab = {
-  .phi_pgain = VISION_PHI_PGAIN,
-  .phi_igain = VISION_PHI_IGAIN,
-  .theta_pgain = VISION_THETA_PGAIN,
-  .theta_igain = VISION_THETA_IGAIN,
-  .desired_vx = VISION_DESIRED_VX,
-  .desired_vy = VISION_DESIRED_VY
+struct opticflow_stab_t opticflow_stab =
+{
+    .phi_pgain = VISION_PHI_PGAIN,
+    .phi_igain = VISION_PHI_IGAIN,
+    .theta_pgain = VISION_THETA_PGAIN,
+    .theta_igain = VISION_THETA_IGAIN,
+    .desired_vx = VISION_DESIRED_VX,
+    .desired_vy = VISION_DESIRED_VY
 };
 
 /////////Variables needed to set by user!!!!!/////
@@ -94,7 +95,7 @@ int8_t filter_flag = 0;    //0 =>no filter 1 =>Kalman filter 2 =>Butterworth fil
 int8_t repulsionforce_filter_flag = 0;    //0 =>no filter 1 =>Butterworth filter
 
 oa_method OA_method_flag =
-  PINGPONG; //0 =>No OA only opticflow 1=pingpong 2=>pot_heading 3=>pot_vel 4=>vector 5=>safetyzone
+    PINGPONG; //0 =>No OA only opticflow 1=pingpong 2=>pot_heading 3=>pot_vel 4=>vector 5=>safetyzone
 int8_t opti_speed_flag = 1;
 float vref_max = 100;
 /////////////////////////////////////////////////
@@ -146,16 +147,16 @@ void guidance_h_module_init(void)
  */
 void guidance_h_module_enter(void)
 {
-  /* Reset the integrated errors */
-  opticflow_stab.err_vx_int = 0;
-  opticflow_stab.err_vy_int = 0;
+    /* Reset the integrated errors */
+    opticflow_stab.err_vx_int = 0;
+    opticflow_stab.err_vy_int = 0;
 
-  /* Set rool/pitch to 0 degrees and psi to current heading */
-  opticflow_stab.cmd.phi = 0;
-  opticflow_stab.cmd.theta = 0;
-  opticflow_stab.cmd.psi = stateGetNedToBodyEulers_i()->psi;
+    /* Set rool/pitch to 0 degrees and psi to current heading */
+    opticflow_stab.cmd.phi = 0;
+    opticflow_stab.cmd.theta = 0;
+    opticflow_stab.cmd.psi = stateGetNedToBodyEulers_i()->psi;
 
-  new_heading = 0;
+    new_heading = 0;
 
 //  register_periodic_telemetry(DefaultPeriodic, "INPUT_CONTROL", send_INPUT_CONTROL);
 }
@@ -165,7 +166,7 @@ void guidance_h_module_enter(void)
  */
 void guidance_h_module_read_rc(void)
 {
-  // TODO: change the desired vx/vy
+    // TODO: change the desired vx/vy
 }
 
 /**
@@ -174,12 +175,12 @@ void guidance_h_module_read_rc(void)
  */
 void guidance_h_module_run(bool_t in_flight)
 {
-  OA_update();
-  /* Update the setpoint */
-  stabilization_attitude_set_rpy_setpoint_i(&opticflow_stab.cmd);
+    OA_update();
+    /* Update the setpoint */
+    stabilization_attitude_set_rpy_setpoint_i(&opticflow_stab.cmd);
 
-  /* Run the default attitude stabilization */
-  stabilization_attitude_run(in_flight);
+    /* Run the default attitude stabilization */
+    stabilization_attitude_run(in_flight);
 }
 
 /**
@@ -188,163 +189,172 @@ void guidance_h_module_run(bool_t in_flight)
  */
 void OA_update()
 {
-  float v_x = 0;
-  float v_y = 0;
+    float v_x = 0;
+    float v_y = 0;
 
-  if (opti_speed_flag == 1) {
-    //rotation_vector.psi = stateGetNedToBodyEulers_f()->psi;
-    //opti_speed = stateGetSpeedNed_f();
+    if (opti_speed_flag == 1)
+    {
+        //rotation_vector.psi = stateGetNedToBodyEulers_f()->psi;
+        //opti_speed = stateGetSpeedNed_f();
 
-    //Transform to body frame.
-    //float_rmat_of_eulers_312(&T, &rotation_vector)Attractforce_goal_send;
-    //MAT33_VECT3_MUL(*opti_speed, T, *opti_speed);
+        //Transform to body frame.
+        //float_rmat_of_eulers_312(&T, &rotation_vector)Attractforce_goal_send;
+        //MAT33_VECT3_MUL(*opti_speed, T, *opti_speed);
 
-    // Calculate the speed in body frame
-    struct FloatVect2 speed_cur;
-    float psi = stateGetNedToBodyEulers_f()->psi;
-    float s_psi = sin(psi);
-    float c_psi = cos(psi);
-    speed_cur.x = c_psi * stateGetSpeedNed_f()->x + s_psi * stateGetSpeedNed_f()->y;
-    speed_cur.y = -s_psi * stateGetSpeedNed_f()->x + c_psi * stateGetSpeedNed_f()->y;
+        // Calculate the speed in body frame
+        struct FloatVect2 speed_cur;
+        float psi = stateGetNedToBodyEulers_f()->psi;
+        float s_psi = sin(psi);
+        float c_psi = cos(psi);
+        speed_cur.x = c_psi * stateGetSpeedNed_f()->x + s_psi * stateGetSpeedNed_f()->y;
+        speed_cur.y = -s_psi * stateGetSpeedNed_f()->x + c_psi * stateGetSpeedNed_f()->y;
 
-    opti_speed_read.x = speed_cur.x * 100;
-    opti_speed_read.y = speed_cur.y * 100;
+        opti_speed_read.x = speed_cur.x * 100;
+        opti_speed_read.y = speed_cur.y * 100;
 
-    //set result_vel
-    v_x = speed_cur.y * 100;
-    v_y = speed_cur.x * 100;
-  } else {
-  }
-
-  if (OA_method_flag == NO_OBSTACLE_AVOIDANCE) {
-    /* Calculate the error if we have enough flow */
-    opticflow_stab.desired_vx = 0;
-    opticflow_stab.desired_vy = 0;
-
-    err_vx = opticflow_stab.desired_vx - v_x;
-    err_vy = opticflow_stab.desired_vy - v_y;
-
-    /* Calculate the integrated errors (TODO: bound??) */
-    opticflow_stab.err_vx_int += err_vx / 100;
-    opticflow_stab.err_vy_int += err_vy / 100;
-
-    /* Calculate the commands */
-    opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vx / 100
-                               + opticflow_stab.phi_igain * opticflow_stab.err_vx_int;
-    opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vy / 100
-                                 + opticflow_stab.theta_igain * opticflow_stab.err_vy_int);
-
-    /* Bound the roll and pitch commands */
-    BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
-    BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT);
-  }
-
-  if (OA_method_flag == PINGPONG) {
-    opticflow_stab.cmd.phi = ANGLE_BFP_OF_REAL(ref_roll);
-    opticflow_stab.cmd.theta = ANGLE_BFP_OF_REAL(ref_pitch);
-  }
-
-  if (OA_method_flag == 2) {
-    Total_Kan_x = r_dot_new;
-    Total_Kan_y = speed_pot;
-
-    alpha_fil = 0.1;
-
-    yaw_rate = (int32_t)(alpha_fil * ANGLE_BFP_OF_REAL(r_dot_new));
-    opticflow_stab.cmd.psi  = stateGetNedToBodyEulers_i()->psi + yaw_rate;
-
-    INT32_ANGLE_NORMALIZE(opticflow_stab.cmd.psi);
-
-    opticflow_stab.desired_vx = 0;
-    opticflow_stab.desired_vy = speed_pot;
-
-    /* Calculate the error if we have enough flow */
-
-    err_vx = opticflow_stab.desired_vx - v_x;
-    err_vy = opticflow_stab.desired_vy - v_y;
-
-    /* Calculate the integrated errors (TODO: bound??) */
-    opticflow_stab.err_vx_int += err_vx / 100;
-    opticflow_stab.err_vy_int += err_vy / 100;
-
-    /* Calculate the commands */
-    opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vx / 100
-                               + opticflow_stab.phi_igain * opticflow_stab.err_vx_int;
-
-    opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vy / 100
-                                 + opticflow_stab.theta_igain * opticflow_stab.err_vy_int);
-
-    /* Bound the roll and pitch commands */
-    BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
-    BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT);
-
-  }
-  if (OA_method_flag == POT_HEADING) {
-    new_heading = ref_pitch;
-
-    opticflow_stab.desired_vx = sin(new_heading) * speed_pot * 100;
-    opticflow_stab.desired_vy = cos(new_heading) * speed_pot * 100;
-
-    /* Calculate the error if we have enough flow */
-    err_vx = opticflow_stab.desired_vx - v_x;
-    err_vy = opticflow_stab.desired_vy - v_y;
-
-
-    /* Calculate the integrated errors (TODO: bound??) */
-    opticflow_stab.err_vx_int += err_vx / 100;
-    opticflow_stab.err_vy_int += err_vy / 100;
-
-    /* Calculate the commands */
-    opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vx / 100
-                               + opticflow_stab.phi_igain * opticflow_stab.err_vx_int;
-    opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vy / 100
-                                 + opticflow_stab.theta_igain * opticflow_stab.err_vy_int);
-
-    /* Bound the roll and pitch commands */
-    BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
-    BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT)
-
-  }
-
-  if (OA_method_flag == VECTOR || OA_method_flag == SAFETYZONE || OA_method_flag == LOGICBASED) {
-    //vector field method
-    float v_desired_total;
-
-    Total_Kan_x = ref_pitch;
-    Total_Kan_y = ref_roll;
-
-    opticflow_stab.desired_vx = alpha_fil *
-                                Total_Kan_y; //alpha_fil*(Repulsionforce_Kan.y+Attractforce_goal.y) + result->vel_x;
-    opticflow_stab.desired_vy = alpha_fil *
-                                Total_Kan_x; //alpha_fil*(Repulsionforce_Kan.x+Attractforce_goal.x) + result->vel_y;
-
-    v_desired_total = sqrt(opticflow_stab.desired_vx * opticflow_stab.desired_vx + opticflow_stab.desired_vy *
-                           opticflow_stab.desired_vy);
-
-    if (v_desired_total >= vref_max) {
-      opticflow_stab.desired_vx = (vref_max / v_desired_total) * opticflow_stab.desired_vx;
-      opticflow_stab.desired_vy = (vref_max / v_desired_total) * opticflow_stab.desired_vy;
+        //set result_vel
+        v_x = speed_cur.y * 100;
+        v_y = speed_cur.x * 100;
+    }
+    else
+    {
     }
 
-    /* Calculate the error if we have enough flow */
+    if (OA_method_flag == NO_OBSTACLE_AVOIDANCE)
+    {
+        /* Calculate the error if we have enough flow */
+        opticflow_stab.desired_vx = 0;
+        opticflow_stab.desired_vy = 0;
 
-    //alpha_fil needs to be tuned!
-    err_vx = opticflow_stab.desired_vx - v_x;
-    err_vy = opticflow_stab.desired_vy - v_y;
+        err_vx = opticflow_stab.desired_vx - v_x;
+        err_vy = opticflow_stab.desired_vy - v_y;
 
-    /* Calculate the integrated errors (TODO: bound??) */
-    opticflow_stab.err_vx_int += err_vx / 100;
-    opticflow_stab.err_vy_int += err_vy / 100;
+        /* Calculate the integrated errors (TODO: bound??) */
+        opticflow_stab.err_vx_int += err_vx / 100;
+        opticflow_stab.err_vy_int += err_vy / 100;
 
-    /* Calculate the commands */
-    opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vx / 100
-                               + opticflow_stab.phi_igain * opticflow_stab.err_vx_int;
-    opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vy / 100
-                                 + opticflow_stab.theta_igain * opticflow_stab.err_vy_int);
+        /* Calculate the commands */
+        opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vx / 100
+                                   + opticflow_stab.phi_igain * opticflow_stab.err_vx_int;
+        opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vy / 100
+                                     + opticflow_stab.theta_igain * opticflow_stab.err_vy_int);
 
-    /* Bound the roll and pitch commands */
-    BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
-    BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT);
+        /* Bound the roll and pitch commands */
+        BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
+        BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT);
+    }
 
-  }
+    if (OA_method_flag == PINGPONG)
+    {
+        opticflow_stab.cmd.phi = ANGLE_BFP_OF_REAL(ref_roll);
+        opticflow_stab.cmd.theta = ANGLE_BFP_OF_REAL(ref_pitch);
+    }
+
+    if (OA_method_flag == 2)
+    {
+        Total_Kan_x = r_dot_new;
+        Total_Kan_y = speed_pot;
+
+        alpha_fil = 0.1;
+
+        yaw_rate = (int32_t)(alpha_fil * ANGLE_BFP_OF_REAL(r_dot_new));
+        opticflow_stab.cmd.psi  = stateGetNedToBodyEulers_i()->psi + yaw_rate;
+
+        INT32_ANGLE_NORMALIZE(opticflow_stab.cmd.psi);
+
+        opticflow_stab.desired_vx = 0;
+        opticflow_stab.desired_vy = speed_pot;
+
+        /* Calculate the error if we have enough flow */
+
+        err_vx = opticflow_stab.desired_vx - v_x;
+        err_vy = opticflow_stab.desired_vy - v_y;
+
+        /* Calculate the integrated errors (TODO: bound??) */
+        opticflow_stab.err_vx_int += err_vx / 100;
+        opticflow_stab.err_vy_int += err_vy / 100;
+
+        /* Calculate the commands */
+        opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vx / 100
+                                   + opticflow_stab.phi_igain * opticflow_stab.err_vx_int;
+
+        opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vy / 100
+                                     + opticflow_stab.theta_igain * opticflow_stab.err_vy_int);
+
+        /* Bound the roll and pitch commands */
+        BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
+        BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT);
+
+    }
+    if (OA_method_flag == POT_HEADING)
+    {
+        new_heading = ref_pitch;
+
+        opticflow_stab.desired_vx = sin(new_heading) * speed_pot * 100;
+        opticflow_stab.desired_vy = cos(new_heading) * speed_pot * 100;
+
+        /* Calculate the error if we have enough flow */
+        err_vx = opticflow_stab.desired_vx - v_x;
+        err_vy = opticflow_stab.desired_vy - v_y;
+
+
+        /* Calculate the integrated errors (TODO: bound??) */
+        opticflow_stab.err_vx_int += err_vx / 100;
+        opticflow_stab.err_vy_int += err_vy / 100;
+
+        /* Calculate the commands */
+        opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vx / 100
+                                   + opticflow_stab.phi_igain * opticflow_stab.err_vx_int;
+        opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vy / 100
+                                     + opticflow_stab.theta_igain * opticflow_stab.err_vy_int);
+
+        /* Bound the roll and pitch commands */
+        BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
+        BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT)
+
+    }
+
+    if (OA_method_flag == VECTOR || OA_method_flag == SAFETYZONE || OA_method_flag == LOGICBASED)
+    {
+        //vector field method
+        float v_desired_total;
+
+        Total_Kan_x = ref_pitch;
+        Total_Kan_y = ref_roll;
+
+        opticflow_stab.desired_vx = alpha_fil *
+                                    Total_Kan_y; //alpha_fil*(Repulsionforce_Kan.y+Attractforce_goal.y) + result->vel_x;
+        opticflow_stab.desired_vy = alpha_fil *
+                                    Total_Kan_x; //alpha_fil*(Repulsionforce_Kan.x+Attractforce_goal.x) + result->vel_y;
+
+        v_desired_total = sqrt(opticflow_stab.desired_vx * opticflow_stab.desired_vx + opticflow_stab.desired_vy *
+                               opticflow_stab.desired_vy);
+
+        if (v_desired_total >= vref_max)
+        {
+            opticflow_stab.desired_vx = (vref_max / v_desired_total) * opticflow_stab.desired_vx;
+            opticflow_stab.desired_vy = (vref_max / v_desired_total) * opticflow_stab.desired_vy;
+        }
+
+        /* Calculate the error if we have enough flow */
+
+        //alpha_fil needs to be tuned!
+        err_vx = opticflow_stab.desired_vx - v_x;
+        err_vy = opticflow_stab.desired_vy - v_y;
+
+        /* Calculate the integrated errors (TODO: bound??) */
+        opticflow_stab.err_vx_int += err_vx / 100;
+        opticflow_stab.err_vy_int += err_vy / 100;
+
+        /* Calculate the commands */
+        opticflow_stab.cmd.phi   = opticflow_stab.phi_pgain * err_vx / 100
+                                   + opticflow_stab.phi_igain * opticflow_stab.err_vx_int;
+        opticflow_stab.cmd.theta = -(opticflow_stab.theta_pgain * err_vy / 100
+                                     + opticflow_stab.theta_igain * opticflow_stab.err_vy_int);
+
+        /* Bound the roll and pitch commands */
+        BoundAbs(opticflow_stab.cmd.phi, CMD_OF_SAT);
+        BoundAbs(opticflow_stab.cmd.theta, CMD_OF_SAT);
+
+    }
 }

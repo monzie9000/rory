@@ -19,47 +19,54 @@ volatile uint16_t  mb_tacho_nb_pulse;
 
 void mb_tacho_init(void)
 {
-  /* select pin for capture */
-  MB_TACHO_PINSEL |= MB_TACHO_PINSEL_VAL << MB_TACHO_PINSEL_BIT;
-  /* enable capture 0.2 on falling edge + trigger interrupt */
-  T0CCR |= TCCR_CR0_F | TCCR_CR0_I;
+    /* select pin for capture */
+    MB_TACHO_PINSEL |= MB_TACHO_PINSEL_VAL << MB_TACHO_PINSEL_BIT;
+    /* enable capture 0.2 on falling edge + trigger interrupt */
+    T0CCR |= TCCR_CR0_F | TCCR_CR0_I;
 }
 
 uint32_t mb_tacho_get_duration(void)
 {
-  int_disable();
-  uint32_t my_duration = 0;
-  if (got_one_pulse) {
-    my_duration = mb_tacho_duration;
-  }
-  got_one_pulse = FALSE;
-  mcu_int_enable();
-  return my_duration;
+    int_disable();
+    uint32_t my_duration = 0;
+    if (got_one_pulse)
+    {
+        my_duration = mb_tacho_duration;
+    }
+    got_one_pulse = FALSE;
+    mcu_int_enable();
+    return my_duration;
 }
 
 float mb_tacho_get_averaged(void)
 {
 
-  int_disable();
-  float ret;
-  float tacho;
-  const float tach_to_rpm = 15000000.*60. / (float)MB_TACHO_NB_SLOT;
-  if (mb_tacho_nb_pulse) {
-    tacho = mb_tacho_averaged / (float)mb_tacho_nb_pulse ;
-  } else {
-    tacho = 0.;
-  }
+    int_disable();
+    float ret;
+    float tacho;
+    const float tach_to_rpm = 15000000.*60. / (float)MB_TACHO_NB_SLOT;
+    if (mb_tacho_nb_pulse)
+    {
+        tacho = mb_tacho_averaged / (float)mb_tacho_nb_pulse ;
+    }
+    else
+    {
+        tacho = 0.;
+    }
 
-  if (tacho == 0) {
-    ret = 0;
-  } else {
-    ret = tach_to_rpm / tacho;
-  }
+    if (tacho == 0)
+    {
+        ret = 0;
+    }
+    else
+    {
+        ret = tach_to_rpm / tacho;
+    }
 
-  mb_tacho_averaged = 0.;
-  mb_tacho_nb_pulse = 0;
-  mcu_int_enable();
+    mb_tacho_averaged = 0.;
+    mb_tacho_nb_pulse = 0;
+    mcu_int_enable();
 
-  return ret;
+    return ret;
 
 }

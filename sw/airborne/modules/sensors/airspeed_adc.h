@@ -28,11 +28,12 @@
 
 #include <inttypes.h>
 
-struct AirspeedAdc {
-  uint16_t val;
-  uint16_t offset;
-  float scale;    ///< used as quadratic scale if AIRSPEED_ADC_QUADRATIC_SCALE, otherwise linear
-  float airspeed;
+struct AirspeedAdc
+{
+    uint16_t val;
+    uint16_t offset;
+    float scale;    ///< used as quadratic scale if AIRSPEED_ADC_QUADRATIC_SCALE, otherwise linear
+    float airspeed;
 };
 
 extern struct AirspeedAdc airspeed_adc;

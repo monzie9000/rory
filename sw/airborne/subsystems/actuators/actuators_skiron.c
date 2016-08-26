@@ -37,27 +37,35 @@ struct ActuatorsSkiron actuators_skiron;
 void actuators_skiron_init(void)
 {
 
-  actuators_skiron.trans.type = I2CTransTx;
-  actuators_skiron.trans.len_w = SERVOS_SKIRON_NB;
-  actuators_skiron.trans.slave_addr = ACTUATORS_SKIRON_I2C_ADDR;
-  actuators_skiron.trans.status = I2CTransDone;
+    actuators_skiron.trans.type = I2CTransTx;
+    actuators_skiron.trans.len_w = SERVOS_SKIRON_NB;
+    actuators_skiron.trans.slave_addr = ACTUATORS_SKIRON_I2C_ADDR;
+    actuators_skiron.trans.status = I2CTransDone;
 
 }
 
 void actuators_skiron_set(void)
 {
 #if defined ACTUATORS_START_DELAY && ! defined SITL
-  if (!actuators_delay_done) {
-    if (SysTimeTimer(actuators_delay_time) < USEC_OF_SEC(ACTUATORS_START_DELAY)) { return; }
-    else { actuators_delay_done = TRUE; }
-  }
+    if (!actuators_delay_done)
+    {
+        if (SysTimeTimer(actuators_delay_time) < USEC_OF_SEC(ACTUATORS_START_DELAY))
+        {
+            return;
+        }
+        else
+        {
+            actuators_delay_done = TRUE;
+        }
+    }
 #endif
 
 #ifdef KILL_MOTORS
-  for (uint8_t i = 0; i < ACTUATORS_SKIRON_NB; i++) {
-    actuators_skiron.trans.buf[i] = 0;
-  }
+    for (uint8_t i = 0; i < ACTUATORS_SKIRON_NB; i++)
+    {
+        actuators_skiron.trans.buf[i] = 0;
+    }
 #endif
 
-  i2c_submit(&ACTUATORS_SKIRON_I2C_DEV, &actuators_skiron.trans);
+    i2c_submit(&ACTUATORS_SKIRON_I2C_DEV, &actuators_skiron.trans);
 }

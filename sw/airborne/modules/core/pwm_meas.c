@@ -32,5 +32,5 @@
 
 void pwm_meas_init(void)
 {
-  pwm_input_init();
+    pwm_input_init();
 }

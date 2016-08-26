@@ -41,55 +41,63 @@ struct Sbus sbus1, sbus2;
 
 static void send_sbus(struct transport_tx *trans, struct link_device *dev)
 {
-  // Using PPM message
-  pprz_msg_send_PPM(trans, dev, AC_ID,
-                    &radio_control.frame_rate, SBUS_NB_CHANNEL, sbus1.ppm);
+    // Using PPM message
+    pprz_msg_send_PPM(trans, dev, AC_ID,
+                      &radio_control.frame_rate, SBUS_NB_CHANNEL, sbus1.ppm);
 }
 #endif
 
 // Init function
 void radio_control_impl_init(void)
 {
-  sbus_common_init(&sbus1, &SBUS1_UART_DEV);
-  sbus_common_init(&sbus2, &SBUS2_UART_DEV);
+    sbus_common_init(&sbus1, &SBUS1_UART_DEV);
+    sbus_common_init(&sbus2, &SBUS2_UART_DEV);
 
-  // Register telemetry message
+    // Register telemetry message
 #if PERIODIC_TELEMETRY
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_PPM, send_sbus);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_PPM, send_sbus);
 #endif
 }
 
 static inline void sbus_dual_decode_event(void)
 {
-  sbus_common_decode_event(&sbus1, &SBUS1_UART_DEV);
-  sbus_common_decode_event(&sbus2, &SBUS2_UART_DEV);
+    sbus_common_decode_event(&sbus1, &SBUS1_UART_DEV);
+    sbus_common_decode_event(&sbus2, &SBUS2_UART_DEV);
 }
 
 void radio_control_impl_event(void (* _received_frame_handler)(void))
 {
-  sbus_dual_decode_event();
-  if (sbus2.frame_available) {
-    radio_control.frame_cpt++;
-    radio_control.time_since_last_frame = 0;
-    if (radio_control.radio_ok_cpt > 0) {
-      radio_control.radio_ok_cpt--;
-    } else {
-      radio_control.status = RC_OK;
-      NormalizePpmIIR(sbus2.pulses, radio_control);
-      _received_frame_handler();
+    sbus_dual_decode_event();
+    if (sbus2.frame_available)
+    {
+        radio_control.frame_cpt++;
+        radio_control.time_since_last_frame = 0;
+        if (radio_control.radio_ok_cpt > 0)
+        {
+            radio_control.radio_ok_cpt--;
+        }
+        else
+        {
+            radio_control.status = RC_OK;
+            NormalizePpmIIR(sbus2.pulses, radio_control);
+            _received_frame_handler();
+        }
+        sbus2.frame_available = FALSE;
     }
-    sbus2.frame_available = FALSE;
-  }
-  if (sbus1.frame_available) {
-    radio_control.frame_cpt++;
-    radio_control.time_since_last_frame = 0;
-    if (radio_control.radio_ok_cpt > 0) {
-      radio_control.radio_ok_cpt--;
-    } else {
-      radio_control.status = RC_OK;
-      NormalizePpmIIR(sbus1.pulses, radio_control);
-      _received_frame_handler();
+    if (sbus1.frame_available)
+    {
+        radio_control.frame_cpt++;
+        radio_control.time_since_last_frame = 0;
+        if (radio_control.radio_ok_cpt > 0)
+        {
+            radio_control.radio_ok_cpt--;
+        }
+        else
+        {
+            radio_control.status = RC_OK;
+            NormalizePpmIIR(sbus1.pulses, radio_control);
+            _received_frame_handler();
+        }
+        sbus1.frame_available = FALSE;
     }
-    sbus1.frame_available = FALSE;
-  }
 }

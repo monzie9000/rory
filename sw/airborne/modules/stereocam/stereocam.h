@@ -29,12 +29,13 @@
 
 #include <std.h>
 
-typedef struct {
-  uint8_t len;
-  uint8_t *data;
-  uint8_t fresh;
-  uint8_t matrix_width;
-  uint8_t matrix_height;
+typedef struct
+{
+    uint8_t len;
+    uint8_t *data;
+    uint8_t fresh;
+    uint8_t matrix_width;
+    uint8_t matrix_height;
 } uint8array;
 
 extern uint8array stereocam_data;

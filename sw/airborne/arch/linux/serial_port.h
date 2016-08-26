@@ -25,10 +25,11 @@
 
 #include <termios.h>
 
-struct SerialPort {
-  int fd;                        /* serial device fd          */
-  struct termios orig_termios;   /* saved tty state structure */
-  struct termios cur_termios;    /* tty state structure       */
+struct SerialPort
+{
+    int fd;                        /* serial device fd          */
+    struct termios orig_termios;   /* saved tty state structure */
+    struct termios cur_termios;    /* tty state structure       */
 };
 
 extern struct SerialPort *serial_port_new(void);

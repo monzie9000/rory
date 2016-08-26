@@ -33,54 +33,62 @@
 #include "firmwares/rotorcraft/guidance.h"
 #include "firmwares/rotorcraft/navigation.h"
 
-struct Vi_imu_info {
-  struct Int16Vect3 gyro;
-  struct Int16Vect3 accel;
-  struct Int16Vect3 mag;
+struct Vi_imu_info
+{
+    struct Int16Vect3 gyro;
+    struct Int16Vect3 accel;
+    struct Int16Vect3 mag;
 };
 
-struct Vi_gps_info {
-  struct Int32Vect3 pos;
-  struct Int16Vect3 speed;
-  int32_t pacc;
-  uint8_t num_sv;
-  uint8_t fix;
+struct Vi_gps_info
+{
+    struct Int32Vect3 pos;
+    struct Int16Vect3 speed;
+    int32_t pacc;
+    uint8_t num_sv;
+    uint8_t fix;
 };
 
-struct Vi_ahrs_info {
-  struct Int16Eulers euler;
-  struct Int16Eulers  rate;
+struct Vi_ahrs_info
+{
+    struct Int16Eulers euler;
+    struct Int16Eulers  rate;
 };
 
-struct Vi_info {
-  struct Vi_imu_info  imu;
-  struct Vi_gps_info  gps;
-  struct Vi_ahrs_info ahrs;
+struct Vi_info
+{
+    struct Vi_imu_info  imu;
+    struct Vi_gps_info  gps;
+    struct Vi_ahrs_info ahrs;
 };
 
-struct Vi_command {
-  union {
-    struct Int32Vect3  rate;
-    struct Int32Eulers attitude;
-    struct Int32Vect3 speed; //FIXME Warning z is heading rate
-    struct Int32Vect3 pos; //FIXME Warning z is heading
-  } h_sp;
-  union {
-    int32_t direct;
-    int32_t climb;
-    int32_t height;
-  } v_sp;
-  uint8_t h_mode;
-  uint8_t v_mode;
+struct Vi_command
+{
+    union
+    {
+        struct Int32Vect3  rate;
+        struct Int32Eulers attitude;
+        struct Int32Vect3 speed; //FIXME Warning z is heading rate
+        struct Int32Vect3 pos; //FIXME Warning z is heading
+    } h_sp;
+    union
+    {
+        int32_t direct;
+        int32_t climb;
+        int32_t height;
+    } v_sp;
+    uint8_t h_mode;
+    uint8_t v_mode;
 };
 
-struct VehicleInterface {
-  bool_t enabled;
-  bool_t timeouted;
-  uint8_t last_msg;
-  struct Vi_info info;
-  struct Vi_command input;
-  uint8_t available_sensors;
+struct VehicleInterface
+{
+    bool_t enabled;
+    bool_t timeouted;
+    uint8_t last_msg;
+    struct Vi_info info;
+    struct Vi_command input;
+    uint8_t available_sensors;
 };
 
 extern struct VehicleInterface vi;

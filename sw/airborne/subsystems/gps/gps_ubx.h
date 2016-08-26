@@ -36,44 +36,47 @@
 #define GPS_NB_CHANNELS 16
 
 #define GPS_UBX_MAX_PAYLOAD 255
-struct GpsUbx {
-  bool_t msg_available;
-  uint8_t msg_buf[GPS_UBX_MAX_PAYLOAD] __attribute__((aligned));
-  uint8_t msg_id;
-  uint8_t msg_class;
+struct GpsUbx
+{
+    bool_t msg_available;
+    uint8_t msg_buf[GPS_UBX_MAX_PAYLOAD] __attribute__((aligned));
+    uint8_t msg_id;
+    uint8_t msg_class;
 
-  uint8_t status;
-  uint16_t len;
-  uint8_t msg_idx;
-  uint8_t ck_a, ck_b;
-  uint8_t send_ck_a, send_ck_b;
-  uint8_t error_cnt;
-  uint8_t error_last;
+    uint8_t status;
+    uint16_t len;
+    uint8_t msg_idx;
+    uint8_t ck_a, ck_b;
+    uint8_t send_ck_a, send_ck_b;
+    uint8_t error_cnt;
+    uint8_t error_last;
 
-  uint8_t status_flags;
-  uint8_t sol_flags;
-  uint8_t have_velned;
+    uint8_t status_flags;
+    uint8_t sol_flags;
+    uint8_t have_velned;
 
 };
 
 extern struct GpsUbx gps_ubx;
 
 #if USE_GPS_UBX_RXM_RAW
-struct GpsUbxRawMes {
-  double cpMes;
-  double prMes;
-  float doMes;
-  uint8_t sv;
-  int8_t mesQI;
-  int8_t cno;
-  uint8_t lli;
+struct GpsUbxRawMes
+{
+    double cpMes;
+    double prMes;
+    float doMes;
+    uint8_t sv;
+    int8_t mesQI;
+    int8_t cno;
+    uint8_t lli;
 };
 
-struct GpsUbxRaw {
-  int32_t iTOW;
-  int16_t week;
-  uint8_t numSV;
-  struct GpsUbxRawMes measures[GPS_NB_CHANNELS];
+struct GpsUbxRaw
+{
+    int32_t iTOW;
+    int16_t week;
+    uint8_t numSV;
+    struct GpsUbxRawMes measures[GPS_NB_CHANNELS];
 };
 
 extern struct GpsUbxRaw gps_ubx_raw;
@@ -100,14 +103,16 @@ extern void gps_ubx_msg(void);
  */
 static inline void GpsEvent(void)
 {
-  struct link_device *dev = &((GPS_LINK).device);
+    struct link_device *dev = &((GPS_LINK).device);
 
-  while (dev->char_available(dev->periph)) {
-    gps_ubx_parse(dev->get_byte(dev->periph));
-    if (gps_ubx.msg_available) {
-      gps_ubx_msg();
+    while (dev->char_available(dev->periph))
+    {
+        gps_ubx_parse(dev->get_byte(dev->periph));
+        if (gps_ubx.msg_available)
+        {
+            gps_ubx_msg();
+        }
     }
-  }
 }
 
 

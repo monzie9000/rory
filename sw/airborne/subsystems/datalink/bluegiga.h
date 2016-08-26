@@ -30,11 +30,12 @@
 #include "mcu_periph/link_device.h"
 
 /* The different statuses the communication can be in */
-enum BlueGigaStatus {
-  BLUEGIGA_UNINIT,                /**< The com isn't initialized */
-  BLUEGIGA_IDLE,                  /**< The com is in idle */
-  BLUEGIGA_SENDING,               /**< The com is sending */
-  BLUEGIGA_BROADCASTING           /**< The com is switched from data link to rssi scanning */
+enum BlueGigaStatus
+{
+    BLUEGIGA_UNINIT,                /**< The com isn't initialized */
+    BLUEGIGA_IDLE,                  /**< The com is in idle */
+    BLUEGIGA_SENDING,               /**< The com is sending */
+    BLUEGIGA_BROADCASTING           /**< The com is switched from data link to rssi scanning */
 };
 
 #ifndef BLUEGIGA_BUFFER_SIZE
@@ -45,24 +46,25 @@ enum BlueGigaStatus {
 #error "BLUEGIGA_BUFFER_SIZE not made for sizes larger than 256, check subsystems/datalink/bluegiga.c for more information"
 #endif
 
-struct bluegiga_periph {
-  /* Receive buffer */
-  uint8_t rx_buf[BLUEGIGA_BUFFER_SIZE];
-  uint8_t rx_insert_idx;
-  uint8_t rx_extract_idx;
-  /* Transmit buffer */
-  uint8_t tx_buf[BLUEGIGA_BUFFER_SIZE];
-  uint8_t tx_insert_idx;
-  uint8_t tx_extract_idx;
-  /* transmit and receive buffers */
-  uint8_t work_tx[20];
-  uint8_t work_rx[20];
-  /** Generic device interface */
-  struct link_device device;
+struct bluegiga_periph
+{
+    /* Receive buffer */
+    uint8_t rx_buf[BLUEGIGA_BUFFER_SIZE];
+    uint8_t rx_insert_idx;
+    uint8_t rx_extract_idx;
+    /* Transmit buffer */
+    uint8_t tx_buf[BLUEGIGA_BUFFER_SIZE];
+    uint8_t tx_insert_idx;
+    uint8_t tx_extract_idx;
+    /* transmit and receive buffers */
+    uint8_t work_tx[20];
+    uint8_t work_rx[20];
+    /** Generic device interface */
+    struct link_device device;
 
-  /* some administrative variables */
-  uint32_t bytes_recvd_since_last;
-  uint8_t end_of_msg;
+    /* some administrative variables */
+    uint32_t bytes_recvd_since_last;
+    uint8_t end_of_msg;
 
 };
 
@@ -84,23 +86,28 @@ void bluegiga_request_all_rssi(struct bluegiga_periph *p);
 #include "led.h"
 static inline void bluegiga_read_buffer(struct bluegiga_periph *p, struct pprz_transport *t)
 {
-  do {
-    uint8_t c = 0;
-    do {
-      parse_pprz(t, p->rx_buf[(p->rx_extract_idx + c++) % BLUEGIGA_BUFFER_SIZE]);
-    } while (((p->rx_extract_idx + c) % BLUEGIGA_BUFFER_SIZE != p->rx_insert_idx)
-             && !(t->trans_rx.msg_received));
-    // reached end of circular read buffer or message received
-    // if received, decode and advance
-    if (t->trans_rx.msg_received) {
+    do
+    {
+        uint8_t c = 0;
+        do
+        {
+            parse_pprz(t, p->rx_buf[(p->rx_extract_idx + c++) % BLUEGIGA_BUFFER_SIZE]);
+        }
+        while (((p->rx_extract_idx + c) % BLUEGIGA_BUFFER_SIZE != p->rx_insert_idx)
+                && !(t->trans_rx.msg_received));
+        // reached end of circular read buffer or message received
+        // if received, decode and advance
+        if (t->trans_rx.msg_received)
+        {
 #ifdef MODEM_LED
-      LED_TOGGLE(MODEM_LED);
+            LED_TOGGLE(MODEM_LED);
 #endif
-      pprz_parse_payload(t);
-      t->trans_rx.msg_received = FALSE;
+            pprz_parse_payload(t);
+            t->trans_rx.msg_received = FALSE;
+        }
+        bluegiga_increment_buf(&p->rx_extract_idx, c);
     }
-    bluegiga_increment_buf(&p->rx_extract_idx, c);
-  } while (bluegiga_ch_available(p)); // continue till all messages read
+    while (bluegiga_ch_available(p));   // continue till all messages read
 }
 
 // transmit previous data in buffer and parse data received

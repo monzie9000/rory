@@ -35,12 +35,14 @@
 #include "link_mcu_hw.h"
 #endif
 
-struct link_mcu_msg {
-  union  {
-    struct fbw_state from_fbw;
-    struct ap_state  from_ap;
-  } payload;
-  uint16_t checksum;
+struct link_mcu_msg
+{
+    union
+    {
+        struct fbw_state from_fbw;
+        struct ap_state  from_ap;
+    } payload;
+    uint16_t checksum;
 };
 
 extern struct link_mcu_msg link_mcu_from_ap_msg;

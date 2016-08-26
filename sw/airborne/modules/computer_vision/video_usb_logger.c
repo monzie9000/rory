@@ -40,51 +40,55 @@ static FILE *video_usb_logger = NULL;
 /** Start the file logger and open a new file */
 void video_usb_logger_start(void)
 {
-  uint32_t counter = 0;
-  char filename[512];
+    uint32_t counter = 0;
+    char filename[512];
 
-  // Check for available files
-  sprintf(filename, "%s/%05d.csv", STRINGIFY(VIDEO_USB_LOGGER_PATH), counter);
-  while ((video_usb_logger = fopen(filename, "r"))) {
-    fclose(video_usb_logger);
-
-    counter++;
+    // Check for available files
     sprintf(filename, "%s/%05d.csv", STRINGIFY(VIDEO_USB_LOGGER_PATH), counter);
-  }
+    while ((video_usb_logger = fopen(filename, "r")))
+    {
+        fclose(video_usb_logger);
 
-  video_usb_logger = fopen(filename, "w");
+        counter++;
+        sprintf(filename, "%s/%05d.csv", STRINGIFY(VIDEO_USB_LOGGER_PATH), counter);
+    }
 
-  if (video_usb_logger != NULL) {
-    fprintf(video_usb_logger, "counter,image,roll,pitch,yaw,x,y,z,sonar\n");
-  }
+    video_usb_logger = fopen(filename, "w");
+
+    if (video_usb_logger != NULL)
+    {
+        fprintf(video_usb_logger, "counter,image,roll,pitch,yaw,x,y,z,sonar\n");
+    }
 }
 
 /** Stop the logger an nicely close the file */
 void video_usb_logger_stop(void)
 {
-  if (video_usb_logger != NULL) {
-    fclose(video_usb_logger);
-    video_usb_logger = NULL;
-  }
+    if (video_usb_logger != NULL)
+    {
+        fclose(video_usb_logger);
+        video_usb_logger = NULL;
+    }
 }
 
 /** Log the values to a csv file */
 void video_usb_logger_periodic(void)
 {
-  if (video_usb_logger == NULL) {
-    return;
-  }
-  static uint32_t counter = 0;
-  struct NedCoor_i *ned = stateGetPositionNed_i();
-  struct Int32Eulers *euler = stateGetNedToBodyEulers_i();
-  static uint32_t sonar = 0;
+    if (video_usb_logger == NULL)
+    {
+        return;
+    }
+    static uint32_t counter = 0;
+    struct NedCoor_i *ned = stateGetPositionNed_i();
+    struct Int32Eulers *euler = stateGetNedToBodyEulers_i();
+    static uint32_t sonar = 0;
 
-  // Take a new shot
-  viewvideo_take_shot(TRUE);
+    // Take a new shot
+    viewvideo_take_shot(TRUE);
 
-  // Save to the file
-  fprintf(video_usb_logger, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", counter,
-          viewvideo.shot_number, euler->phi, euler->theta, euler->psi, ned->x,
-          ned->y, ned->z, sonar);
-  counter++;
+    // Save to the file
+    fprintf(video_usb_logger, "%d,%d,%d,%d,%d,%d,%d,%d,%d\n", counter,
+            viewvideo.shot_number, euler->phi, euler->theta, euler->psi, ned->x,
+            ned->y, ned->z, sonar);
+    counter++;
 }

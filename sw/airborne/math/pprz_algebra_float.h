@@ -45,54 +45,61 @@ extern "C" {
 #define M_SQRT2         1.41421356237309504880
 #endif
 
-struct FloatVect2 {
-  float x;
-  float y;
+struct FloatVect2
+{
+    float x;
+    float y;
 };
 
-struct FloatVect3 {
-  float x;
-  float y;
-  float z;
+struct FloatVect3
+{
+    float x;
+    float y;
+    float z;
 };
 
 /**
  * @brief Roation quaternion
  */
-struct FloatQuat {
-  float qi;
-  float qx;
-  float qy;
-  float qz;
+struct FloatQuat
+{
+    float qi;
+    float qx;
+    float qy;
+    float qz;
 };
 
-struct FloatMat33 {
-  float m[3 * 3];
+struct FloatMat33
+{
+    float m[3 * 3];
 };
 
 /**
  * @brief rotation matrix
  */
-struct FloatRMat {
-  float m[3 * 3];
+struct FloatRMat
+{
+    float m[3 * 3];
 };
 
 /**
  * @brief euler angles
  * @details Units: radians */
-struct FloatEulers {
-  float phi; ///< in radians
-  float theta; ///< in radians
-  float psi; ///< in radians
+struct FloatEulers
+{
+    float phi; ///< in radians
+    float theta; ///< in radians
+    float psi; ///< in radians
 };
 
 /**
  * @brief angular rates
  * @details Units: rad/s */
-struct FloatRates {
-  float p; ///< in rad/s
-  float q; ///< in rad/s
-  float r; ///< in rad/s
+struct FloatRates
+{
+    float p; ///< in rad/s
+    float q; ///< in rad/s
+    float r; ///< in rad/s
 };
 
 #define FLOAT_ANGLE_NORMALIZE(_a) {             \
@@ -118,22 +125,23 @@ struct FloatRates {
 
 static inline float float_vect2_norm2(struct FloatVect2 *v)
 {
-  return v->x * v->x + v->y * v->y;
+    return v->x * v->x + v->y * v->y;
 }
 
 static inline float float_vect2_norm(struct FloatVect2 *v)
 {
-  return sqrtf(float_vect2_norm2(v));
+    return sqrtf(float_vect2_norm2(v));
 }
 
 /** normalize 2D vector in place */
 static inline void float_vect2_normalize(struct FloatVect2 *v)
 {
-  const float n = float_vect2_norm(v);
-  if (n > 0) {
-    v->x /= n;
-    v->y /= n;
-  }
+    const float n = float_vect2_norm(v);
+    if (n > 0)
+    {
+        v->x /= n;
+        v->y /= n;
+    }
 }
 
 #define FLOAT_VECT2_NORMALIZE(_v) float_vect2_normalize(&(_v))
@@ -150,23 +158,24 @@ static inline void float_vect2_normalize(struct FloatVect2 *v)
 
 static inline float float_vect3_norm2(struct FloatVect3 *v)
 {
-  return v->x * v->x + v->y * v->y + v->z * v->z;
+    return v->x * v->x + v->y * v->y + v->z * v->z;
 }
 
 static inline float float_vect3_norm(struct FloatVect3 *v)
 {
-  return sqrtf(float_vect3_norm2(v));
+    return sqrtf(float_vect3_norm2(v));
 }
 
 /** normalize 3D vector in place */
 static inline void float_vect3_normalize(struct FloatVect3 *v)
 {
-  const float n = float_vect3_norm(v);
-  if (n > 0) {
-    v->x /= n;
-    v->y /= n;
-    v->z /= n;
-  }
+    const float n = float_vect3_norm(v);
+    if (n > 0)
+    {
+        v->x /= n;
+        v->y /= n;
+        v->z /= n;
+    }
 }
 
 #define FLOAT_VECT3_NORMALIZE(_v) float_vect3_normalize(&(_v))
@@ -239,7 +248,7 @@ extern void float_rates_of_euler_dot(struct FloatRates *r, struct FloatEulers *e
 /** initialises a rotation matrix to identity */
 static inline void float_rmat_identity(struct FloatRMat *rm)
 {
-  FLOAT_MAT33_DIAG(*rm, 1., 1., 1.);
+    FLOAT_MAT33_DIAG(*rm, 1., 1., 1.);
 }
 
 /** Inverse/transpose of a rotation matrix.
@@ -337,40 +346,42 @@ extern float float_rmat_reorthogonalize(struct FloatRMat *rm);
 /** initialises a quaternion to identity */
 static inline void float_quat_identity(struct FloatQuat *q)
 {
-  q->qi = 1.0;
-  q->qx = 0;
-  q->qy = 0;
-  q->qz = 0;
+    q->qi = 1.0;
+    q->qx = 0;
+    q->qy = 0;
+    q->qz = 0;
 }
 
 #define FLOAT_QUAT_NORM2(_q) (SQUARE((_q).qi) + SQUARE((_q).qx) + SQUARE((_q).qy) + SQUARE((_q).qz))
 
 static inline float float_quat_norm(struct FloatQuat *q)
 {
-  return sqrtf(SQUARE(q->qi) + SQUARE(q->qx) +  SQUARE(q->qy) + SQUARE(q->qz));
+    return sqrtf(SQUARE(q->qi) + SQUARE(q->qx) +  SQUARE(q->qy) + SQUARE(q->qz));
 }
 
 static inline void float_quat_normalize(struct FloatQuat *q)
 {
-  float qnorm = float_quat_norm(q);
-  if (qnorm > FLT_MIN) {
-    q->qi = q->qi / qnorm;
-    q->qx = q->qx / qnorm;
-    q->qy = q->qy / qnorm;
-    q->qz = q->qz / qnorm;
-  }
+    float qnorm = float_quat_norm(q);
+    if (qnorm > FLT_MIN)
+    {
+        q->qi = q->qi / qnorm;
+        q->qx = q->qx / qnorm;
+        q->qy = q->qy / qnorm;
+        q->qz = q->qz / qnorm;
+    }
 }
 
 static inline void float_quat_invert(struct FloatQuat *qo, struct FloatQuat *qi)
 {
-  QUAT_INVERT(*qo, *qi);
+    QUAT_INVERT(*qo, *qi);
 }
 
 static inline void float_quat_wrap_shortest(struct FloatQuat *q)
 {
-  if (q->qi < 0.) {
-    QUAT_EXPLEMENTARY(*q, *q);
-  }
+    if (q->qi < 0.)
+    {
+        QUAT_EXPLEMENTARY(*q, *q);
+    }
 }
 
 #define FLOAT_QUAT_EXTRACT(_vo, _qi) QUAT_EXTRACT_Q(_vo, _qi)
@@ -485,7 +496,7 @@ extern void float_quat_of_rmat(struct FloatQuat *q, struct FloatRMat *rm);
 
 static inline float float_eulers_norm(struct FloatEulers *e)
 {
-  return sqrtf(SQUARE(e->phi) + SQUARE(e->theta) + SQUARE(e->psi));
+    return sqrtf(SQUARE(e->phi) + SQUARE(e->theta) + SQUARE(e->psi));
 }
 extern void float_eulers_of_rmat(struct FloatEulers *e, struct FloatRMat *rm);
 extern void float_eulers_of_quat(struct FloatEulers *e, struct FloatQuat *q);
@@ -504,75 +515,106 @@ extern void float_eulers_of_quat(struct FloatEulers *e, struct FloatQuat *q);
 /** a = 0 */
 static inline void float_vect_zero(float *a, const int n)
 {
-  int i;
-  for (i = 0; i < n; i++) { a[i] = 0.; }
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        a[i] = 0.;
+    }
 }
 
 /** a = b */
 static inline void float_vect_copy(float *a, const float *b, const int n)
 {
-  int i;
-  for (i = 0; i < n; i++) { a[i] = b[i]; }
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        a[i] = b[i];
+    }
 }
 
 /** o = a + b */
 static inline void float_vect_sum(float *o, const float *a, const float *b, const int n)
 {
-  int i;
-  for (i = 0; i < n; i++) { o[i] = a[i] + b[i]; }
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        o[i] = a[i] + b[i];
+    }
 }
 
 /** o = a - b */
 static inline void float_vect_diff(float *o, const float *a, const float *b, const int n)
 {
-  int i;
-  for (i = 0; i < n; i++) { o[i] = a[i] - b[i]; }
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        o[i] = a[i] - b[i];
+    }
 }
 
 /** o = a * b (element wise) */
 static inline void float_vect_mul(float *o, const float *a, const float *b, const int n)
 {
-  int i;
-  for (i = 0; i < n; i++) { o[i] = a[i] * b[i]; }
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        o[i] = a[i] * b[i];
+    }
 }
 
 /** a += b */
 static inline void float_vect_add(float *a, const float *b, const int n)
 {
-  int i;
-  for (i = 0; i < n; i++) { a[i] += b[i]; }
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        a[i] += b[i];
+    }
 }
 
 /** a -= b */
 static inline void float_vect_sub(float *a, const float *b, const int n)
 {
-  int i;
-  for (i = 0; i < n; i++) { a[i] -= b[i]; }
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        a[i] -= b[i];
+    }
 }
 
 /** o = a * s */
 static inline void float_vect_smul(float *o, const float *a, const float s, const int n)
 {
-  int i;
-  for (i = 0; i < n; i++) { o[i] = a[i] * s; }
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        o[i] = a[i] * s;
+    }
 }
 
 /** o = a / s */
 static inline void float_vect_sdiv(float *o, const float *a, const float s, const int n)
 {
-  int i;
-  if (fabs(s) > 1e-5) {
-    for (i = 0; i < n; i++) { o[i] = a[i] / s; }
-  }
+    int i;
+    if (fabs(s) > 1e-5)
+    {
+        for (i = 0; i < n; i++)
+        {
+            o[i] = a[i] / s;
+        }
+    }
 }
 
 /** ||a|| */
 static inline float float_vect_norm(const float *a, const int n)
 {
-  int i;
-  float sum = 0;
-  for (i = 0; i < n; i++) { sum += a[i] * a[i]; }
-  return sqrtf(sum);
+    int i;
+    float sum = 0;
+    for (i = 0; i < n; i++)
+    {
+        sum += a[i] * a[i];
+    }
+    return sqrtf(sum);
 }
 
 //
@@ -592,50 +634,68 @@ static inline float float_vect_norm(const float *a, const int n)
 /** a = 0 */
 static inline void float_mat_zero(float **a, int m, int n)
 {
-  int i, j;
-  for (i = 0; i < m; i++) {
-    for (j = 0; j < n; j++) { a[i][j] = 0.; }
-  }
+    int i, j;
+    for (i = 0; i < m; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            a[i][j] = 0.;
+        }
+    }
 }
 
 /** a = b */
 static inline void float_mat_copy(float **a, float **b, int m, int n)
 {
-  int i, j;
-  for (i = 0; i < m; i++) {
-    for (j = 0; j < n; j++) { a[i][j] = b[i][j]; }
-  }
+    int i, j;
+    for (i = 0; i < m; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            a[i][j] = b[i][j];
+        }
+    }
 }
 
 /** o = a + b */
 static inline void float_mat_sum(float **o, float **a, float **b, int m, int n)
 {
-  int i, j;
-  for (i = 0; i < m; i++) {
-    for (j = 0; j < n; j++) { o[i][j] = a[i][j] + b[i][j]; }
-  }
+    int i, j;
+    for (i = 0; i < m; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            o[i][j] = a[i][j] + b[i][j];
+        }
+    }
 }
 
 /** o = a - b */
 static inline void float_mat_diff(float **o, float **a, float **b, int m, int n)
 {
-  int i, j;
-  for (i = 0; i < m; i++) {
-    for (j = 0; j < n; j++) { o[i][j] = a[i][j] - b[i][j]; }
-  }
+    int i, j;
+    for (i = 0; i < m; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            o[i][j] = a[i][j] - b[i][j];
+        }
+    }
 }
 
 /** transpose square matrix */
 static inline void float_mat_transpose(float **a, int n)
 {
-  int i, j;
-  for (i = 0; i < n; i++) {
-    for (j = 0; j < i; j++) {
-      float t = a[i][j];
-      a[i][j] = a[j][i];
-      a[j][i] = t;
+    int i, j;
+    for (i = 0; i < n; i++)
+    {
+        for (j = 0; j < i; j++)
+        {
+            float t = a[i][j];
+            a[i][j] = a[j][i];
+            a[j][i] = t;
+        }
     }
-  }
 }
 
 /** o = a * b
@@ -646,15 +706,18 @@ static inline void float_mat_transpose(float **a, int n)
  */
 static inline void float_mat_mul(float **o, float **a, float **b, int m, int n, int l)
 {
-  int i, j, k;
-  for (i = 0; i < m; i++) {
-    for (j = 0; j < l; j++) {
-      o[i][j] = 0.;
-      for (k = 0; k < n; k++) {
-        o[i][j] += a[i][k] * b[k][j];
-      }
+    int i, j, k;
+    for (i = 0; i < m; i++)
+    {
+        for (j = 0; j < l; j++)
+        {
+            o[i][j] = 0.;
+            for (k = 0; k < n; k++)
+            {
+                o[i][j] += a[i][k] * b[k][j];
+            }
+        }
     }
-  }
 }
 
 /** matrix minor
@@ -665,37 +728,46 @@ static inline void float_mat_mul(float **o, float **a, float **b, int m, int n, 
  */
 static inline void float_mat_minor(float **o, float **a, int m, int n, int d)
 {
-  int i, j;
-  float_mat_zero(o, m, n);
-  for (i = 0; i < d; i++) { o[i][i] = 1.0; }
-  for (i = d; i < m; i++) {
-    for (j = d; j < n; j++) {
-      o[i][j] = a[i][j];
+    int i, j;
+    float_mat_zero(o, m, n);
+    for (i = 0; i < d; i++)
+    {
+        o[i][i] = 1.0;
     }
-  }
+    for (i = d; i < m; i++)
+    {
+        for (j = d; j < n; j++)
+        {
+            o[i][j] = a[i][j];
+        }
+    }
 }
 
 /** o = I - v v^T */
 static inline void float_mat_vmul(float **o, float *v, int n)
 {
-  int i, j;
-  for (i = 0; i < n; i++) {
-    for (j = 0; j < n; j++) {
-      o[i][j] = -2. *  v[i] * v[j];
+    int i, j;
+    for (i = 0; i < n; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            o[i][j] = -2. *  v[i] * v[j];
+        }
     }
-  }
-  for (i = 0; i < n; i++) {
-    o[i][i] += 1.;
-  }
+    for (i = 0; i < n; i++)
+    {
+        o[i][i] += 1.;
+    }
 }
 
 /** o = c-th column of matrix a[m x n] */
 static inline void float_mat_col(float *o, float **a, int m, int c)
 {
-  int i;
-  for (i = 0; i < m; i++) {
-    o[i] = a[i][c];
-  }
+    int i;
+    for (i = 0; i < m; i++)
+    {
+        o[i] = a[i][c];
+    }
 }
 
 #ifdef __cplusplus

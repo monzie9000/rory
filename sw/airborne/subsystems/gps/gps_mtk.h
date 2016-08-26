@@ -30,22 +30,23 @@
 
 #define GPS_MTK_MAX_PAYLOAD 255
 
-struct GpsMtk {
-  bool_t msg_available;
-  uint8_t msg_buf[GPS_MTK_MAX_PAYLOAD] __attribute__((aligned));
-  uint8_t msg_id;
-  uint8_t msg_class;
+struct GpsMtk
+{
+    bool_t msg_available;
+    uint8_t msg_buf[GPS_MTK_MAX_PAYLOAD] __attribute__((aligned));
+    uint8_t msg_id;
+    uint8_t msg_class;
 
-  uint8_t status;
-  uint16_t len;
-  uint8_t msg_idx;
-  uint8_t ck_a, ck_b;
-  uint8_t send_ck_a, send_ck_b;
-  uint8_t error_cnt;
-  uint8_t error_last;
+    uint8_t status;
+    uint16_t len;
+    uint8_t msg_idx;
+    uint8_t ck_a, ck_b;
+    uint8_t send_ck_a, send_ck_b;
+    uint8_t error_cnt;
+    uint8_t error_last;
 
-  uint8_t status_flags;
-  uint8_t sol_flags;
+    uint8_t status_flags;
+    uint8_t sol_flags;
 };
 
 extern struct GpsMtk gps_mtk;
@@ -71,15 +72,17 @@ extern void gps_mtk_parse(uint8_t c);
 
 static inline void GpsEvent(void)
 {
-  struct link_device *dev = &((GPS_LINK).device);
+    struct link_device *dev = &((GPS_LINK).device);
 
-  while (dev->char_available(dev->periph)) {
-    gps_mtk_parse(dev->get_byte(dev->periph));
-    if (gps_mtk.msg_available) {
-      gps_mtk_msg();
+    while (dev->char_available(dev->periph))
+    {
+        gps_mtk_parse(dev->get_byte(dev->periph));
+        if (gps_mtk.msg_available)
+        {
+            gps_mtk_msg();
+        }
+        GpsConfigure();
     }
-    GpsConfigure();
-  }
 }
 
 /*

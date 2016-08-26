@@ -231,35 +231,35 @@ static void b2_hff_update_ydot(struct HfilterFloat *hff_work, float vel, float R
 
 static void send_hff(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_HFF(trans, dev, AC_ID,
-                    &b2_hff_state.x,
-                    &b2_hff_state.y,
-                    &b2_hff_state.xdot,
-                    &b2_hff_state.ydot,
-                    &b2_hff_state.xdotdot,
-                    &b2_hff_state.ydotdot);
+    pprz_msg_send_HFF(trans, dev, AC_ID,
+                      &b2_hff_state.x,
+                      &b2_hff_state.y,
+                      &b2_hff_state.xdot,
+                      &b2_hff_state.ydot,
+                      &b2_hff_state.xdotdot,
+                      &b2_hff_state.ydotdot);
 }
 
 static void send_hff_debug(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_HFF_DBG(trans, dev, AC_ID,
-                        &b2_hff_x_meas,
-                        &b2_hff_y_meas,
-                        &b2_hff_xd_meas,
-                        &b2_hff_yd_meas,
-                        &b2_hff_state.xP[0][0],
-                        &b2_hff_state.yP[0][0],
-                        &b2_hff_state.xP[1][1],
-                        &b2_hff_state.yP[1][1]);
+    pprz_msg_send_HFF_DBG(trans, dev, AC_ID,
+                          &b2_hff_x_meas,
+                          &b2_hff_y_meas,
+                          &b2_hff_xd_meas,
+                          &b2_hff_yd_meas,
+                          &b2_hff_state.xP[0][0],
+                          &b2_hff_state.yP[0][0],
+                          &b2_hff_state.xP[1][1],
+                          &b2_hff_state.yP[1][1]);
 }
 
 #ifdef GPS_LAG
 static void send_hff_gps(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_HFF_GPS(trans, dev, AC_ID,
-                        &(b2_hff_rb_last->lag_counter),
-                        &lag_counter_err,
-                        &save_counter);
+    pprz_msg_send_HFF_GPS(trans, dev, AC_ID,
+                          &(b2_hff_rb_last->lag_counter),
+                          &lag_counter_err,
+                          &save_counter);
 }
 #endif
 
@@ -267,325 +267,377 @@ static void send_hff_gps(struct transport_tx *trans, struct link_device *dev)
 
 void b2_hff_init(float init_x, float init_xdot, float init_y, float init_ydot)
 {
-  Rgps_pos = HFF_R_POS;
-  Rgps_vel = HFF_R_SPEED;
-  b2_hff_init_x(init_x, init_xdot);
-  b2_hff_init_y(init_y, init_ydot);
+    Rgps_pos = HFF_R_POS;
+    Rgps_vel = HFF_R_SPEED;
+    b2_hff_init_x(init_x, init_xdot);
+    b2_hff_init_y(init_y, init_ydot);
 #ifdef GPS_LAG
-  /* init buffer for past mean accel values */
-  acc_buf_r = 0;
-  acc_buf_w = 0;
-  acc_buf_n = 0;
-  b2_hff_rb_put = b2_hff_rb;
-  b2_hff_rb_last = b2_hff_rb;
-  b2_hff_rb_last->rollback = FALSE;
-  b2_hff_rb_last->lag_counter = 0;
-  b2_hff_state.lag_counter = GPS_LAG_N;
+    /* init buffer for past mean accel values */
+    acc_buf_r = 0;
+    acc_buf_w = 0;
+    acc_buf_n = 0;
+    b2_hff_rb_put = b2_hff_rb;
+    b2_hff_rb_last = b2_hff_rb;
+    b2_hff_rb_last->rollback = FALSE;
+    b2_hff_rb_last->lag_counter = 0;
+    b2_hff_state.lag_counter = GPS_LAG_N;
 #ifdef SITL
-  printf("GPS_LAG: %f\n", GPS_LAG);
-  printf("GPS_LAG_N: %d\n", GPS_LAG_N);
-  printf("GPS_DT_N: %d\n", GPS_DT_N);
-  printf("DT_HFILTER: %f\n", DT_HFILTER);
-  printf("GPS_LAG_TOL_N: %i\n", GPS_LAG_TOL_N);
+    printf("GPS_LAG: %f\n", GPS_LAG);
+    printf("GPS_LAG_N: %d\n", GPS_LAG_N);
+    printf("GPS_DT_N: %d\n", GPS_DT_N);
+    printf("DT_HFILTER: %f\n", DT_HFILTER);
+    printf("GPS_LAG_TOL_N: %i\n", GPS_LAG_TOL_N);
 #endif
 #else
-  b2_hff_rb_last = &b2_hff_state;
-  b2_hff_state.lag_counter = 0;
+    b2_hff_rb_last = &b2_hff_state;
+    b2_hff_state.lag_counter = 0;
 #endif
-  b2_hff_rb_n = 0;
-  b2_hff_state.rollback = FALSE;
-  lag_counter_err = 0;
-  save_counter = -1;
-  past_save_counter = SAVE_DONE;
-  b2_hff_ps_counter = 1;
-  b2_hff_lost_counter = 0;
-  b2_hff_lost_limit = HFF_LOST_LIMIT;
+    b2_hff_rb_n = 0;
+    b2_hff_state.rollback = FALSE;
+    lag_counter_err = 0;
+    save_counter = -1;
+    past_save_counter = SAVE_DONE;
+    b2_hff_ps_counter = 1;
+    b2_hff_lost_counter = 0;
+    b2_hff_lost_limit = HFF_LOST_LIMIT;
 
 #if PERIODIC_TELEMETRY
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_HFF, send_hff);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_HFF_DBG, send_hff_debug);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_HFF, send_hff);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_HFF_DBG, send_hff_debug);
 #ifdef GPS_LAG
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_HFF_GPS, send_hff_gps);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_HFF_GPS, send_hff_gps);
 #endif
 #endif
 
-  init_butterworth_2_low_pass_int(&filter_x, HFF_LOWPASS_CUTOFF_FREQUENCY, (1. / AHRS_PROPAGATE_FREQUENCY), 0);
-  init_butterworth_2_low_pass_int(&filter_y, HFF_LOWPASS_CUTOFF_FREQUENCY, (1. / AHRS_PROPAGATE_FREQUENCY), 0);
-  init_butterworth_2_low_pass_int(&filter_z, HFF_LOWPASS_CUTOFF_FREQUENCY, (1. / AHRS_PROPAGATE_FREQUENCY), 0);
+    init_butterworth_2_low_pass_int(&filter_x, HFF_LOWPASS_CUTOFF_FREQUENCY, (1. / AHRS_PROPAGATE_FREQUENCY), 0);
+    init_butterworth_2_low_pass_int(&filter_y, HFF_LOWPASS_CUTOFF_FREQUENCY, (1. / AHRS_PROPAGATE_FREQUENCY), 0);
+    init_butterworth_2_low_pass_int(&filter_z, HFF_LOWPASS_CUTOFF_FREQUENCY, (1. / AHRS_PROPAGATE_FREQUENCY), 0);
 }
 
 static void b2_hff_init_x(float init_x, float init_xdot)
 {
-  b2_hff_state.x     = init_x;
-  b2_hff_state.xdot  = init_xdot;
-  int i, j;
-  for (i = 0; i < HFF_STATE_SIZE; i++) {
-    for (j = 0; j < HFF_STATE_SIZE; j++) {
-      b2_hff_state.xP[i][j] = 0.;
+    b2_hff_state.x     = init_x;
+    b2_hff_state.xdot  = init_xdot;
+    int i, j;
+    for (i = 0; i < HFF_STATE_SIZE; i++)
+    {
+        for (j = 0; j < HFF_STATE_SIZE; j++)
+        {
+            b2_hff_state.xP[i][j] = 0.;
+        }
+        b2_hff_state.xP[i][i] = INIT_PXX;
     }
-    b2_hff_state.xP[i][i] = INIT_PXX;
-  }
 }
 
 static void b2_hff_init_y(float init_y, float init_ydot)
 {
-  b2_hff_state.y     = init_y;
-  b2_hff_state.ydot  = init_ydot;
-  int i, j;
-  for (i = 0; i < HFF_STATE_SIZE; i++) {
-    for (j = 0; j < HFF_STATE_SIZE; j++) {
-      b2_hff_state.yP[i][j] = 0.;
+    b2_hff_state.y     = init_y;
+    b2_hff_state.ydot  = init_ydot;
+    int i, j;
+    for (i = 0; i < HFF_STATE_SIZE; i++)
+    {
+        for (j = 0; j < HFF_STATE_SIZE; j++)
+        {
+            b2_hff_state.yP[i][j] = 0.;
+        }
+        b2_hff_state.yP[i][i] = INIT_PXX;
     }
-    b2_hff_state.yP[i][i] = INIT_PXX;
-  }
 }
 
 #ifdef GPS_LAG
 static void b2_hff_store_accel_ltp(float x, float y)
 {
-  past_accel[acc_buf_w].x = x;
-  past_accel[acc_buf_w].y = y;
-  INC_ACC_IDX(acc_buf_w);
+    past_accel[acc_buf_w].x = x;
+    past_accel[acc_buf_w].y = y;
+    INC_ACC_IDX(acc_buf_w);
 
-  if (acc_buf_n < ACC_BUF_MAXN) {
-    acc_buf_n++;
-  } else {
-    INC_ACC_IDX(acc_buf_r);
-  }
+    if (acc_buf_n < ACC_BUF_MAXN)
+    {
+        acc_buf_n++;
+    }
+    else
+    {
+        INC_ACC_IDX(acc_buf_r);
+    }
 }
 
 /* get the accel values from back_n steps ago */
 static void b2_hff_get_past_accel(unsigned int back_n)
 {
-  int i;
-  if (back_n > acc_buf_n) {
-    PRINT_DBG(1, ("Cannot go back %d steps, going back only %d instead!\n", back_n, acc_buf_n));
-    back_n = acc_buf_n;
-  } else if (back_n == 0) {
-    PRINT_DBG(1, ("Cannot go back zero steps!\n"));
-    return;
-  }
-  if ((int)(acc_buf_w - back_n) < 0) {
-    i = acc_buf_w - back_n  + ACC_BUF_MAXN;
-  } else {
-    i = acc_buf_w - back_n;
-  }
-  b2_hff_xdd_meas = past_accel[i].x;
-  b2_hff_ydd_meas = past_accel[i].y;
-  PRINT_DBG(3, ("get past accel. buf_n: %2d \tbuf_w: %2d \tback_n: %2d \ti: %2d \txdd: %f \tydd: %f\n", acc_buf_n,
-                acc_buf_w, back_n, i, b2_hff_xdd_meas, b2_hff_ydd_meas));
+    int i;
+    if (back_n > acc_buf_n)
+    {
+        PRINT_DBG(1, ("Cannot go back %d steps, going back only %d instead!\n", back_n, acc_buf_n));
+        back_n = acc_buf_n;
+    }
+    else if (back_n == 0)
+    {
+        PRINT_DBG(1, ("Cannot go back zero steps!\n"));
+        return;
+    }
+    if ((int)(acc_buf_w - back_n) < 0)
+    {
+        i = acc_buf_w - back_n  + ACC_BUF_MAXN;
+    }
+    else
+    {
+        i = acc_buf_w - back_n;
+    }
+    b2_hff_xdd_meas = past_accel[i].x;
+    b2_hff_ydd_meas = past_accel[i].y;
+    PRINT_DBG(3, ("get past accel. buf_n: %2d \tbuf_w: %2d \tback_n: %2d \ti: %2d \txdd: %f \tydd: %f\n", acc_buf_n,
+                  acc_buf_w, back_n, i, b2_hff_xdd_meas, b2_hff_ydd_meas));
 }
 
 static void b2_hff_rb_put_state(struct HfilterFloat *source)
 {
-  /* copy state from source into buffer */
-  b2_hff_set_state(b2_hff_rb_put, source);
-  b2_hff_rb_put->lag_counter = 0;
-  b2_hff_rb_put->rollback = FALSE;
+    /* copy state from source into buffer */
+    b2_hff_set_state(b2_hff_rb_put, source);
+    b2_hff_rb_put->lag_counter = 0;
+    b2_hff_rb_put->rollback = FALSE;
 
-  /* forward write pointer */
-  INC_RB_POINTER(b2_hff_rb_put);
+    /* forward write pointer */
+    INC_RB_POINTER(b2_hff_rb_put);
 
-  /* increase fill count and forward last pointer if neccessary */
-  if (b2_hff_rb_n < HFF_RB_MAXN) {
-    b2_hff_rb_n++;
-  } else {
-    INC_RB_POINTER(b2_hff_rb_last);
-  }
-  PRINT_DBG(2, ("put state. fill count now: %d\n", b2_hff_rb_n));
+    /* increase fill count and forward last pointer if neccessary */
+    if (b2_hff_rb_n < HFF_RB_MAXN)
+    {
+        b2_hff_rb_n++;
+    }
+    else
+    {
+        INC_RB_POINTER(b2_hff_rb_last);
+    }
+    PRINT_DBG(2, ("put state. fill count now: %d\n", b2_hff_rb_n));
 }
 
 static void b2_hff_rb_drop_last(void)
 {
-  if (b2_hff_rb_n > 0) {
-    INC_RB_POINTER(b2_hff_rb_last);
-    b2_hff_rb_n--;
-  } else {
-    PRINT_DBG(2, ("hff ringbuffer empty!\n"));
-    b2_hff_rb_last->lag_counter = 0;
-    b2_hff_rb_last->rollback = FALSE;
-  }
-  PRINT_DBG(2, ("drop last state. fill count now: %d\n", b2_hff_rb_n));
+    if (b2_hff_rb_n > 0)
+    {
+        INC_RB_POINTER(b2_hff_rb_last);
+        b2_hff_rb_n--;
+    }
+    else
+    {
+        PRINT_DBG(2, ("hff ringbuffer empty!\n"));
+        b2_hff_rb_last->lag_counter = 0;
+        b2_hff_rb_last->rollback = FALSE;
+    }
+    PRINT_DBG(2, ("drop last state. fill count now: %d\n", b2_hff_rb_n));
 }
 
 /* copy source state to dest state */
 static void b2_hff_set_state(struct HfilterFloat *dest, struct HfilterFloat *source)
 {
-  dest->x       = source->x;
-  dest->xdot    = source->xdot;
-  dest->xdotdot = source->xdotdot;
-  dest->y       = source->y;
-  dest->ydot    = source->ydot;
-  dest->ydotdot = source->ydotdot;
-  for (int i = 0; i < HFF_STATE_SIZE; i++) {
-    for (int j = 0; j < HFF_STATE_SIZE; j++) {
-      dest->xP[i][j] = source->xP[i][j];
-      dest->yP[i][j] = source->yP[i][j];
+    dest->x       = source->x;
+    dest->xdot    = source->xdot;
+    dest->xdotdot = source->xdotdot;
+    dest->y       = source->y;
+    dest->ydot    = source->ydot;
+    dest->ydotdot = source->ydotdot;
+    for (int i = 0; i < HFF_STATE_SIZE; i++)
+    {
+        for (int j = 0; j < HFF_STATE_SIZE; j++)
+        {
+            dest->xP[i][j] = source->xP[i][j];
+            dest->yP[i][j] = source->yP[i][j];
+        }
     }
-  }
 }
 
 static void b2_hff_propagate_past(struct HfilterFloat *hff_past)
 {
-  PRINT_DBG(1, ("enter propagate past: %d\n", hff_past->lag_counter));
-  /* run max MAX_PP_STEPS propagation steps */
-  for (int i = 0; i < MAX_PP_STEPS; i++) {
-    if (hff_past->lag_counter > 0) {
-      b2_hff_get_past_accel(hff_past->lag_counter);
-      PRINT_DBG(2, ("propagate past: %d\n", hff_past->lag_counter));
-      b2_hff_propagate_x(hff_past, DT_HFILTER);
-      b2_hff_propagate_y(hff_past, DT_HFILTER);
-      hff_past->lag_counter--;
+    PRINT_DBG(1, ("enter propagate past: %d\n", hff_past->lag_counter));
+    /* run max MAX_PP_STEPS propagation steps */
+    for (int i = 0; i < MAX_PP_STEPS; i++)
+    {
+        if (hff_past->lag_counter > 0)
+        {
+            b2_hff_get_past_accel(hff_past->lag_counter);
+            PRINT_DBG(2, ("propagate past: %d\n", hff_past->lag_counter));
+            b2_hff_propagate_x(hff_past, DT_HFILTER);
+            b2_hff_propagate_y(hff_past, DT_HFILTER);
+            hff_past->lag_counter--;
 
-      if (past_save_counter > 0) {
-        past_save_counter--;
-        PRINT_DBG(2, ("dec past_save_counter: %d\n", past_save_counter));
-      } else if (past_save_counter == SAVE_NOW) {
-        /* next GPS measurement valid at this state -> save */
-        PRINT_DBG(2, ("save past state\n"));
-        b2_hff_rb_put_state(hff_past);
-        past_save_counter = SAVING;
-      } else if (past_save_counter == SAVING) {
-        /* increase lag counter on if next state is already saved */
-        if (hff_past == &b2_hff_rb[HFF_RB_MAXN - 1]) {
-          b2_hff_rb[0].lag_counter++;
-        } else {
-          (hff_past + 1)->lag_counter++;
+            if (past_save_counter > 0)
+            {
+                past_save_counter--;
+                PRINT_DBG(2, ("dec past_save_counter: %d\n", past_save_counter));
+            }
+            else if (past_save_counter == SAVE_NOW)
+            {
+                /* next GPS measurement valid at this state -> save */
+                PRINT_DBG(2, ("save past state\n"));
+                b2_hff_rb_put_state(hff_past);
+                past_save_counter = SAVING;
+            }
+            else if (past_save_counter == SAVING)
+            {
+                /* increase lag counter on if next state is already saved */
+                if (hff_past == &b2_hff_rb[HFF_RB_MAXN - 1])
+                {
+                    b2_hff_rb[0].lag_counter++;
+                }
+                else
+                {
+                    (hff_past + 1)->lag_counter++;
+                }
+            }
         }
-      }
-    }
 
-    /* finished re-propagating the past values */
-    if (hff_past->lag_counter == 0) {
-      b2_hff_set_state(&b2_hff_state, hff_past);
-      b2_hff_rb_drop_last();
-      past_save_counter = SAVE_DONE;
-      break;
+        /* finished re-propagating the past values */
+        if (hff_past->lag_counter == 0)
+        {
+            b2_hff_set_state(&b2_hff_state, hff_past);
+            b2_hff_rb_drop_last();
+            past_save_counter = SAVE_DONE;
+            break;
+        }
     }
-  }
 }
 #endif /* GPS_LAG */
 
 
 void b2_hff_propagate(void)
 {
-  if (b2_hff_lost_counter < b2_hff_lost_limit) {
-    b2_hff_lost_counter++;
-  }
-
-#ifdef GPS_LAG
-  /* continue re-propagating to catch up with the present */
-  if (b2_hff_rb_last->rollback) {
-    b2_hff_propagate_past(b2_hff_rb_last);
-  }
-#endif
-
-  /* rotate imu accel measurement to body frame and filter */
-  struct Int32Vect3 acc_meas_body;
-  struct Int32RMat *body_to_imu_rmat = orientationGetRMat_i(&imu.body_to_imu);
-  int32_rmat_transp_vmult(&acc_meas_body, body_to_imu_rmat, &imu.accel);
-
-  struct Int32Vect3 acc_body_filtered;
-  acc_body_filtered.x = update_butterworth_2_low_pass_int(&filter_x, acc_meas_body.x);
-  acc_body_filtered.y = update_butterworth_2_low_pass_int(&filter_y, acc_meas_body.y);
-  acc_body_filtered.z = update_butterworth_2_low_pass_int(&filter_z, acc_meas_body.z);
-
-  /* propagate current state if it is time */
-  if (b2_hff_ps_counter == HFF_PRESCALER) {
-    b2_hff_ps_counter = 1;
-    if (b2_hff_lost_counter < b2_hff_lost_limit) {
-      struct Int32Vect3 filtered_accel_ltp;
-      struct Int32RMat *ltp_to_body_rmat = stateGetNedToBodyRMat_i();
-      int32_rmat_transp_vmult(&filtered_accel_ltp, ltp_to_body_rmat, &acc_body_filtered);
-      b2_hff_xdd_meas = ACCEL_FLOAT_OF_BFP(filtered_accel_ltp.x);
-      b2_hff_ydd_meas = ACCEL_FLOAT_OF_BFP(filtered_accel_ltp.y);
-#ifdef GPS_LAG
-      b2_hff_store_accel_ltp(b2_hff_xdd_meas, b2_hff_ydd_meas);
-#endif
-      /*
-       * propagate current state
-       */
-      b2_hff_propagate_x(&b2_hff_state, DT_HFILTER);
-      b2_hff_propagate_y(&b2_hff_state, DT_HFILTER);
-
-#ifdef GPS_LAG
-      /* increase lag counter on last saved state */
-      if (b2_hff_rb_n > 0) {
-        b2_hff_rb_last->lag_counter++;
-      }
-
-      /* save filter state if needed */
-      if (save_counter == 0) {
-        PRINT_DBG(1, ("save current state\n"));
-        b2_hff_rb_put_state(&b2_hff_state);
-        save_counter = -1;
-      } else if (save_counter > 0) {
-        save_counter--;
-      }
-#endif
+    if (b2_hff_lost_counter < b2_hff_lost_limit)
+    {
+        b2_hff_lost_counter++;
     }
-  } else {
-    b2_hff_ps_counter++;
-  }
+
+#ifdef GPS_LAG
+    /* continue re-propagating to catch up with the present */
+    if (b2_hff_rb_last->rollback)
+    {
+        b2_hff_propagate_past(b2_hff_rb_last);
+    }
+#endif
+
+    /* rotate imu accel measurement to body frame and filter */
+    struct Int32Vect3 acc_meas_body;
+    struct Int32RMat *body_to_imu_rmat = orientationGetRMat_i(&imu.body_to_imu);
+    int32_rmat_transp_vmult(&acc_meas_body, body_to_imu_rmat, &imu.accel);
+
+    struct Int32Vect3 acc_body_filtered;
+    acc_body_filtered.x = update_butterworth_2_low_pass_int(&filter_x, acc_meas_body.x);
+    acc_body_filtered.y = update_butterworth_2_low_pass_int(&filter_y, acc_meas_body.y);
+    acc_body_filtered.z = update_butterworth_2_low_pass_int(&filter_z, acc_meas_body.z);
+
+    /* propagate current state if it is time */
+    if (b2_hff_ps_counter == HFF_PRESCALER)
+    {
+        b2_hff_ps_counter = 1;
+        if (b2_hff_lost_counter < b2_hff_lost_limit)
+        {
+            struct Int32Vect3 filtered_accel_ltp;
+            struct Int32RMat *ltp_to_body_rmat = stateGetNedToBodyRMat_i();
+            int32_rmat_transp_vmult(&filtered_accel_ltp, ltp_to_body_rmat, &acc_body_filtered);
+            b2_hff_xdd_meas = ACCEL_FLOAT_OF_BFP(filtered_accel_ltp.x);
+            b2_hff_ydd_meas = ACCEL_FLOAT_OF_BFP(filtered_accel_ltp.y);
+#ifdef GPS_LAG
+            b2_hff_store_accel_ltp(b2_hff_xdd_meas, b2_hff_ydd_meas);
+#endif
+            /*
+             * propagate current state
+             */
+            b2_hff_propagate_x(&b2_hff_state, DT_HFILTER);
+            b2_hff_propagate_y(&b2_hff_state, DT_HFILTER);
+
+#ifdef GPS_LAG
+            /* increase lag counter on last saved state */
+            if (b2_hff_rb_n > 0)
+            {
+                b2_hff_rb_last->lag_counter++;
+            }
+
+            /* save filter state if needed */
+            if (save_counter == 0)
+            {
+                PRINT_DBG(1, ("save current state\n"));
+                b2_hff_rb_put_state(&b2_hff_state);
+                save_counter = -1;
+            }
+            else if (save_counter > 0)
+            {
+                save_counter--;
+            }
+#endif
+        }
+    }
+    else
+    {
+        b2_hff_ps_counter++;
+    }
 }
 
 void b2_hff_update_gps(struct FloatVect2 *pos_ned, struct FloatVect2 *speed_ned)
 {
-  b2_hff_lost_counter = 0;
+    b2_hff_lost_counter = 0;
 
 #if USE_GPS_ACC4R
-  Rgps_pos = (float) gps.pacc / 100.;
-  if (Rgps_pos < HFF_R_POS_MIN) {
-    Rgps_pos = HFF_R_POS_MIN;
-  }
-
-  Rgps_vel = (float) gps.sacc / 100.;
-  if (Rgps_vel < HFF_R_SPEED_MIN) {
-    Rgps_vel = HFF_R_SPEED_MIN;
-  }
-#endif
-
-#ifdef GPS_LAG
-  if (GPS_LAG_N == 0) {
-#endif
-
-    /* update filter state with measurement */
-    b2_hff_update_x(&b2_hff_state, pos_ned->x, Rgps_pos);
-    b2_hff_update_y(&b2_hff_state, pos_ned->y, Rgps_pos);
-#if HFF_UPDATE_SPEED
-    b2_hff_update_xdot(&b2_hff_state, speed_ned->x, Rgps_vel);
-    b2_hff_update_ydot(&b2_hff_state, speed_ned->y, Rgps_vel);
-#endif
-
-
-#ifdef GPS_LAG
-  } else if (b2_hff_rb_n > 0) {
-    /* roll back if state was saved approx when GPS was valid */
-    lag_counter_err = b2_hff_rb_last->lag_counter - GPS_LAG_N;
-    PRINT_DBG(2, ("update. rb_n: %d  lag_counter: %d  lag_cnt_err: %d\n", b2_hff_rb_n, b2_hff_rb_last->lag_counter,
-                  lag_counter_err));
-    if (abs(lag_counter_err) <= GPS_LAG_TOL_N) {
-      b2_hff_rb_last->rollback = TRUE;
-      b2_hff_update_x(b2_hff_rb_last, pos_ned->x, Rgps_pos);
-      b2_hff_update_y(b2_hff_rb_last, pos_ned->y, Rgps_pos);
-#if HFF_UPDATE_SPEED
-      b2_hff_update_xdot(b2_hff_rb_last, speed_ned->x, Rgps_vel);
-      b2_hff_update_ydot(b2_hff_rb_last, speed_ned->y, Rgps_vel);
-#endif
-      past_save_counter = GPS_DT_N - 1; // + lag_counter_err;
-      PRINT_DBG(2, ("gps updated. past_save_counter: %d\n", past_save_counter));
-      b2_hff_propagate_past(b2_hff_rb_last);
-    } else if (lag_counter_err >= GPS_DT_N - (GPS_LAG_TOL_N + 1)) {
-      /* apparently missed a GPS update, try next saved state */
-      PRINT_DBG(2, ("try next saved state\n"));
-      b2_hff_rb_drop_last();
-      b2_hff_update_gps(pos_ned, speed_ned);
+    Rgps_pos = (float) gps.pacc / 100.;
+    if (Rgps_pos < HFF_R_POS_MIN)
+    {
+        Rgps_pos = HFF_R_POS_MIN;
     }
-  } else if (save_counter < 0) {
-    /* ringbuffer empty -> save output filter state at next GPS validity point in time */
-    save_counter = GPS_DT_N - 1 - (GPS_LAG_N % GPS_DT_N);
-    PRINT_DBG(2, ("rb empty, save counter set: %d\n", save_counter));
-  }
+
+    Rgps_vel = (float) gps.sacc / 100.;
+    if (Rgps_vel < HFF_R_SPEED_MIN)
+    {
+        Rgps_vel = HFF_R_SPEED_MIN;
+    }
+#endif
+
+#ifdef GPS_LAG
+    if (GPS_LAG_N == 0)
+    {
+#endif
+
+        /* update filter state with measurement */
+        b2_hff_update_x(&b2_hff_state, pos_ned->x, Rgps_pos);
+        b2_hff_update_y(&b2_hff_state, pos_ned->y, Rgps_pos);
+#if HFF_UPDATE_SPEED
+        b2_hff_update_xdot(&b2_hff_state, speed_ned->x, Rgps_vel);
+        b2_hff_update_ydot(&b2_hff_state, speed_ned->y, Rgps_vel);
+#endif
+
+
+#ifdef GPS_LAG
+    }
+    else if (b2_hff_rb_n > 0)
+    {
+        /* roll back if state was saved approx when GPS was valid */
+        lag_counter_err = b2_hff_rb_last->lag_counter - GPS_LAG_N;
+        PRINT_DBG(2, ("update. rb_n: %d  lag_counter: %d  lag_cnt_err: %d\n", b2_hff_rb_n, b2_hff_rb_last->lag_counter,
+                      lag_counter_err));
+        if (abs(lag_counter_err) <= GPS_LAG_TOL_N)
+        {
+            b2_hff_rb_last->rollback = TRUE;
+            b2_hff_update_x(b2_hff_rb_last, pos_ned->x, Rgps_pos);
+            b2_hff_update_y(b2_hff_rb_last, pos_ned->y, Rgps_pos);
+#if HFF_UPDATE_SPEED
+            b2_hff_update_xdot(b2_hff_rb_last, speed_ned->x, Rgps_vel);
+            b2_hff_update_ydot(b2_hff_rb_last, speed_ned->y, Rgps_vel);
+#endif
+            past_save_counter = GPS_DT_N - 1; // + lag_counter_err;
+            PRINT_DBG(2, ("gps updated. past_save_counter: %d\n", past_save_counter));
+            b2_hff_propagate_past(b2_hff_rb_last);
+        }
+        else if (lag_counter_err >= GPS_DT_N - (GPS_LAG_TOL_N + 1))
+        {
+            /* apparently missed a GPS update, try next saved state */
+            PRINT_DBG(2, ("try next saved state\n"));
+            b2_hff_rb_drop_last();
+            b2_hff_update_gps(pos_ned, speed_ned);
+        }
+    }
+    else if (save_counter < 0)
+    {
+        /* ringbuffer empty -> save output filter state at next GPS validity point in time */
+        save_counter = GPS_DT_N - 1 - (GPS_LAG_N % GPS_DT_N);
+        PRINT_DBG(2, ("rb empty, save counter set: %d\n", save_counter));
+    }
 
 #endif /* GPS_LAG */
 }
@@ -593,16 +645,17 @@ void b2_hff_update_gps(struct FloatVect2 *pos_ned, struct FloatVect2 *speed_ned)
 
 void b2_hff_realign(struct FloatVect2 pos, struct FloatVect2 vel)
 {
-  b2_hff_state.x = pos.x;
-  b2_hff_state.y = pos.y;
-  b2_hff_state.xdot = vel.x;
-  b2_hff_state.ydot = vel.y;
+    b2_hff_state.x = pos.x;
+    b2_hff_state.y = pos.y;
+    b2_hff_state.xdot = vel.x;
+    b2_hff_state.ydot = vel.y;
 #ifdef GPS_LAG
-  while (b2_hff_rb_n > 0) {
-    b2_hff_rb_drop_last();
-  }
-  save_counter = -1;
-  past_save_counter = SAVE_DONE;
+    while (b2_hff_rb_n > 0)
+    {
+        b2_hff_rb_drop_last();
+    }
+    save_counter = -1;
+    past_save_counter = SAVE_DONE;
 #endif
 }
 
@@ -628,38 +681,38 @@ void b2_hff_realign(struct FloatVect2 pos, struct FloatVect2 vel)
 */
 static void b2_hff_propagate_x(struct HfilterFloat *hff_work, float dt)
 {
-  /* update state */
-  hff_work->xdotdot = b2_hff_xdd_meas;
-  hff_work->x = hff_work->x + dt * hff_work->xdot + dt * dt / 2 * hff_work->xdotdot;
-  hff_work->xdot = hff_work->xdot + dt * hff_work->xdotdot;
-  /* update covariance */
-  const float FPF00 = hff_work->xP[0][0] + dt * (hff_work->xP[1][0] + hff_work->xP[0][1] + dt * hff_work->xP[1][1]);
-  const float FPF01 = hff_work->xP[0][1] + dt * hff_work->xP[1][1];
-  const float FPF10 = hff_work->xP[1][0] + dt * hff_work->xP[1][1];
-  const float FPF11 = hff_work->xP[1][1];
+    /* update state */
+    hff_work->xdotdot = b2_hff_xdd_meas;
+    hff_work->x = hff_work->x + dt * hff_work->xdot + dt * dt / 2 * hff_work->xdotdot;
+    hff_work->xdot = hff_work->xdot + dt * hff_work->xdotdot;
+    /* update covariance */
+    const float FPF00 = hff_work->xP[0][0] + dt * (hff_work->xP[1][0] + hff_work->xP[0][1] + dt * hff_work->xP[1][1]);
+    const float FPF01 = hff_work->xP[0][1] + dt * hff_work->xP[1][1];
+    const float FPF10 = hff_work->xP[1][0] + dt * hff_work->xP[1][1];
+    const float FPF11 = hff_work->xP[1][1];
 
-  hff_work->xP[0][0] = FPF00 + Q;
-  hff_work->xP[0][1] = FPF01;
-  hff_work->xP[1][0] = FPF10;
-  hff_work->xP[1][1] = FPF11 + Qdotdot;
+    hff_work->xP[0][0] = FPF00 + Q;
+    hff_work->xP[0][1] = FPF01;
+    hff_work->xP[1][0] = FPF10;
+    hff_work->xP[1][1] = FPF11 + Qdotdot;
 }
 
 static void b2_hff_propagate_y(struct HfilterFloat *hff_work, float dt)
 {
-  /* update state */
-  hff_work->ydotdot = b2_hff_ydd_meas;
-  hff_work->y = hff_work->y + dt * hff_work->ydot + dt * dt / 2 * hff_work->ydotdot;
-  hff_work->ydot = hff_work->ydot + dt * hff_work->ydotdot;
-  /* update covariance */
-  const float FPF00 = hff_work->yP[0][0] + dt * (hff_work->yP[1][0] + hff_work->yP[0][1] + dt * hff_work->yP[1][1]);
-  const float FPF01 = hff_work->yP[0][1] + dt * hff_work->yP[1][1];
-  const float FPF10 = hff_work->yP[1][0] + dt * hff_work->yP[1][1];
-  const float FPF11 = hff_work->yP[1][1];
+    /* update state */
+    hff_work->ydotdot = b2_hff_ydd_meas;
+    hff_work->y = hff_work->y + dt * hff_work->ydot + dt * dt / 2 * hff_work->ydotdot;
+    hff_work->ydot = hff_work->ydot + dt * hff_work->ydotdot;
+    /* update covariance */
+    const float FPF00 = hff_work->yP[0][0] + dt * (hff_work->yP[1][0] + hff_work->yP[0][1] + dt * hff_work->yP[1][1]);
+    const float FPF01 = hff_work->yP[0][1] + dt * hff_work->yP[1][1];
+    const float FPF10 = hff_work->yP[1][0] + dt * hff_work->yP[1][1];
+    const float FPF11 = hff_work->yP[1][1];
 
-  hff_work->yP[0][0] = FPF00 + Q;
-  hff_work->yP[0][1] = FPF01;
-  hff_work->yP[1][0] = FPF10;
-  hff_work->yP[1][1] = FPF11 + Qdotdot;
+    hff_work->yP[0][0] = FPF00 + Q;
+    hff_work->yP[0][1] = FPF01;
+    hff_work->yP[1][0] = FPF10;
+    hff_work->yP[1][1] = FPF11 + Qdotdot;
 }
 
 
@@ -684,54 +737,54 @@ static void b2_hff_propagate_y(struct HfilterFloat *hff_work, float dt)
 */
 void b2_hff_update_pos(struct FloatVect2 pos, struct FloatVect2 Rpos)
 {
-  b2_hff_update_x(&b2_hff_state, pos.x, Rpos.x);
-  b2_hff_update_y(&b2_hff_state, pos.y, Rpos.y);
+    b2_hff_update_x(&b2_hff_state, pos.x, Rpos.x);
+    b2_hff_update_y(&b2_hff_state, pos.y, Rpos.y);
 }
 
 static void b2_hff_update_x(struct HfilterFloat *hff_work, float x_meas, float Rpos)
 {
-  b2_hff_x_meas = x_meas;
+    b2_hff_x_meas = x_meas;
 
-  const float y  = x_meas - hff_work->x;
-  const float S  = hff_work->xP[0][0] + Rpos;
-  const float K1 = hff_work->xP[0][0] * 1 / S;
-  const float K2 = hff_work->xP[1][0] * 1 / S;
+    const float y  = x_meas - hff_work->x;
+    const float S  = hff_work->xP[0][0] + Rpos;
+    const float K1 = hff_work->xP[0][0] * 1 / S;
+    const float K2 = hff_work->xP[1][0] * 1 / S;
 
-  hff_work->x     = hff_work->x     + K1 * y;
-  hff_work->xdot  = hff_work->xdot  + K2 * y;
+    hff_work->x     = hff_work->x     + K1 * y;
+    hff_work->xdot  = hff_work->xdot  + K2 * y;
 
-  const float P11 = (1. - K1) * hff_work->xP[0][0];
-  const float P12 = (1. - K1) * hff_work->xP[0][1];
-  const float P21 = -K2 * hff_work->xP[0][0] + hff_work->xP[1][0];
-  const float P22 = -K2 * hff_work->xP[0][1] + hff_work->xP[1][1];
+    const float P11 = (1. - K1) * hff_work->xP[0][0];
+    const float P12 = (1. - K1) * hff_work->xP[0][1];
+    const float P21 = -K2 * hff_work->xP[0][0] + hff_work->xP[1][0];
+    const float P22 = -K2 * hff_work->xP[0][1] + hff_work->xP[1][1];
 
-  hff_work->xP[0][0] = P11;
-  hff_work->xP[0][1] = P12;
-  hff_work->xP[1][0] = P21;
-  hff_work->xP[1][1] = P22;
+    hff_work->xP[0][0] = P11;
+    hff_work->xP[0][1] = P12;
+    hff_work->xP[1][0] = P21;
+    hff_work->xP[1][1] = P22;
 }
 
 static void b2_hff_update_y(struct HfilterFloat *hff_work, float y_meas, float Rpos)
 {
-  b2_hff_y_meas = y_meas;
+    b2_hff_y_meas = y_meas;
 
-  const float y  = y_meas - hff_work->y;
-  const float S  = hff_work->yP[0][0] + Rpos;
-  const float K1 = hff_work->yP[0][0] * 1 / S;
-  const float K2 = hff_work->yP[1][0] * 1 / S;
+    const float y  = y_meas - hff_work->y;
+    const float S  = hff_work->yP[0][0] + Rpos;
+    const float K1 = hff_work->yP[0][0] * 1 / S;
+    const float K2 = hff_work->yP[1][0] * 1 / S;
 
-  hff_work->y     = hff_work->y     + K1 * y;
-  hff_work->ydot  = hff_work->ydot  + K2 * y;
+    hff_work->y     = hff_work->y     + K1 * y;
+    hff_work->ydot  = hff_work->ydot  + K2 * y;
 
-  const float P11 = (1. - K1) * hff_work->yP[0][0];
-  const float P12 = (1. - K1) * hff_work->yP[0][1];
-  const float P21 = -K2 * hff_work->yP[0][0] + hff_work->yP[1][0];
-  const float P22 = -K2 * hff_work->yP[0][1] + hff_work->yP[1][1];
+    const float P11 = (1. - K1) * hff_work->yP[0][0];
+    const float P12 = (1. - K1) * hff_work->yP[0][1];
+    const float P21 = -K2 * hff_work->yP[0][0] + hff_work->yP[1][0];
+    const float P22 = -K2 * hff_work->yP[0][1] + hff_work->yP[1][1];
 
-  hff_work->yP[0][0] = P11;
-  hff_work->yP[0][1] = P12;
-  hff_work->yP[1][0] = P21;
-  hff_work->yP[1][1] = P22;
+    hff_work->yP[0][0] = P11;
+    hff_work->yP[0][1] = P12;
+    hff_work->yP[1][0] = P21;
+    hff_work->yP[1][1] = P22;
 }
 
 
@@ -756,52 +809,52 @@ static void b2_hff_update_y(struct HfilterFloat *hff_work, float y_meas, float R
 */
 void b2_hff_update_vel(struct FloatVect2 vel, struct FloatVect2 Rvel)
 {
-  b2_hff_update_xdot(&b2_hff_state, vel.x, Rvel.x);
-  b2_hff_update_ydot(&b2_hff_state, vel.y, Rvel.y);
+    b2_hff_update_xdot(&b2_hff_state, vel.x, Rvel.x);
+    b2_hff_update_ydot(&b2_hff_state, vel.y, Rvel.y);
 }
 
 static void b2_hff_update_xdot(struct HfilterFloat *hff_work, float vel, float Rvel)
 {
-  b2_hff_xd_meas = vel;
+    b2_hff_xd_meas = vel;
 
-  const float yd = vel - hff_work->xdot;
-  const float S  = hff_work->xP[1][1] + Rvel;
-  const float K1 = hff_work->xP[0][1] * 1 / S;
-  const float K2 = hff_work->xP[1][1] * 1 / S;
+    const float yd = vel - hff_work->xdot;
+    const float S  = hff_work->xP[1][1] + Rvel;
+    const float K1 = hff_work->xP[0][1] * 1 / S;
+    const float K2 = hff_work->xP[1][1] * 1 / S;
 
-  hff_work->x     = hff_work->x     + K1 * yd;
-  hff_work->xdot  = hff_work->xdot  + K2 * yd;
+    hff_work->x     = hff_work->x     + K1 * yd;
+    hff_work->xdot  = hff_work->xdot  + K2 * yd;
 
-  const float P11 = -K1 * hff_work->xP[1][0] + hff_work->xP[0][0];
-  const float P12 = -K1 * hff_work->xP[1][1] + hff_work->xP[0][1];
-  const float P21 = (1. - K2) * hff_work->xP[1][0];
-  const float P22 = (1. - K2) * hff_work->xP[1][1];
+    const float P11 = -K1 * hff_work->xP[1][0] + hff_work->xP[0][0];
+    const float P12 = -K1 * hff_work->xP[1][1] + hff_work->xP[0][1];
+    const float P21 = (1. - K2) * hff_work->xP[1][0];
+    const float P22 = (1. - K2) * hff_work->xP[1][1];
 
-  hff_work->xP[0][0] = P11;
-  hff_work->xP[0][1] = P12;
-  hff_work->xP[1][0] = P21;
-  hff_work->xP[1][1] = P22;
+    hff_work->xP[0][0] = P11;
+    hff_work->xP[0][1] = P12;
+    hff_work->xP[1][0] = P21;
+    hff_work->xP[1][1] = P22;
 }
 
 static void b2_hff_update_ydot(struct HfilterFloat *hff_work, float vel, float Rvel)
 {
-  b2_hff_yd_meas = vel;
+    b2_hff_yd_meas = vel;
 
-  const float yd = vel - hff_work->ydot;
-  const float S  = hff_work->yP[1][1] + Rvel;
-  const float K1 = hff_work->yP[0][1] * 1 / S;
-  const float K2 = hff_work->yP[1][1] * 1 / S;
+    const float yd = vel - hff_work->ydot;
+    const float S  = hff_work->yP[1][1] + Rvel;
+    const float K1 = hff_work->yP[0][1] * 1 / S;
+    const float K2 = hff_work->yP[1][1] * 1 / S;
 
-  hff_work->y     = hff_work->y     + K1 * yd;
-  hff_work->ydot  = hff_work->ydot  + K2 * yd;
+    hff_work->y     = hff_work->y     + K1 * yd;
+    hff_work->ydot  = hff_work->ydot  + K2 * yd;
 
-  const float P11 = -K1 * hff_work->yP[1][0] + hff_work->yP[0][0];
-  const float P12 = -K1 * hff_work->yP[1][1] + hff_work->yP[0][1];
-  const float P21 = (1. - K2) * hff_work->yP[1][0];
-  const float P22 = (1. - K2) * hff_work->yP[1][1];
+    const float P11 = -K1 * hff_work->yP[1][0] + hff_work->yP[0][0];
+    const float P12 = -K1 * hff_work->yP[1][1] + hff_work->yP[0][1];
+    const float P21 = (1. - K2) * hff_work->yP[1][0];
+    const float P22 = (1. - K2) * hff_work->yP[1][1];
 
-  hff_work->yP[0][0] = P11;
-  hff_work->yP[0][1] = P12;
-  hff_work->yP[1][0] = P21;
-  hff_work->yP[1][1] = P22;
+    hff_work->yP[0][0] = P11;
+    hff_work->yP[0][1] = P12;
+    hff_work->yP[1][0] = P21;
+    hff_work->yP[1][1] = P22;
 }

@@ -35,18 +35,19 @@
 #define UDP_RX_BUFFER_SIZE 256
 #define UDP_TX_BUFFER_SIZE 256
 
-struct udp_periph {
-  /** Receive buffer */
-  uint8_t rx_buf[UDP_RX_BUFFER_SIZE];
-  uint16_t rx_insert_idx;
-  uint16_t rx_extract_idx;
-  /** Transmit buffer */
-  uint8_t tx_buf[UDP_TX_BUFFER_SIZE];
-  uint16_t tx_insert_idx;
-  /** UDP network */
-  void *network;
-  /** Generic device interface */
-  struct link_device device;
+struct udp_periph
+{
+    /** Receive buffer */
+    uint8_t rx_buf[UDP_RX_BUFFER_SIZE];
+    uint16_t rx_insert_idx;
+    uint16_t rx_extract_idx;
+    /** Transmit buffer */
+    uint8_t tx_buf[UDP_TX_BUFFER_SIZE];
+    uint16_t tx_insert_idx;
+    /** UDP network */
+    void *network;
+    /** Generic device interface */
+    struct link_device device;
 };
 
 extern void     udp_periph_init(struct udp_periph *p, char *host, int port_out, int port_in, bool_t broadcast);

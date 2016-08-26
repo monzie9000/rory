@@ -78,120 +78,130 @@
 #define ESC32_CAN_SEQ_MASK            ((uint32_t)0x3f<<3)
 
 // types
-enum {
-  ESC32_CAN_TYPE_ESC = 1,
-  ESC32_CAN_TYPE_SERVO,
-  ESC32_CAN_TYPE_SENSOR,
-  ESC32_CAN_TYPE_SWITCH,
-  ESC32_CAN_TYPE_OSD,
-  ESC32_CAN_TYPE_UART,
-  ESC32_CAN_TYPE_HUB,
-  ESC32_CAN_TYPE_NUM
+enum
+{
+    ESC32_CAN_TYPE_ESC = 1,
+    ESC32_CAN_TYPE_SERVO,
+    ESC32_CAN_TYPE_SENSOR,
+    ESC32_CAN_TYPE_SWITCH,
+    ESC32_CAN_TYPE_OSD,
+    ESC32_CAN_TYPE_UART,
+    ESC32_CAN_TYPE_HUB,
+    ESC32_CAN_TYPE_NUM
 };
 
 // commands
-enum {
-  ESC32_CAN_CMD_DISARM = 1,
-  ESC32_CAN_CMD_ARM,
-  ESC32_CAN_CMD_START,
-  ESC32_CAN_CMD_STOP,
-  ESC32_CAN_CMD_SETPOINT10,
-  ESC32_CAN_CMD_SETPOINT12,
-  ESC32_CAN_CMD_SETPOINT16,
-  ESC32_CAN_CMD_RPM,
-  ESC32_CAN_CMD_CFG_READ,
-  ESC32_CAN_CMD_CFG_WRITE,
-  ESC32_CAN_CMD_CFG_DEFAULT,
-  ESC32_CAN_CMD_TELEM_RATE,
-  ESC32_CAN_CMD_TELEM_VALUE,
-  ESC32_CAN_CMD_BEEP,
-  ESC32_CAN_CMD_POS,
-  ESC32_CAN_CMD_USER_DEFINED,
-  ESC32_CAN_CMD_RESET,
-  ESC32_CAN_CMD_STREAM,
-  ESC32_CAN_CMD_ON,
-  ESC32_CAN_CMD_OFF
+enum
+{
+    ESC32_CAN_CMD_DISARM = 1,
+    ESC32_CAN_CMD_ARM,
+    ESC32_CAN_CMD_START,
+    ESC32_CAN_CMD_STOP,
+    ESC32_CAN_CMD_SETPOINT10,
+    ESC32_CAN_CMD_SETPOINT12,
+    ESC32_CAN_CMD_SETPOINT16,
+    ESC32_CAN_CMD_RPM,
+    ESC32_CAN_CMD_CFG_READ,
+    ESC32_CAN_CMD_CFG_WRITE,
+    ESC32_CAN_CMD_CFG_DEFAULT,
+    ESC32_CAN_CMD_TELEM_RATE,
+    ESC32_CAN_CMD_TELEM_VALUE,
+    ESC32_CAN_CMD_BEEP,
+    ESC32_CAN_CMD_POS,
+    ESC32_CAN_CMD_USER_DEFINED,
+    ESC32_CAN_CMD_RESET,
+    ESC32_CAN_CMD_STREAM,
+    ESC32_CAN_CMD_ON,
+    ESC32_CAN_CMD_OFF
 };
 
 // data types
-enum {
-  ESC32_CAN_DATA_GROUP = 1,
-  ESC32_CAN_DATA_TYPE,
-  ESC32_CAN_DATA_ID,
-  ESC32_CAN_DATA_INPUT_MODE,
-  ESC32_CAN_DATA_RUN_MODE,
-  ESC32_CAN_DATA_STATE,
-  ESC32_CAN_DATA_PARAM_ID,
-  ESC32_CAN_DATA_TELEM,
-  ESC32_CAN_DATA_VERSION,
-  ESC32_CAN_DATA_VALUE,
-  ESC32_CAN_DATA_PARAM_NAME1,
-  ESC32_CAN_DATA_PARAM_NAME2
+enum
+{
+    ESC32_CAN_DATA_GROUP = 1,
+    ESC32_CAN_DATA_TYPE,
+    ESC32_CAN_DATA_ID,
+    ESC32_CAN_DATA_INPUT_MODE,
+    ESC32_CAN_DATA_RUN_MODE,
+    ESC32_CAN_DATA_STATE,
+    ESC32_CAN_DATA_PARAM_ID,
+    ESC32_CAN_DATA_TELEM,
+    ESC32_CAN_DATA_VERSION,
+    ESC32_CAN_DATA_VALUE,
+    ESC32_CAN_DATA_PARAM_NAME1,
+    ESC32_CAN_DATA_PARAM_NAME2
 };
 
 // telemetry values
-enum {
-  ESC32_CAN_TELEM_NONE = 0,
-  ESC32_CAN_TELEM_STATUS,
-  ESC32_CAN_TELEM_STATE,
-  ESC32_CAN_TELEM_TEMP,
-  ESC32_CAN_TELEM_VIN,
-  ESC32_CAN_TELEM_AMPS,
-  ESC32_CAN_TELEM_RPM,
-  ESC32_CAN_TELEM_ERRORS,
-  ESC32_CAN_TELEM_VALUE,
-  ESC32_CAN_TELEM_NUM
+enum
+{
+    ESC32_CAN_TELEM_NONE = 0,
+    ESC32_CAN_TELEM_STATUS,
+    ESC32_CAN_TELEM_STATE,
+    ESC32_CAN_TELEM_TEMP,
+    ESC32_CAN_TELEM_VIN,
+    ESC32_CAN_TELEM_AMPS,
+    ESC32_CAN_TELEM_RPM,
+    ESC32_CAN_TELEM_ERRORS,
+    ESC32_CAN_TELEM_VALUE,
+    ESC32_CAN_TELEM_NUM
 };
 
-struct ESC32_response {
-  uint8_t fid;                             ///< The FID of the response
-  uint8_t data[8];                         ///< The data of the response
+struct ESC32_response
+{
+    uint8_t fid;                             ///< The FID of the response
+    uint8_t data[8];                         ///< The data of the response
 };
 
 // ESCs status
-enum ESC32_esc_status {
-  ESC32_STATUS_ESC_FREE = 0,
-  ESC32_STATUS_ESC_INIT,
-  ESC32_STATUS_ESC_RDY
+enum ESC32_esc_status
+{
+    ESC32_STATUS_ESC_FREE = 0,
+    ESC32_STATUS_ESC_INIT,
+    ESC32_STATUS_ESC_RDY
 };
 
-struct ESC32_com {
-  enum ESC32_esc_status status;             ///< The current status of the esc
-  uint8_t network_id;                       ///< Index in the array +1
-  uint32_t uuid;                            ///< The UUID of the ESC
-  uint8_t type;                             ///< The type of ESC
-  uint8_t can_id;                           ///< The CAN identifier
-};
-
-// ESC status
-enum ESC32_status {
-  ESC32_STATUS_INIT = 0,
-  ESC32_STATUS_MELODY,
-  ESC32_STATUS_UNARMED,
-  ESC32_STATUS_RUNNING
+struct ESC32_com
+{
+    enum ESC32_esc_status status;             ///< The current status of the esc
+    uint8_t network_id;                       ///< Index in the array +1
+    uint32_t uuid;                            ///< The UUID of the ESC
+    uint8_t type;                             ///< The type of ESC
+    uint8_t can_id;                           ///< The CAN identifier
 };
 
 // ESC status
-enum ESC32_config_cmd {
-  ESC32_CONFIG_CMD_IDLE = 0,
-  ESC32_CONFIG_CMD_BEEP,
-  ESC32_CONFIG_CMD_TURN,
-  ESC32_CONFIG_CMD_DIR
+enum ESC32_status
+{
+    ESC32_STATUS_INIT = 0,
+    ESC32_STATUS_MELODY,
+    ESC32_STATUS_UNARMED,
+    ESC32_STATUS_RUNNING
 };
 
-struct ESC32 {
-  enum ESC32_status status;                             ///< The current status of all actuators
-  uint32_t melody_status;                               ///< The status of the melody
+// ESC status
+enum ESC32_config_cmd
+{
+    ESC32_CONFIG_CMD_IDLE = 0,
+    ESC32_CONFIG_CMD_BEEP,
+    ESC32_CONFIG_CMD_TURN,
+    ESC32_CONFIG_CMD_DIR
+};
 
-  uint8_t can_seq_idx;                                  ///< CAN seq ID used for communicating
-  struct ESC32_response responses[ESC32_RESPONSE_CNT];  ///< Responses of CAN messages
+struct ESC32
+{
+    enum ESC32_status status;                             ///< The current status of all actuators
+    uint32_t melody_status;                               ///< The status of the melody
 
-  struct ESC32_com escs[SERVOS_ESC32_NB];               ///< The ESCs connected via CAN
-  uint8_t escs_sorted[SERVOS_ESC32_NB];                 ///< The ESCs sorted by uuid
-  uint16_t cmds[SERVOS_ESC32_NB];                       ///< Commands which need to be committed
+    uint8_t can_seq_idx;                                  ///< CAN seq ID used for communicating
+    struct ESC32_response responses[ESC32_RESPONSE_CNT];  ///< Responses of CAN messages
 
-  uint8_t config_idx;                                   ///< Selected ESC
-  enum ESC32_config_cmd config_cmd;                     ///< The command
+    struct ESC32_com escs[SERVOS_ESC32_NB];               ///< The ESCs connected via CAN
+    uint8_t escs_sorted[SERVOS_ESC32_NB];                 ///< The ESCs sorted by uuid
+    uint16_t cmds[SERVOS_ESC32_NB];                       ///< Commands which need to be committed
+
+    uint8_t config_idx;                                   ///< Selected ESC
+    enum ESC32_config_cmd config_cmd;                     ///< The command
 };
 
 

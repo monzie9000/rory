@@ -72,9 +72,9 @@
 
 void attitude_ref_euler_int_init(struct AttRefEulerInt *ref)
 {
-  INT_EULERS_ZERO(ref->euler);
-  INT_RATES_ZERO(ref->rate);
-  INT_RATES_ZERO(ref->accel);
+    INT_EULERS_ZERO(ref->euler);
+    INT_RATES_ZERO(ref->rate);
+    INT_RATES_ZERO(ref->accel);
 }
 
 /**
@@ -84,55 +84,59 @@ void attitude_ref_euler_int_init(struct AttRefEulerInt *ref)
 void attitude_ref_euler_int_update(struct AttRefEulerInt *ref, struct Int32Eulers *sp_euler)
 {
 
-  /* dumb integrate reference attitude        */
-  const struct Int32Eulers d_angle = {
-    ref->rate.p >> (F_UPDATE_RES + REF_RATE_FRAC - REF_ANGLE_FRAC),
-    ref->rate.q >> (F_UPDATE_RES + REF_RATE_FRAC - REF_ANGLE_FRAC),
-    ref->rate.r >> (F_UPDATE_RES + REF_RATE_FRAC - REF_ANGLE_FRAC)
-  };
-  EULERS_ADD(ref->euler, d_angle);
-  ANGLE_REF_NORMALIZE(ref->euler.psi);
+    /* dumb integrate reference attitude        */
+    const struct Int32Eulers d_angle =
+    {
+        ref->rate.p >> (F_UPDATE_RES + REF_RATE_FRAC - REF_ANGLE_FRAC),
+        ref->rate.q >> (F_UPDATE_RES + REF_RATE_FRAC - REF_ANGLE_FRAC),
+        ref->rate.r >> (F_UPDATE_RES + REF_RATE_FRAC - REF_ANGLE_FRAC)
+    };
+    EULERS_ADD(ref->euler, d_angle);
+    ANGLE_REF_NORMALIZE(ref->euler.psi);
 
-  /* integrate reference rotational speeds   */
-  const struct Int32Rates d_rate = {
-    ref->accel.p >> (F_UPDATE_RES + REF_ACCEL_FRAC - REF_RATE_FRAC),
-    ref->accel.q >> (F_UPDATE_RES + REF_ACCEL_FRAC - REF_RATE_FRAC),
-    ref->accel.r >> (F_UPDATE_RES + REF_ACCEL_FRAC - REF_RATE_FRAC)
-  };
-  RATES_ADD(ref->rate, d_rate);
+    /* integrate reference rotational speeds   */
+    const struct Int32Rates d_rate =
+    {
+        ref->accel.p >> (F_UPDATE_RES + REF_ACCEL_FRAC - REF_RATE_FRAC),
+        ref->accel.q >> (F_UPDATE_RES + REF_ACCEL_FRAC - REF_RATE_FRAC),
+        ref->accel.r >> (F_UPDATE_RES + REF_ACCEL_FRAC - REF_RATE_FRAC)
+    };
+    RATES_ADD(ref->rate, d_rate);
 
-  /* attitude setpoint with REF_ANGLE_FRAC   */
-  struct Int32Eulers sp_ref;
-  INT32_EULERS_LSHIFT(sp_ref, *sp_euler, (REF_ANGLE_FRAC - INT32_ANGLE_FRAC));
+    /* attitude setpoint with REF_ANGLE_FRAC   */
+    struct Int32Eulers sp_ref;
+    INT32_EULERS_LSHIFT(sp_ref, *sp_euler, (REF_ANGLE_FRAC - INT32_ANGLE_FRAC));
 
-  /* compute reference attitude error        */
-  struct Int32Eulers ref_err;
-  EULERS_DIFF(ref_err, ref->euler, sp_ref);
-  /* wrap it in the shortest direction       */
-  ANGLE_REF_NORMALIZE(ref_err.psi);
+    /* compute reference attitude error        */
+    struct Int32Eulers ref_err;
+    EULERS_DIFF(ref_err, ref->euler, sp_ref);
+    /* wrap it in the shortest direction       */
+    ANGLE_REF_NORMALIZE(ref_err.psi);
 
-  /* compute reference angular accelerations */
-  const struct Int32Rates accel_rate = {
-    ((int32_t)(-2.*ZETA_OMEGA_P) * (ref->rate.p >> (REF_RATE_FRAC - REF_ACCEL_FRAC)))
-        >> (ZETA_OMEGA_P_RES),
-    ((int32_t)(-2.*ZETA_OMEGA_Q) * (ref->rate.q >> (REF_RATE_FRAC - REF_ACCEL_FRAC)))
-    >> (ZETA_OMEGA_Q_RES),
-    ((int32_t)(-2.*ZETA_OMEGA_R) * (ref->rate.r >> (REF_RATE_FRAC - REF_ACCEL_FRAC)))
-    >> (ZETA_OMEGA_R_RES)
-  };
+    /* compute reference angular accelerations */
+    const struct Int32Rates accel_rate =
+    {
+        ((int32_t)(-2.*ZETA_OMEGA_P) * (ref->rate.p >> (REF_RATE_FRAC - REF_ACCEL_FRAC)))
+                >> (ZETA_OMEGA_P_RES),
+        ((int32_t)(-2.*ZETA_OMEGA_Q) * (ref->rate.q >> (REF_RATE_FRAC - REF_ACCEL_FRAC)))
+        >> (ZETA_OMEGA_Q_RES),
+        ((int32_t)(-2.*ZETA_OMEGA_R) * (ref->rate.r >> (REF_RATE_FRAC - REF_ACCEL_FRAC)))
+        >> (ZETA_OMEGA_R_RES)
+    };
 
-  const struct Int32Rates accel_angle = {
-    ((int32_t)(-OMEGA_2_P) * (ref_err.phi   >> (REF_ANGLE_FRAC - REF_ACCEL_FRAC))) >> (OMEGA_2_P_RES),
-    ((int32_t)(-OMEGA_2_Q) * (ref_err.theta >> (REF_ANGLE_FRAC - REF_ACCEL_FRAC))) >> (OMEGA_2_Q_RES),
-    ((int32_t)(-OMEGA_2_R) * (ref_err.psi   >> (REF_ANGLE_FRAC - REF_ACCEL_FRAC))) >> (OMEGA_2_R_RES)
-  };
+    const struct Int32Rates accel_angle =
+    {
+        ((int32_t)(-OMEGA_2_P) * (ref_err.phi   >> (REF_ANGLE_FRAC - REF_ACCEL_FRAC))) >> (OMEGA_2_P_RES),
+        ((int32_t)(-OMEGA_2_Q) * (ref_err.theta >> (REF_ANGLE_FRAC - REF_ACCEL_FRAC))) >> (OMEGA_2_Q_RES),
+        ((int32_t)(-OMEGA_2_R) * (ref_err.psi   >> (REF_ANGLE_FRAC - REF_ACCEL_FRAC))) >> (OMEGA_2_R_RES)
+    };
 
-  RATES_SUM(ref->accel, accel_rate, accel_angle);
+    RATES_SUM(ref->accel, accel_rate, accel_angle);
 
-  /*  saturate acceleration */
-  const struct Int32Rates MIN_ACCEL = { -REF_ACCEL_MAX_P, -REF_ACCEL_MAX_Q, -REF_ACCEL_MAX_R };
-  const struct Int32Rates MAX_ACCEL = {  REF_ACCEL_MAX_P,  REF_ACCEL_MAX_Q,  REF_ACCEL_MAX_R };
-  RATES_BOUND_BOX(ref->accel, MIN_ACCEL, MAX_ACCEL);
+    /*  saturate acceleration */
+    const struct Int32Rates MIN_ACCEL = { -REF_ACCEL_MAX_P, -REF_ACCEL_MAX_Q, -REF_ACCEL_MAX_R };
+    const struct Int32Rates MAX_ACCEL = {  REF_ACCEL_MAX_P,  REF_ACCEL_MAX_Q,  REF_ACCEL_MAX_R };
+    RATES_BOUND_BOX(ref->accel, MIN_ACCEL, MAX_ACCEL);
 
-  /* saturate speed and trim accel accordingly */
+    /* saturate speed and trim accel accordingly */
 }

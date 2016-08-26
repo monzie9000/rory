@@ -37,11 +37,12 @@
 
 /** Invariant filter state
  */
-struct inv_state  {
-  struct FloatQuat quat;  ///< Estimated attitude (quaternion)
-  struct FloatRates bias; ///< Estimated gyro biases
-  float cs;               ///< Estimates magnetometer sensitivity
-  float as;               ///< Estimated accelerometer sensitivity
+struct inv_state
+{
+    struct FloatQuat quat;  ///< Estimated attitude (quaternion)
+    struct FloatRates bias; ///< Estimated gyro biases
+    float cs;               ///< Estimates magnetometer sensitivity
+    float as;               ///< Estimated accelerometer sensitivity
 };
 
 /** Invariant filter measurement vector dimension
@@ -50,9 +51,10 @@ struct inv_state  {
 
 /** Invariant filter measurement vector
  */
-struct inv_measures {
-  struct FloatVect3 accel;    ///< Measured accelerometers
-  struct FloatVect3 mag;      ///< Measured magnetic field
+struct inv_measures
+{
+    struct FloatVect3 accel;    ///< Measured accelerometers
+    struct FloatVect3 mag;      ///< Measured magnetic field
 };
 
 /** Invariant filter command vector dimension
@@ -61,48 +63,52 @@ struct inv_measures {
 
 /** Invariant filter command vector
  */
-struct inv_command {
-  struct FloatRates rates;  ///< Input gyro rates
+struct inv_command
+{
+    struct FloatRates rates;  ///< Input gyro rates
 };
 
 /** Invariant filter correction gains
  */
-struct inv_correction_gains {
-  struct FloatVect3 LE;   ///< Correction gains on attitude
-  struct FloatVect3 ME;   ///< Correction gains on gyro biases
-  float NE;               ///< Correction gains on accel bias
-  float OE;               ///< Correction gains on magnetometer sensitivity
+struct inv_correction_gains
+{
+    struct FloatVect3 LE;   ///< Correction gains on attitude
+    struct FloatVect3 ME;   ///< Correction gains on gyro biases
+    float NE;               ///< Correction gains on accel bias
+    float OE;               ///< Correction gains on magnetometer sensitivity
 };
 
 /** Invariant filter tuning gains
  */
-struct inv_gains {
-  float lx; ///< Tuning parameter of accel and mag on attitude (longitudinal subsystem)
-  float ly; ///< Tuning parameter of accel and mag on attitude (lateral subsystem)
-  float lz; ///< Tuning parameter of accel and mag on attitude (heading subsystem)
-  float mx; ///< Tuning parameter of accel and mag on gyro bias (longitudinal subsystem)
-  float my; ///< Tuning parameter of accel and mag on gyro bias (lateral subsystem)
-  float mz; ///< Tuning parameter of accel and mag on gyro bias (heading subsystem)
-  float n;  ///< Tuning parameter of accel and mag on accel bias (scaling subsystem)
-  float o;  ///< Tuning parameter of accel and mag on mag bias (scaling subsystem)
+struct inv_gains
+{
+    float lx; ///< Tuning parameter of accel and mag on attitude (longitudinal subsystem)
+    float ly; ///< Tuning parameter of accel and mag on attitude (lateral subsystem)
+    float lz; ///< Tuning parameter of accel and mag on attitude (heading subsystem)
+    float mx; ///< Tuning parameter of accel and mag on gyro bias (longitudinal subsystem)
+    float my; ///< Tuning parameter of accel and mag on gyro bias (lateral subsystem)
+    float mz; ///< Tuning parameter of accel and mag on gyro bias (heading subsystem)
+    float n;  ///< Tuning parameter of accel and mag on accel bias (scaling subsystem)
+    float o;  ///< Tuning parameter of accel and mag on mag bias (scaling subsystem)
 };
 
 /** Invariant filter structure
  */
-struct AhrsFloatInv {
-  struct inv_state state;             ///< state vector
-  struct inv_measures meas;           ///< measurement vector
-  struct inv_command cmd;             ///< command vector
-  struct inv_correction_gains corr;   ///< correction gains
-  struct inv_gains gains;             ///< tuning gains
+struct AhrsFloatInv
+{
+    struct inv_state state;             ///< state vector
+    struct inv_measures meas;           ///< measurement vector
+    struct inv_command cmd;             ///< command vector
+    struct inv_correction_gains corr;   ///< correction gains
+    struct inv_gains gains;             ///< tuning gains
 
-  bool_t reset;                       ///< flag to request reset/reinit the filter
+    bool_t reset;                       ///< flag to request reset/reinit the filter
 
-  /** body_to_imu rotation */
-  struct OrientationReps body_to_imu;
+    /** body_to_imu rotation */
+    struct OrientationReps body_to_imu;
 
-  struct FloatVect3 mag_h;
-  bool_t is_aligned;
+    struct FloatVect3 mag_h;
+    bool_t is_aligned;
 };
 
 extern struct AhrsFloatInv ahrs_float_inv;

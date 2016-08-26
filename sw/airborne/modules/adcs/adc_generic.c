@@ -30,22 +30,22 @@ static struct adc_buf buf_generic2;
 void adc_generic_init(void)
 {
 #ifdef ADC_CHANNEL_GENERIC1
-  adc_buf_channel(ADC_CHANNEL_GENERIC1, &buf_generic1, ADC_CHANNEL_GENERIC_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_GENERIC1, &buf_generic1, ADC_CHANNEL_GENERIC_NB_SAMPLES);
 #endif
 #ifdef ADC_CHANNEL_GENERIC2
-  adc_buf_channel(ADC_CHANNEL_GENERIC2, &buf_generic2, ADC_CHANNEL_GENERIC_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_GENERIC2, &buf_generic2, ADC_CHANNEL_GENERIC_NB_SAMPLES);
 #endif
 }
 
 void adc_generic_periodic(void)
 {
 #ifdef ADC_CHANNEL_GENERIC1
-  adc_generic_val1 = buf_generic1.sum / buf_generic1.av_nb_sample;
+    adc_generic_val1 = buf_generic1.sum / buf_generic1.av_nb_sample;
 #endif
 #ifdef ADC_CHANNEL_GENERIC2
-  adc_generic_val2 = buf_generic2.sum / buf_generic2.av_nb_sample;
+    adc_generic_val2 = buf_generic2.sum / buf_generic2.av_nb_sample;
 #endif
 
-  DOWNLINK_SEND_ADC_GENERIC(DefaultChannel, DefaultDevice, &adc_generic_val1, &adc_generic_val2);
+    DOWNLINK_SEND_ADC_GENERIC(DefaultChannel, DefaultDevice, &adc_generic_val1, &adc_generic_val2);
 }
 

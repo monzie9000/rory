@@ -30,10 +30,11 @@
 #include <inttypes.h>
 #include "mcu_periph/link_device.h"
 
-struct MsgProperties {
-  uint16_t positionImageStart;
-  uint8_t width;
-  uint8_t height;
+struct MsgProperties
+{
+    uint16_t positionImageStart;
+    uint8_t width;
+    uint8_t height;
 } ;
 typedef struct MsgProperties MsgProperties;
 // function primitives

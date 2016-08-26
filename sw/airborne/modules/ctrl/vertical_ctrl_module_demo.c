@@ -58,36 +58,39 @@ void vertical_ctrl_module_run(bool_t in_flight);
 
 void vertical_ctrl_module_init(void)
 {
-  v_ctrl.agl = 0.0f;
-  v_ctrl.setpoint = 1.0f;
-  v_ctrl.pgain = VERTICAL_CTRL_MODULE_PGAIN;
-  v_ctrl.igain = VERTICAL_CTRL_MODULE_IGAIN;
-  v_ctrl.sum_err = 0.0f;
+    v_ctrl.agl = 0.0f;
+    v_ctrl.setpoint = 1.0f;
+    v_ctrl.pgain = VERTICAL_CTRL_MODULE_PGAIN;
+    v_ctrl.igain = VERTICAL_CTRL_MODULE_IGAIN;
+    v_ctrl.sum_err = 0.0f;
 
-  // Subscribe to the altitude above ground level ABI messages
-  AbiBindMsgAGL(VERTICAL_CTRL_MODULE_AGL_ID, &agl_ev, vertical_ctrl_agl_cb);
+    // Subscribe to the altitude above ground level ABI messages
+    AbiBindMsgAGL(VERTICAL_CTRL_MODULE_AGL_ID, &agl_ev, vertical_ctrl_agl_cb);
 }
 
 
 void vertical_ctrl_module_run(bool_t in_flight)
 {
-  if (!in_flight) {
-    // Reset integrators
-    v_ctrl.sum_err = 0;
-    stabilization_cmd[COMMAND_THRUST] = 0;
-  } else {
-    int32_t nominal_throttle = 0.5 * MAX_PPRZ;
-    float err = v_ctrl.setpoint - v_ctrl.agl;
-    int32_t thrust = nominal_throttle + v_ctrl.pgain * err + v_ctrl.igain * v_ctrl.sum_err;
-    Bound(thrust, 0, MAX_PPRZ);
-    stabilization_cmd[COMMAND_THRUST] = thrust;
-    v_ctrl.sum_err += err;
-  }
+    if (!in_flight)
+    {
+        // Reset integrators
+        v_ctrl.sum_err = 0;
+        stabilization_cmd[COMMAND_THRUST] = 0;
+    }
+    else
+    {
+        int32_t nominal_throttle = 0.5 * MAX_PPRZ;
+        float err = v_ctrl.setpoint - v_ctrl.agl;
+        int32_t thrust = nominal_throttle + v_ctrl.pgain * err + v_ctrl.igain * v_ctrl.sum_err;
+        Bound(thrust, 0, MAX_PPRZ);
+        stabilization_cmd[COMMAND_THRUST] = thrust;
+        v_ctrl.sum_err += err;
+    }
 }
 
 static void vertical_ctrl_agl_cb(uint8_t sender_id, float distance)
 {
-  v_ctrl.agl = distance;
+    v_ctrl.agl = distance;
 }
 
 
@@ -95,16 +98,16 @@ static void vertical_ctrl_agl_cb(uint8_t sender_id, float distance)
 // Call our controller
 void guidance_v_module_init(void)
 {
-  vertical_ctrl_module_init();
+    vertical_ctrl_module_init();
 }
 
 void guidance_v_module_enter(void)
 {
-  // reset integrator
-  v_ctrl.sum_err = 0.0f;
+    // reset integrator
+    v_ctrl.sum_err = 0.0f;
 }
 
 void guidance_v_module_run(bool_t in_flight)
 {
-  vertical_ctrl_module_run(in_flight);
+    vertical_ctrl_module_run(in_flight);
 }

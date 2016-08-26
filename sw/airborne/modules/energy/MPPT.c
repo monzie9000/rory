@@ -72,64 +72,71 @@ static int16_t MPPT_data[NB_DATA];
 
 void MPPT_init(void)
 {
-  MPPT_mode = 0;
-  MPPT_status = MPPT_STATUS_IDLE;
+    MPPT_mode = 0;
+    MPPT_status = MPPT_STATUS_IDLE;
 }
 
 
 static void MPPT_ask(void)
 {
-  data_index++;
-  if (data_index >= NB_I2C_DATA) {
-    /* Setting the current value */
-    fbw_current_milliamp = MPPT_data[MPPT_IBAT_INDEX];
+    data_index++;
+    if (data_index >= NB_I2C_DATA)
+    {
+        /* Setting the current value */
+        fbw_current_milliamp = MPPT_data[MPPT_IBAT_INDEX];
 
-    MPPT_data[MPPT_ITOTAL_INDEX] = MPPT_data[MPPT_IBAT_INDEX] + MPPT_data[MPPT_ICONV_INDEX];
-    DOWNLINK_SEND_MPPT(DefaultChannel, DefaultDevice, NB_DATA, MPPT_data);
-    data_index = 0;
-  }
+        MPPT_data[MPPT_ITOTAL_INDEX] = MPPT_data[MPPT_IBAT_INDEX] + MPPT_data[MPPT_ICONV_INDEX];
+        DOWNLINK_SEND_MPPT(DefaultChannel, DefaultDevice, NB_DATA, MPPT_data);
+        data_index = 0;
+    }
 
-  mppt_trans.buf[0] = data_index;
-  i2c_transmit(&i2c0, &mppt_trans, MPPT_SLAVE_ADDR, 1);
-  MPPT_status = MPPT_STATUS_ASKING;
+    mppt_trans.buf[0] = data_index;
+    i2c_transmit(&i2c0, &mppt_trans, MPPT_SLAVE_ADDR, 1);
+    MPPT_status = MPPT_STATUS_ASKING;
 }
 
 void MPPT_periodic(void)
 {
 
-  if (mppt_trans.status == I2CTransSuccess) {
-    switch (MPPT_status) {
-      case MPPT_STATUS_IDLE:
-        /* If free, change mode if needed */
-        if (MPPT_mode) {
-          mppt_trans.buf[0] = MPPT_MODE_ADDR;
-          mppt_trans.buf[1] = 0;
-          mppt_trans.buf[2] = MPPT_mode;
-          i2c_transmit(&i2c0, &mppt_trans, MPPT_SLAVE_ADDR, 3);
-          MPPT_mode = 0;
-          MPPT_status = MPPT_STATUS_WRITING;
-        } else {
-          MPPT_ask();
+    if (mppt_trans.status == I2CTransSuccess)
+    {
+        switch (MPPT_status)
+        {
+        case MPPT_STATUS_IDLE:
+            /* If free, change mode if needed */
+            if (MPPT_mode)
+            {
+                mppt_trans.buf[0] = MPPT_MODE_ADDR;
+                mppt_trans.buf[1] = 0;
+                mppt_trans.buf[2] = MPPT_mode;
+                i2c_transmit(&i2c0, &mppt_trans, MPPT_SLAVE_ADDR, 3);
+                MPPT_mode = 0;
+                MPPT_status = MPPT_STATUS_WRITING;
+            }
+            else
+            {
+                MPPT_ask();
+            }
+            break;
+
+        case MPPT_STATUS_WRITING:
+            MPPT_status = MPPT_STATUS_IDLE;
+            break;
+
+        case MPPT_STATUS_ASKING:
+            /* The slave should send 2 bytes */
+            i2c_receive(&i2c0, &mppt_trans, MPPT_SLAVE_ADDR, 2);
+            MPPT_status = MPPT_STATUS_READING;
+            break;
+
+        case MPPT_STATUS_READING:
+            /* We got 2 bytes */
+            if (data_index < NB_I2C_DATA)
+            {
+                MPPT_data[data_index] = (mppt_trans.buf[0] << 8) | mppt_trans.buf[1];
+            }
+            MPPT_status = MPPT_STATUS_IDLE;
+            break;
         }
-        break;
-
-      case MPPT_STATUS_WRITING:
-        MPPT_status = MPPT_STATUS_IDLE;
-        break;
-
-      case MPPT_STATUS_ASKING:
-        /* The slave should send 2 bytes */
-        i2c_receive(&i2c0, &mppt_trans, MPPT_SLAVE_ADDR, 2);
-        MPPT_status = MPPT_STATUS_READING;
-        break;
-
-      case MPPT_STATUS_READING:
-        /* We got 2 bytes */
-        if (data_index < NB_I2C_DATA) {
-          MPPT_data[data_index] = (mppt_trans.buf[0] << 8) | mppt_trans.buf[1];
-        }
-        MPPT_status = MPPT_STATUS_IDLE;
-        break;
     }
-  }
 }

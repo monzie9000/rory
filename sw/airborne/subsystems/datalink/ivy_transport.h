@@ -34,14 +34,15 @@
 #include "mcu_periph/link_device.h"
 
 // IVY transport
-struct ivy_transport {
-  char ivy_buf[256];
-  char *ivy_p;
-  int ivy_dl_enabled;
-  // generic transmission interface
-  struct transport_tx trans_tx;
-  // generic (dummy) device
-  struct link_device device;
+struct ivy_transport
+{
+    char ivy_buf[256];
+    char *ivy_p;
+    int ivy_dl_enabled;
+    // generic transmission interface
+    struct transport_tx trans_tx;
+    // generic (dummy) device
+    struct link_device device;
 };
 
 extern struct ivy_transport ivy_tp;

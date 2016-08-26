@@ -62,10 +62,11 @@ typedef void (*abi_callback)(void);
 #define ABI_DISABLE 0
 
 /** Event structure to store callbacks in a linked list */
-struct abi_struct {
-  uint8_t id;
-  abi_callback cb;
-  struct abi_struct *next;
+struct abi_struct
+{
+    uint8_t id;
+    abi_callback cb;
+    struct abi_struct *next;
 };
 typedef struct abi_struct abi_event;
 

@@ -3,10 +3,10 @@
 
 uint16_t getGpsWeek (void)
 {
-  return gps.week;
+    return gps.week;
 }
 
 uint32_t getGpsTimeOfWeek (void)
 {
-  return gps.tow;
+    return gps.tow;
 }

@@ -36,37 +36,42 @@ INFO("Radio-Control now follows PPRZ sign convention: this means you might need 
 //#else
 void radio_control_impl_init(void)
 {
-  superbitrf_init();
+    superbitrf_init();
 }
 //#endif
 
 /** normalize superbitrf rc_values to radio values */
 static void superbitrf_rc_normalize(int16_t *in, int16_t *out, uint8_t count)
 {
-  uint8_t i;
-  for (i = 0; i < count; i++) {
-    if (i == RADIO_THROTTLE) {
-      out[i] = (in[i] + MAX_PPRZ) / 2;
-      Bound(out[i], 0, MAX_PPRZ);
-    } else {
-      out[i] = in[i];
-      Bound(out[i], MIN_PPRZ, MAX_PPRZ);
+    uint8_t i;
+    for (i = 0; i < count; i++)
+    {
+        if (i == RADIO_THROTTLE)
+        {
+            out[i] = (in[i] + MAX_PPRZ) / 2;
+            Bound(out[i], 0, MAX_PPRZ);
+        }
+        else
+        {
+            out[i] = in[i];
+            Bound(out[i], MIN_PPRZ, MAX_PPRZ);
+        }
     }
-  }
 }
 
 void radio_control_impl_event(void (* _received_frame_handler)(void))
 {
-  cyrf6936_event(&superbitrf.cyrf6936);
-  superbitrf_event();
-  if (superbitrf.rc_frame_available) {
-    radio_control.frame_cpt++;
-    radio_control.time_since_last_frame = 0;
-    radio_control.radio_ok_cpt = 0;
-    radio_control.status = RC_OK;
-    superbitrf_rc_normalize(superbitrf.rc_values, radio_control.values,
-                            superbitrf.num_channels);
-    _received_frame_handler();
-    superbitrf.rc_frame_available = FALSE;
-  }
+    cyrf6936_event(&superbitrf.cyrf6936);
+    superbitrf_event();
+    if (superbitrf.rc_frame_available)
+    {
+        radio_control.frame_cpt++;
+        radio_control.time_since_last_frame = 0;
+        radio_control.radio_ok_cpt = 0;
+        radio_control.status = RC_OK;
+        superbitrf_rc_normalize(superbitrf.rc_values, radio_control.values,
+                                superbitrf.num_channels);
+        _received_frame_handler();
+        superbitrf.rc_frame_available = FALSE;
+    }
 }

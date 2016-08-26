@@ -34,19 +34,20 @@
 
 enum SpiralStatus { SpiralOutside, SpiralStartCircle, SpiralCircle, SpiralInc };
 
-struct NavSpiral {
-  struct FloatVect3 trans_current;
-  struct FloatVect2 fly_from;
-  struct FloatVect2 last_circle;
-  struct FloatVect3 center;
-  float dist_from_center;
-  float alpha_limit;
-  float segments;
-  float radius;
-  float radius_min;
-  float radius_start;
-  float radius_increment;
-  enum SpiralStatus status;
+struct NavSpiral
+{
+    struct FloatVect3 trans_current;
+    struct FloatVect2 fly_from;
+    struct FloatVect2 last_circle;
+    struct FloatVect3 center;
+    float dist_from_center;
+    float alpha_limit;
+    float segments;
+    float radius;
+    float radius_min;
+    float radius_start;
+    float radius_increment;
+    enum SpiralStatus status;
 };
 
 extern struct NavSpiral nav_spiral;

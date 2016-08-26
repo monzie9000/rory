@@ -36,37 +36,40 @@ struct VehicleInterface vi;
 void vi_init(void)
 {
 
-  vi.enabled = FALSE;
-  vi.timeouted = TRUE;
-  vi.last_msg = VI_TIMEOUT;
+    vi.enabled = FALSE;
+    vi.timeouted = TRUE;
+    vi.last_msg = VI_TIMEOUT;
 
-  vi.input.h_mode = GUIDANCE_H_MODE_ATTITUDE;
-  INT_EULERS_ZERO(vi.input.h_sp.attitude);
-  vi.input.v_mode = GUIDANCE_V_MODE_CLIMB;
-  vi.input.v_sp.climb = 0;
-  vi_impl_init();
+    vi.input.h_mode = GUIDANCE_H_MODE_ATTITUDE;
+    INT_EULERS_ZERO(vi.input.h_sp.attitude);
+    vi.input.v_mode = GUIDANCE_V_MODE_CLIMB;
+    vi.input.v_sp.climb = 0;
+    vi_impl_init();
 
 }
 
 void vi_periodic(void)
 {
 #if (VI_TIMEOUT != 0)
-  if (vi.last_msg < VI_TIMEOUT) {
-    vi.last_msg++;
-  } else {
-    vi.timeouted = TRUE;
-    vi.input.h_mode = GUIDANCE_H_MODE_ATTITUDE;
-    INT_EULERS_ZERO(vi.input.h_sp.attitude);
-    vi.input.v_mode = GUIDANCE_V_MODE_CLIMB;
-    vi.input.v_sp.climb = 0;
-  }
+    if (vi.last_msg < VI_TIMEOUT)
+    {
+        vi.last_msg++;
+    }
+    else
+    {
+        vi.timeouted = TRUE;
+        vi.input.h_mode = GUIDANCE_H_MODE_ATTITUDE;
+        INT_EULERS_ZERO(vi.input.h_sp.attitude);
+        vi.input.v_mode = GUIDANCE_V_MODE_CLIMB;
+        vi.input.v_sp.climb = 0;
+    }
 #endif
-  vi_impl_periodic();
+    vi_impl_periodic();
 }
 
 void vi_set_enabled(bool_t enabled)
 {
-  vi_impl_set_enabled(enabled);
+    vi_impl_set_enabled(enabled);
 
 }
 

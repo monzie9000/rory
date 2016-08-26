@@ -165,9 +165,10 @@
 #include "subsystems/imu.h"
 
 
-struct ImuBooz2 {
+struct ImuBooz2
+{
 #if defined IMU_B2_MAG_TYPE && IMU_B2_MAG_TYPE == IMU_B2_MAG_HMC58XX
-  struct Hmc58xx mag_hmc;
+    struct Hmc58xx mag_hmc;
 #endif
 };
 

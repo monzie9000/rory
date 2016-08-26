@@ -56,77 +56,78 @@ static inline void reset_psi_ref(struct AttRefQuatFloat *ref, float psi);
  */
 void attitude_ref_quat_float_init(struct AttRefQuatFloat *ref)
 {
-  FLOAT_EULERS_ZERO(ref->euler);
-  float_quat_identity(&ref->quat);
-  FLOAT_RATES_ZERO(ref->rate);
-  FLOAT_RATES_ZERO(ref->accel);
+    FLOAT_EULERS_ZERO(ref->euler);
+    float_quat_identity(&ref->quat);
+    FLOAT_RATES_ZERO(ref->rate);
+    FLOAT_RATES_ZERO(ref->accel);
 
-  ref->saturation.max_rate.p = STABILIZATION_ATTITUDE_REF_MAX_P;
-  ref->saturation.max_rate.q = STABILIZATION_ATTITUDE_REF_MAX_Q;
-  ref->saturation.max_rate.r = STABILIZATION_ATTITUDE_REF_MAX_R;
-  ref->saturation.max_accel.p = STABILIZATION_ATTITUDE_REF_MAX_PDOT;
-  ref->saturation.max_accel.q = STABILIZATION_ATTITUDE_REF_MAX_QDOT;
-  ref->saturation.max_accel.r = STABILIZATION_ATTITUDE_REF_MAX_RDOT;
+    ref->saturation.max_rate.p = STABILIZATION_ATTITUDE_REF_MAX_P;
+    ref->saturation.max_rate.q = STABILIZATION_ATTITUDE_REF_MAX_Q;
+    ref->saturation.max_rate.r = STABILIZATION_ATTITUDE_REF_MAX_R;
+    ref->saturation.max_accel.p = STABILIZATION_ATTITUDE_REF_MAX_PDOT;
+    ref->saturation.max_accel.q = STABILIZATION_ATTITUDE_REF_MAX_QDOT;
+    ref->saturation.max_accel.r = STABILIZATION_ATTITUDE_REF_MAX_RDOT;
 
-  for (int i = 0; i < STABILIZATION_ATTITUDE_GAIN_NB; i++) {
-    RATES_ASSIGN(ref->model[i].omega, omega_p[i], omega_q[i], omega_r[i]);
-    RATES_ASSIGN(ref->model[i].zeta, zeta_p[i], zeta_q[i], zeta_r[i]);
-    RATES_ASSIGN(ref->model[i].two_omega2, 2 * omega_p[i]*omega_p[i], 2 * omega_q[i]*omega_q[i], 2 * omega_r[i]*omega_r[i]);
-  }
+    for (int i = 0; i < STABILIZATION_ATTITUDE_GAIN_NB; i++)
+    {
+        RATES_ASSIGN(ref->model[i].omega, omega_p[i], omega_q[i], omega_r[i]);
+        RATES_ASSIGN(ref->model[i].zeta, zeta_p[i], zeta_q[i], zeta_r[i]);
+        RATES_ASSIGN(ref->model[i].two_omega2, 2 * omega_p[i]*omega_p[i], 2 * omega_q[i]*omega_q[i], 2 * omega_r[i]*omega_r[i]);
+    }
 
-  ref->cur_idx = 0;
+    ref->cur_idx = 0;
 }
 
 void attitude_ref_quat_float_enter(struct AttRefQuatFloat *ref, float psi)
 {
-  reset_psi_ref(ref, psi);
+    reset_psi_ref(ref, psi);
 }
 
 
 void attitude_ref_quat_float_update(struct AttRefQuatFloat *ref, struct FloatQuat *sp_quat, float dt)
 {
 
-  /* integrate reference attitude            */
+    /* integrate reference attitude            */
 #if STABILIZATION_ATTITUDE_REF_QUAT_INFINITESIMAL_STEP
-  struct FloatQuat qdot;
-  float_quat_derivative(&qdot, &ref->rate, &ref->quat);
-  QUAT_SMUL(qdot, qdot, dt);
-  QUAT_ADD(ref->quat, qdot);
+    struct FloatQuat qdot;
+    float_quat_derivative(&qdot, &ref->rate, &ref->quat);
+    QUAT_SMUL(qdot, qdot, dt);
+    QUAT_ADD(ref->quat, qdot);
 #else // use finite step (involves trig)
-  struct FloatQuat delta_q;
-  float_quat_differential(&delta_q, &ref->rate, dt);
-  /* compose new ref_quat by quaternion multiplication of delta rotation and current ref_quat */
-  struct FloatQuat new_ref_quat;
-  float_quat_comp(&new_ref_quat, &ref->quat, &delta_q);
-  QUAT_COPY(ref->quat, new_ref_quat);
+    struct FloatQuat delta_q;
+    float_quat_differential(&delta_q, &ref->rate, dt);
+    /* compose new ref_quat by quaternion multiplication of delta rotation and current ref_quat */
+    struct FloatQuat new_ref_quat;
+    float_quat_comp(&new_ref_quat, &ref->quat, &delta_q);
+    QUAT_COPY(ref->quat, new_ref_quat);
 #endif
-  float_quat_normalize(&ref->quat);
+    float_quat_normalize(&ref->quat);
 
-  /* integrate reference rotational speeds   */
-  struct FloatRates delta_rate;
-  RATES_SMUL(delta_rate, ref->accel, dt);
-  RATES_ADD(ref->rate, delta_rate);
+    /* integrate reference rotational speeds   */
+    struct FloatRates delta_rate;
+    RATES_SMUL(delta_rate, ref->accel, dt);
+    RATES_ADD(ref->rate, delta_rate);
 
-  /* compute reference angular accelerations */
-  struct FloatQuat err;
-  /* compute reference attitude error        */
-  float_quat_inv_comp(&err, sp_quat, &ref->quat);
-  /* wrap it in the shortest direction       */
-  float_quat_wrap_shortest(&err);
-  /* propagate the 2nd order linear model: xdotdot = -2*zeta*omega*xdot - omega^2*x  */
-  /* since error quaternion contains the half-angles we get 2*omega^2*err */
-  ref->accel.p = -2.*ref->model[ref->cur_idx].zeta.p * ref->model[ref->cur_idx].omega.p * ref->rate.p -
-    ref->model[ref->cur_idx].two_omega2.p * err.qx;
-  ref->accel.q = -2.*ref->model[ref->cur_idx].zeta.q * ref->model[ref->cur_idx].omega.q * ref->rate.q -
-    ref->model[ref->cur_idx].two_omega2.q * err.qy;
-  ref->accel.r = -2.*ref->model[ref->cur_idx].zeta.r * ref->model[ref->cur_idx].omega.r * ref->rate.r -
-    ref->model[ref->cur_idx].two_omega2.r * err.qz;
+    /* compute reference angular accelerations */
+    struct FloatQuat err;
+    /* compute reference attitude error        */
+    float_quat_inv_comp(&err, sp_quat, &ref->quat);
+    /* wrap it in the shortest direction       */
+    float_quat_wrap_shortest(&err);
+    /* propagate the 2nd order linear model: xdotdot = -2*zeta*omega*xdot - omega^2*x  */
+    /* since error quaternion contains the half-angles we get 2*omega^2*err */
+    ref->accel.p = -2.*ref->model[ref->cur_idx].zeta.p * ref->model[ref->cur_idx].omega.p * ref->rate.p -
+                   ref->model[ref->cur_idx].two_omega2.p * err.qx;
+    ref->accel.q = -2.*ref->model[ref->cur_idx].zeta.q * ref->model[ref->cur_idx].omega.q * ref->rate.q -
+                   ref->model[ref->cur_idx].two_omega2.q * err.qy;
+    ref->accel.r = -2.*ref->model[ref->cur_idx].zeta.r * ref->model[ref->cur_idx].omega.r * ref->rate.r -
+                   ref->model[ref->cur_idx].two_omega2.r * err.qz;
 
-  /* saturate */
-  attitude_ref_float_saturate_naive(&ref->rate, &ref->accel, &ref->saturation);
+    /* saturate */
+    attitude_ref_float_saturate_naive(&ref->rate, &ref->accel, &ref->saturation);
 
-  /* compute ref_euler */
-  float_eulers_of_quat(&ref->euler, &ref->quat);
+    /* compute ref_euler */
+    float_eulers_of_quat(&ref->euler, &ref->quat);
 }
 
 
@@ -138,13 +139,13 @@ void attitude_ref_quat_float_update(struct AttRefQuatFloat *ref, struct FloatQua
  */
 static inline void reset_psi_ref(struct AttRefQuatFloat *ref, float psi)
 {
-  ref->euler.psi = psi;
-  ref->rate.r = 0;
-  ref->accel.r = 0;
+    ref->euler.psi = psi;
+    ref->rate.r = 0;
+    ref->accel.r = 0;
 
-  // recalc quat from eulers
-  float_quat_of_eulers(&ref->quat, &ref->euler);
-  float_quat_wrap_shortest(&ref->quat);
+    // recalc quat from eulers
+    float_quat_of_eulers(&ref->quat, &ref->euler);
+    float_quat_wrap_shortest(&ref->quat);
 }
 
 
@@ -155,35 +156,35 @@ static inline void reset_psi_ref(struct AttRefQuatFloat *ref, float psi)
  */
 void attitude_ref_quat_float_idx_set_omega_p(struct AttRefQuatFloat *ref, uint8_t idx, float omega)
 {
-  ref->model[idx].omega.p = omega;
-  ref->model[idx].two_omega2.p = 2 * omega * omega;
+    ref->model[idx].omega.p = omega;
+    ref->model[idx].two_omega2.p = 2 * omega * omega;
 }
 
 void attitude_ref_quat_float_idx_set_omega_q(struct AttRefQuatFloat *ref, uint8_t idx, float omega)
 {
-  ref->model[idx].omega.q = omega;
-  ref->model[idx].two_omega2.q = 2 * omega * omega;
+    ref->model[idx].omega.q = omega;
+    ref->model[idx].two_omega2.q = 2 * omega * omega;
 }
 
 void attitude_ref_quat_float_idx_set_omega_r(struct AttRefQuatFloat *ref, uint8_t idx, float omega)
 {
-  ref->model[idx].omega.r = omega;
-  ref->model[idx].two_omega2.r = 2 * omega * omega;
+    ref->model[idx].omega.r = omega;
+    ref->model[idx].two_omega2.r = 2 * omega * omega;
 }
 
 void attitude_ref_quat_float_set_omega_p(struct AttRefQuatFloat *ref, float omega)
 {
-  attitude_ref_quat_float_idx_set_omega_p(ref, ref->cur_idx, omega);
+    attitude_ref_quat_float_idx_set_omega_p(ref, ref->cur_idx, omega);
 }
 
 void attitude_ref_quat_float_set_omega_q(struct AttRefQuatFloat *ref, float omega)
 {
-  attitude_ref_quat_float_idx_set_omega_q(ref, ref->cur_idx, omega);
+    attitude_ref_quat_float_idx_set_omega_q(ref, ref->cur_idx, omega);
 }
 
 void attitude_ref_quat_float_set_omega_r(struct AttRefQuatFloat *ref, float omega)
 {
-  attitude_ref_quat_float_idx_set_omega_r(ref, ref->cur_idx, omega);
+    attitude_ref_quat_float_idx_set_omega_r(ref, ref->cur_idx, omega);
 }
 
 
@@ -192,5 +193,5 @@ void attitude_ref_quat_float_set_omega_r(struct AttRefQuatFloat *ref, float omeg
  */
 void attitude_ref_quat_float_schedule(struct AttRefQuatFloat *ref, uint8_t idx)
 {
-  ref->cur_idx = idx;
+    ref->cur_idx = idx;
 }

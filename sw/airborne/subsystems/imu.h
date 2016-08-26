@@ -38,24 +38,25 @@ extern void imu_impl_init(void);
 extern void imu_periodic(void);
 
 /** abstract IMU interface providing fixed point interface  */
-struct Imu {
-  struct Int32Rates gyro;             ///< gyroscope measurements in rad/s in BFP with #INT32_RATE_FRAC
-  struct Int32Vect3 accel;            ///< accelerometer measurements in m/s^2 in BFP with #INT32_ACCEL_FRAC
-  struct Int32Vect3 mag;              ///< magnetometer measurements scaled to 1 in BFP with #INT32_MAG_FRAC
-  struct Int32Rates gyro_prev;        ///< previous gyroscope measurements
-  struct Int32Vect3 accel_prev;       ///< previous accelerometer measurements
-  struct Int32Rates gyro_neutral;     ///< gyroscope bias
-  struct Int32Vect3 accel_neutral;    ///< accelerometer bias
-  struct Int32Vect3 mag_neutral;      ///< magnetometer neutral readings (bias)
-  struct Int32Rates gyro_unscaled;    ///< unscaled gyroscope measurements
-  struct Int32Vect3 accel_unscaled;   ///< unscaled accelerometer measurements
-  struct Int32Vect3 mag_unscaled;     ///< unscaled magnetometer measurements
-  struct OrientationReps body_to_imu; ///< rotation from body to imu frame
+struct Imu
+{
+    struct Int32Rates gyro;             ///< gyroscope measurements in rad/s in BFP with #INT32_RATE_FRAC
+    struct Int32Vect3 accel;            ///< accelerometer measurements in m/s^2 in BFP with #INT32_ACCEL_FRAC
+    struct Int32Vect3 mag;              ///< magnetometer measurements scaled to 1 in BFP with #INT32_MAG_FRAC
+    struct Int32Rates gyro_prev;        ///< previous gyroscope measurements
+    struct Int32Vect3 accel_prev;       ///< previous accelerometer measurements
+    struct Int32Rates gyro_neutral;     ///< gyroscope bias
+    struct Int32Vect3 accel_neutral;    ///< accelerometer bias
+    struct Int32Vect3 mag_neutral;      ///< magnetometer neutral readings (bias)
+    struct Int32Rates gyro_unscaled;    ///< unscaled gyroscope measurements
+    struct Int32Vect3 accel_unscaled;   ///< unscaled accelerometer measurements
+    struct Int32Vect3 mag_unscaled;     ///< unscaled magnetometer measurements
+    struct OrientationReps body_to_imu; ///< rotation from body to imu frame
 
-  /** flag for adjusting body_to_imu via settings.
-   * if FALSE, reset to airframe values, if TRUE set current roll/pitch
-   */
-  bool_t b2i_set_current;
+    /** flag for adjusting body_to_imu via settings.
+     * if FALSE, reset to airframe values, if TRUE set current roll/pitch
+     */
+    bool_t b2i_set_current;
 };
 
 /** global IMU state */

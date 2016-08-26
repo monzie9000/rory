@@ -46,69 +46,78 @@ static inline void intermcu_parse_msg(struct transport_rx *trans, void (*command
 
 void intermcu_init(void)
 {
-  pprz_transport_init(&intermcu_transport);
+    pprz_transport_init(&intermcu_transport);
 }
 
 void intermcu_periodic(void)
 {
-  /* Check for interMCU loss */
-  if (inter_mcu.time_since_last_frame >= INTERMCU_LOST_CNT) {
-    inter_mcu.status = INTERMCU_LOST;
-  } else {
-    inter_mcu.time_since_last_frame++;
-  }
+    /* Check for interMCU loss */
+    if (inter_mcu.time_since_last_frame >= INTERMCU_LOST_CNT)
+    {
+        inter_mcu.status = INTERMCU_LOST;
+    }
+    else
+    {
+        inter_mcu.time_since_last_frame++;
+    }
 }
 
 void intermcu_on_rc_frame(void)
 {
-  pprz_msg_send_IMCU_RADIO_COMMANDS(&(intermcu_transport.trans_tx), intermcu_device,
-                                    INTERMCU_FBW, 0, RADIO_CONTROL_NB_CHANNEL, radio_control.values); //TODO: Fix status
+    pprz_msg_send_IMCU_RADIO_COMMANDS(&(intermcu_transport.trans_tx), intermcu_device,
+                                      INTERMCU_FBW, 0, RADIO_CONTROL_NB_CHANNEL, radio_control.values); //TODO: Fix status
 }
 
 void intermcu_send_status(uint8_t mode)
 {
-  // Send Status
-  (void)mode;
-  //FIXME
+    // Send Status
+    (void)mode;
+    //FIXME
 }
 
 static inline void intermcu_parse_msg(struct transport_rx *trans, void (*commands_frame_handler)(void))
 {
-  /* Parse the Inter MCU message */
-  uint8_t msg_id = trans->payload[1];
-  switch (msg_id) {
-    case DL_IMCU_COMMANDS: {
-      uint8_t i;
-      uint8_t size = DL_IMCU_COMMANDS_values_length(trans->payload);
-      int16_t *new_commands = DL_IMCU_COMMANDS_values(trans->payload);
-      for (i = 0; i < size; i++) {
-        intermcu_commands[i] = new_commands[i];
-      }
+    /* Parse the Inter MCU message */
+    uint8_t msg_id = trans->payload[1];
+    switch (msg_id)
+    {
+    case DL_IMCU_COMMANDS:
+    {
+        uint8_t i;
+        uint8_t size = DL_IMCU_COMMANDS_values_length(trans->payload);
+        int16_t *new_commands = DL_IMCU_COMMANDS_values(trans->payload);
+        for (i = 0; i < size; i++)
+        {
+            intermcu_commands[i] = new_commands[i];
+        }
 
-      inter_mcu.status = INTERMCU_OK;
-      inter_mcu.time_since_last_frame = 0;
-      commands_frame_handler();
-      break;
+        inter_mcu.status = INTERMCU_OK;
+        inter_mcu.time_since_last_frame = 0;
+        commands_frame_handler();
+        break;
     }
 
     default:
-      break;
-  }
+        break;
+    }
 
-  // Set to receive another message
-  trans->msg_received = FALSE;
+    // Set to receive another message
+    trans->msg_received = FALSE;
 }
 
 void InterMcuEvent(void (*frame_handler)(void))
 {
-  /* Parse incoming bytes */
-  if (intermcu_device->char_available(intermcu_device->periph)) {
-    while (intermcu_device->char_available(intermcu_device->periph) && !intermcu_transport.trans_rx.msg_received) {
-      parse_pprz(&intermcu_transport, intermcu_device->get_byte(intermcu_device->periph));
-    }
+    /* Parse incoming bytes */
+    if (intermcu_device->char_available(intermcu_device->periph))
+    {
+        while (intermcu_device->char_available(intermcu_device->periph) && !intermcu_transport.trans_rx.msg_received)
+        {
+            parse_pprz(&intermcu_transport, intermcu_device->get_byte(intermcu_device->periph));
+        }
 
-    if (intermcu_transport.trans_rx.msg_received) {
-      intermcu_parse_msg(&(intermcu_transport.trans_rx), frame_handler);
+        if (intermcu_transport.trans_rx.msg_received)
+        {
+            intermcu_parse_msg(&(intermcu_transport.trans_rx), frame_handler);
+        }
     }
-  }
 }

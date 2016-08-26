@@ -166,30 +166,33 @@
 #define VN100_AccGain_6G  1
 
 /* 32-bit Parameter Type */
-typedef union {
-  uint32_t UInt;
-  float    Float;
+typedef union
+{
+    uint32_t UInt;
+    float    Float;
 } VN100_Param;
 
 /* SPI Buffer size */
 #define VN100_SPI_BUFFER_SIZE  48
 
 /* SPI Request Packet */
-typedef struct {
-  uint8_t CmdID;
-  uint8_t RegID;
-  uint8_t ZeroByte1;
-  uint8_t ZeroByte2;
-  VN100_Param Data[VN100_SPI_BUFFER_SIZE];
+typedef struct
+{
+    uint8_t CmdID;
+    uint8_t RegID;
+    uint8_t ZeroByte1;
+    uint8_t ZeroByte2;
+    VN100_Param Data[VN100_SPI_BUFFER_SIZE];
 } VN100_Req_Packet;
 
 /* SPI Response Packet */
-typedef struct {
-  uint8_t ZeroByte;
-  uint8_t CmdID;
-  uint8_t RegID;
-  uint8_t ErrID;
-  VN100_Param Data[VN100_SPI_BUFFER_SIZE];
+typedef struct
+{
+    uint8_t ZeroByte;
+    uint8_t CmdID;
+    uint8_t RegID;
+    uint8_t ErrID;
+    VN100_Param Data[VN100_SPI_BUFFER_SIZE];
 } VN100_Res_Packet;
 
 #define VN100_Packet_SetBaud(_b) { VN100_CmdID_WriteRegister, VN100_REG_SBAUD, 0, 0, { _b } }

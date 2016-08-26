@@ -49,18 +49,19 @@ struct i2c_transaction ezcurrent_i2c_trans;
 
 void ezcurrent_init(void)
 {
-  electrical.vsupply = 0;
-  electrical.current = 0;
+    electrical.vsupply = 0;
+    electrical.current = 0;
 
-  ezcurrent_i2c_trans.status = I2CTransDone;
-  ezcurrent_i2c_trans.slave_addr = EZCURRENT_ADDR;
+    ezcurrent_i2c_trans.status = I2CTransDone;
+    ezcurrent_i2c_trans.slave_addr = EZCURRENT_ADDR;
 }
 
 void ezcurrent_read_periodic(void)
 {
-  if (ezcurrent_i2c_trans.status == I2CTransDone) {
-    i2c_receive(&EZCURRENT_I2C_DEV, &ezcurrent_i2c_trans, ezcurrent_i2c_trans.slave_addr, 10);
-  }
+    if (ezcurrent_i2c_trans.status == I2CTransDone)
+    {
+        i2c_receive(&EZCURRENT_I2C_DEV, &ezcurrent_i2c_trans, ezcurrent_i2c_trans.slave_addr, 10);
+    }
 }
 
 #define Uint16FromBuf(_buf,_idx) ((uint16_t)((_buf[_idx+1]<<8) | _buf[_idx]))
@@ -68,19 +69,22 @@ void ezcurrent_read_periodic(void)
 
 void ezcurrent_read_event(void)
 {
-  if (ezcurrent_i2c_trans.status == I2CTransSuccess) {
-    /* voltage of EzOSD sensor is provided in mV, convert to deciVolt */
-    electrical.vsupply = Uint16FromBuf(ezcurrent_i2c_trans.buf, 2) / 100;
-    /* consumed ? in mAh */
-    electrical.consumed = Int16FromBuf(ezcurrent_i2c_trans.buf, 6);
-    /* sensor provides current in 1e-1 Ampere, convert to mA */
-    electrical.current = Int16FromBuf(ezcurrent_i2c_trans.buf, 8) * 100;
+    if (ezcurrent_i2c_trans.status == I2CTransSuccess)
+    {
+        /* voltage of EzOSD sensor is provided in mV, convert to deciVolt */
+        electrical.vsupply = Uint16FromBuf(ezcurrent_i2c_trans.buf, 2) / 100;
+        /* consumed ? in mAh */
+        electrical.consumed = Int16FromBuf(ezcurrent_i2c_trans.buf, 6);
+        /* sensor provides current in 1e-1 Ampere, convert to mA */
+        electrical.current = Int16FromBuf(ezcurrent_i2c_trans.buf, 8) * 100;
 
-    // Transaction has been read
-    ezcurrent_i2c_trans.status = I2CTransDone;
-  } else if (ezcurrent_i2c_trans.status == I2CTransFailed) {
-    ezcurrent_i2c_trans.status = I2CTransDone;
-    // ezcurrent_i2c_trans.slave_addr++;
-  }
+        // Transaction has been read
+        ezcurrent_i2c_trans.status = I2CTransDone;
+    }
+    else if (ezcurrent_i2c_trans.status == I2CTransFailed)
+    {
+        ezcurrent_i2c_trans.status = I2CTransDone;
+        // ezcurrent_i2c_trans.slave_addr++;
+    }
 }
 

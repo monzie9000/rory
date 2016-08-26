@@ -38,6 +38,6 @@ void baro_sim_init(void)
 
 void baro_sim_periodic(void)
 {
-  float pressure = pprz_isa_pressure_of_altitude(gps.hmsl / 1000.0);
-  AbiSendMsgBARO_ABS(BARO_SIM_SENDER_ID, pressure);
+    float pressure = pprz_isa_pressure_of_altitude(gps.hmsl / 1000.0);
+    AbiSendMsgBARO_ABS(BARO_SIM_SENDER_ID, pressure);
 }

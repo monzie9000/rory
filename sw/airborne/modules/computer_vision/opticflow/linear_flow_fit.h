@@ -37,20 +37,21 @@
 #define LINEAR_FLOW_FIT
 
 // structure that contains all outputs of a linear flow fied fit:
-struct linear_flow_fit_info {
-  float slope_x;      ///< Slope of the surface in x-direction - given sufficient lateral motion
-  float slope_y;      ///< Slope of the surface in y-direction - given sufficient lateral motion
-  float surface_roughness;  ///< The error of the linear fit is a measure of surface roughness
-  float focus_of_expansion_x; ///< Image x-coordinate of the focus of expansion (contraction)
-  float focus_of_expansion_y; ///< Image y-coordinate of the focus of expansion (contraction)
-  float relative_velocity_x;  ///< Relative velocity in x-direction, i.e., vx / z, where z is the depth in direction of the camera's principal axis
-  float relative_velocity_y;  ///< Relative velocity in y-direction, i.e., vy / z, where z is the depth in direction of the camera's principal axis
-  float relative_velocity_z;  ///< Relative velocity in z-direction, i.e., vz / z, where z is the depth in direction of the camera's principal axis
-  float time_to_contact;    ///< Basically, 1 / relative_velocity_z
-  float divergence;   ///< Basically, relative_velocity_z. Actual divergence of a 2D flow field is 2 * relative_velocity_z
-  float fit_error;    ///< Error of the fit (same as surface roughness)
-  int n_inliers_u;    ///< Number of inliers in the horizontal flow fit
-  int n_inliers_v;    ///< Number of inliers in the vertical flow fit
+struct linear_flow_fit_info
+{
+    float slope_x;      ///< Slope of the surface in x-direction - given sufficient lateral motion
+    float slope_y;      ///< Slope of the surface in y-direction - given sufficient lateral motion
+    float surface_roughness;  ///< The error of the linear fit is a measure of surface roughness
+    float focus_of_expansion_x; ///< Image x-coordinate of the focus of expansion (contraction)
+    float focus_of_expansion_y; ///< Image y-coordinate of the focus of expansion (contraction)
+    float relative_velocity_x;  ///< Relative velocity in x-direction, i.e., vx / z, where z is the depth in direction of the camera's principal axis
+    float relative_velocity_y;  ///< Relative velocity in y-direction, i.e., vy / z, where z is the depth in direction of the camera's principal axis
+    float relative_velocity_z;  ///< Relative velocity in z-direction, i.e., vz / z, where z is the depth in direction of the camera's principal axis
+    float time_to_contact;    ///< Basically, 1 / relative_velocity_z
+    float divergence;   ///< Basically, relative_velocity_z. Actual divergence of a 2D flow field is 2 * relative_velocity_z
+    float fit_error;    ///< Error of the fit (same as surface roughness)
+    int n_inliers_u;    ///< Number of inliers in the horizontal flow fit
+    int n_inliers_v;    ///< Number of inliers in the vertical flow fit
 };
 
 // This is the function called externally, passing the vector of optical flow vectors and information on the number of vectors and image size:

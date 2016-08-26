@@ -31,15 +31,16 @@
 
 #include "std.h"
 
-struct SysMon {
-  uint8_t  cpu_load;
-  uint16_t periodic_time;      ///< in usec
-  uint16_t periodic_time_min;  ///< in usec
-  uint16_t periodic_time_max;  ///< in usec
-  uint16_t periodic_cycle;     ///< in usec
-  uint16_t periodic_cycle_min; ///< in usec
-  uint16_t periodic_cycle_max; ///< in usec
-  uint16_t event_number;
+struct SysMon
+{
+    uint8_t  cpu_load;
+    uint16_t periodic_time;      ///< in usec
+    uint16_t periodic_time_min;  ///< in usec
+    uint16_t periodic_time_max;  ///< in usec
+    uint16_t periodic_cycle;     ///< in usec
+    uint16_t periodic_cycle_min; ///< in usec
+    uint16_t periodic_cycle_max; ///< in usec
+    uint16_t event_number;
 };
 
 extern struct SysMon sys_mon;

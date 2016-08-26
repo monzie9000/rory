@@ -35,6 +35,6 @@
 
 void periodic_2Hz_openlog(void)
 {
-  uint32_t timestamp = get_sys_time_msec();
-  DOWNLINK_SEND_TIMESTAMP(DefaultChannel, DefaultDevice, &timestamp);
+    uint32_t timestamp = get_sys_time_msec();
+    DOWNLINK_SEND_TIMESTAMP(DefaultChannel, DefaultDevice, &timestamp);
 }

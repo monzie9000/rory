@@ -73,96 +73,101 @@ uint8_t dc_timer;
 
 void gpio_cam_ctrl_init(void)
 {
-  // Call common DC init
-  dc_init();
+    // Call common DC init
+    dc_init();
 
-  // Do gpio specific DC init
-  dc_timer = 0;
+    // Do gpio specific DC init
+    dc_timer = 0;
 
-  gpio_setup_output(DC_SHUTTER_GPIO);
-  DC_RELEASE(DC_SHUTTER_GPIO);
+    gpio_setup_output(DC_SHUTTER_GPIO);
+    DC_RELEASE(DC_SHUTTER_GPIO);
 #ifdef DC_ZOOM_IN_GPIO
-  gpio_setup_output(DC_ZOOM_IN_GPIO);
-  DC_RELEASE(DC_ZOOM_IN_GPIO);
+    gpio_setup_output(DC_ZOOM_IN_GPIO);
+    DC_RELEASE(DC_ZOOM_IN_GPIO);
 #endif
 #ifdef DC_ZOOM_OUT_GPIO
-  gpio_setup_output(DC_ZOOM_OUT_GPIO);
-  DC_RELEASE(DC_ZOOM_OUT_GPIO);
+    gpio_setup_output(DC_ZOOM_OUT_GPIO);
+    DC_RELEASE(DC_ZOOM_OUT_GPIO);
 #endif
 #ifdef DC_POWER_GPIO
-  gpio_setup_output(DC_POWER_GPIO);
-  DC_RELEASE(DC_POWER_GPIO);
+    gpio_setup_output(DC_POWER_GPIO);
+    DC_RELEASE(DC_POWER_GPIO);
 #endif
 #ifdef DC_POWER_OFF_GPIO
-  gpio_setup_output(DC_POWER_OFF_GPIO);
-  DC_RELEASE(DC_POWER_OFF_GPIO);
+    gpio_setup_output(DC_POWER_OFF_GPIO);
+    DC_RELEASE(DC_POWER_OFF_GPIO);
 #endif
 }
 
 void gpio_cam_ctrl_periodic(void)
 {
 #ifdef DC_SHOOT_ON_BUTTON_RELEASE
-  if (dc_timer == 1) {
-    dc_send_shot_position();
-  }
+    if (dc_timer == 1)
+    {
+        dc_send_shot_position();
+    }
 #endif
 
-  if (dc_timer) {
-    dc_timer--;
-  } else {
-    DC_RELEASE(DC_SHUTTER_GPIO);
+    if (dc_timer)
+    {
+        dc_timer--;
+    }
+    else
+    {
+        DC_RELEASE(DC_SHUTTER_GPIO);
 #ifdef DC_ZOOM_IN_GPIO
-    DC_RELEASE(DC_ZOOM_IN_GPIO);
+        DC_RELEASE(DC_ZOOM_IN_GPIO);
 #endif
 #ifdef DC_ZOOM_OUT_GPIO
-    DC_RELEASE(DC_ZOOM_OUT_GPIO);
+        DC_RELEASE(DC_ZOOM_OUT_GPIO);
 #endif
 #ifdef DC_POWER_GPIO
-    DC_RELEASE(DC_POWER_GPIO);
+        DC_RELEASE(DC_POWER_GPIO);
 #endif
 #ifdef DC_POWER_OFF_GPIO
-    DC_RELEASE(DC_POWER_OFF_GPIO);
+        DC_RELEASE(DC_POWER_OFF_GPIO);
 #endif
-  }
+    }
 
-  // Common DC Periodic task
-  dc_periodic();
+    // Common DC Periodic task
+    dc_periodic();
 }
 
 /* Command The Camera */
 void dc_send_command(uint8_t cmd)
 {
-  dc_timer = DC_SHUTTER_DELAY * GPIO_CAM_CTRL_PERIODIC_FREQ;
+    dc_timer = DC_SHUTTER_DELAY * GPIO_CAM_CTRL_PERIODIC_FREQ;
 
-  switch (cmd) {
+    switch (cmd)
+    {
     case DC_SHOOT:
-      DC_PUSH(DC_SHUTTER_GPIO);
+        DC_PUSH(DC_SHUTTER_GPIO);
 #ifndef DC_SHOOT_ON_BUTTON_RELEASE
-      dc_send_shot_position();
+        dc_send_shot_position();
 #endif
-      break;
+        break;
 #ifdef DC_ZOOM_IN_GPIO
     case DC_TALLER:
-      DC_PUSH(DC_ZOOM_IN_GPIO);
-      break;
+        DC_PUSH(DC_ZOOM_IN_GPIO);
+        break;
 #endif
 #ifdef DC_ZOOM_OUT_GPIO
     case DC_WIDER:
-      DC_PUSH(DC_ZOOM_OUT_GPIO);
-      break;
+        DC_PUSH(DC_ZOOM_OUT_GPIO);
+        break;
 #endif
 #ifdef DC_POWER_GPIO
     case DC_ON:
-      DC_PUSH(DC_POWER_GPIO);
-      break;
+        DC_PUSH(DC_POWER_GPIO);
+        break;
 #endif
 #ifdef DC_POWER_OFF_GPIO
     case DC_OFF:
-      DC_PUSH(DC_POWER_OFF_GPIO);
-      dc_timer = DC_POWER_OFF_DELAY * GPIO_CAM_CTRL_PERIODIC_FREQ;
-      break;
+        DC_PUSH(DC_POWER_OFF_GPIO);
+        dc_timer = DC_POWER_OFF_DELAY * GPIO_CAM_CTRL_PERIODIC_FREQ;
+        break;
 #endif
     default:
-      break;
-  }
+        break;
+    }
 }

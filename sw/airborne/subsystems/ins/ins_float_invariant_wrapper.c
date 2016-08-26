@@ -45,26 +45,33 @@ static uint32_t ins_finv_last_stamp = 0;
 #include "state.h"
 static void send_ins_ref(struct transport_tx *trans, struct link_device *dev)
 {
-  float foo = 0.;
-  if (state.ned_initialized_i) {
-    pprz_msg_send_INS_REF(trans, dev, AC_ID,
-                          &state.ned_origin_i.ecef.x, &state.ned_origin_i.ecef.y,
-                          &state.ned_origin_i.ecef.z, &state.ned_origin_i.lla.lat,
-                          &state.ned_origin_i.lla.lon, &state.ned_origin_i.lla.alt,
-                          &state.ned_origin_i.hmsl, &foo);
-  }
+    float foo = 0.;
+    if (state.ned_initialized_i)
+    {
+        pprz_msg_send_INS_REF(trans, dev, AC_ID,
+                              &state.ned_origin_i.ecef.x, &state.ned_origin_i.ecef.y,
+                              &state.ned_origin_i.ecef.z, &state.ned_origin_i.lla.lat,
+                              &state.ned_origin_i.lla.lon, &state.ned_origin_i.lla.alt,
+                              &state.ned_origin_i.hmsl, &foo);
+    }
 }
 
 static void send_filter_status(struct transport_tx *trans, struct link_device *dev)
 {
-  uint8_t id = INS_FINV_FILTER_ID;
-  uint8_t mde = 3;
-  uint16_t val = 0;
-  if (!ins_float_inv.is_aligned) { mde = 2; }
-  uint32_t t_diff = get_sys_time_usec() - ins_finv_last_stamp;
-  /* set lost if no new gyro measurements for 50ms */
-  if (t_diff > 50000) { mde = 5; }
-  pprz_msg_send_STATE_FILTER_STATUS(trans, dev, AC_ID, &id, &mde, &val);
+    uint8_t id = INS_FINV_FILTER_ID;
+    uint8_t mde = 3;
+    uint16_t val = 0;
+    if (!ins_float_inv.is_aligned)
+    {
+        mde = 2;
+    }
+    uint32_t t_diff = get_sys_time_usec() - ins_finv_last_stamp;
+    /* set lost if no new gyro measurements for 50ms */
+    if (t_diff > 50000)
+    {
+        mde = 5;
+    }
+    pprz_msg_send_STATE_FILTER_STATUS(trans, dev, AC_ID, &id, &mde, &val);
 }
 #endif
 
@@ -105,7 +112,7 @@ static abi_event gps_ev;
 
 static void baro_cb(uint8_t __attribute__((unused)) sender_id, float pressure)
 {
-  ins_float_invariant_update_baro(pressure);
+    ins_float_invariant_update_baro(pressure);
 }
 
 /**
@@ -114,42 +121,44 @@ static void baro_cb(uint8_t __attribute__((unused)) sender_id, float pressure)
  * use the last stored accel from #ins_finv_accel.
  */
 static void gyro_cb(uint8_t sender_id __attribute__((unused)),
-                   uint32_t stamp, struct Int32Rates *gyro)
+                    uint32_t stamp, struct Int32Rates *gyro)
 {
 #if USE_AUTO_INS_FREQ || !defined(INS_PROPAGATE_FREQUENCY)
-  PRINT_CONFIG_MSG("Calculating dt for INS float_invariant propagation.")
-  /* timestamp in usec when last callback was received */
-  static uint32_t last_stamp = 0;
+    PRINT_CONFIG_MSG("Calculating dt for INS float_invariant propagation.")
+    /* timestamp in usec when last callback was received */
+    static uint32_t last_stamp = 0;
 
-  if (last_stamp > 0) {
-    float dt = (float)(stamp - last_stamp) * 1e-6;
-    ins_float_invariant_propagate(gyro, &ins_finv_accel, dt);
-  }
-  last_stamp = stamp;
+    if (last_stamp > 0)
+    {
+        float dt = (float)(stamp - last_stamp) * 1e-6;
+        ins_float_invariant_propagate(gyro, &ins_finv_accel, dt);
+    }
+    last_stamp = stamp;
 #else
-  PRINT_CONFIG_MSG("Using fixed INS_PROPAGATE_FREQUENCY for INS float_invariant propagation.")
-  PRINT_CONFIG_VAR(INS_PROPAGATE_FREQUENCY)
-  const float dt = 1. / (INS_PROPAGATE_FREQUENCY);
-  ins_float_invariant_propagate(gyro, &ins_finv_accel, dt);
+    PRINT_CONFIG_MSG("Using fixed INS_PROPAGATE_FREQUENCY for INS float_invariant propagation.")
+    PRINT_CONFIG_VAR(INS_PROPAGATE_FREQUENCY)
+    const float dt = 1. / (INS_PROPAGATE_FREQUENCY);
+    ins_float_invariant_propagate(gyro, &ins_finv_accel, dt);
 #endif
 
-  ins_finv_last_stamp = stamp;
+    ins_finv_last_stamp = stamp;
 }
 
 static void accel_cb(uint8_t sender_id __attribute__((unused)),
                      uint32_t stamp __attribute__((unused)),
                      struct Int32Vect3 *accel)
 {
-  ins_finv_accel = *accel;
+    ins_finv_accel = *accel;
 }
 
 static void mag_cb(uint8_t sender_id __attribute__((unused)),
                    uint32_t stamp __attribute__((unused)),
                    struct Int32Vect3 *mag)
 {
-  if (ins_float_inv.is_aligned) {
-    ins_float_invariant_update_mag(mag);
-  }
+    if (ins_float_inv.is_aligned)
+    {
+        ins_float_invariant_update_mag(mag);
+    }
 }
 
 static void aligner_cb(uint8_t __attribute__((unused)) sender_id,
@@ -157,46 +166,47 @@ static void aligner_cb(uint8_t __attribute__((unused)) sender_id,
                        struct Int32Rates *lp_gyro, struct Int32Vect3 *lp_accel,
                        struct Int32Vect3 *lp_mag)
 {
-  if (!ins_float_inv.is_aligned) {
-    ins_float_invariant_align(lp_gyro, lp_accel, lp_mag);
-  }
+    if (!ins_float_inv.is_aligned)
+    {
+        ins_float_invariant_align(lp_gyro, lp_accel, lp_mag);
+    }
 }
 
 static void body_to_imu_cb(uint8_t sender_id __attribute__((unused)),
                            struct FloatQuat *q_b2i_f)
 {
-  ins_float_inv_set_body_to_imu_quat(q_b2i_f);
+    ins_float_inv_set_body_to_imu_quat(q_b2i_f);
 }
 
 static void geo_mag_cb(uint8_t sender_id __attribute__((unused)), struct FloatVect3 *h)
 {
-  ins_float_inv.mag_h = *h;
+    ins_float_inv.mag_h = *h;
 }
 
 static void gps_cb(uint8_t sender_id __attribute__((unused)),
                    uint32_t stamp __attribute__((unused)),
                    struct GpsState *gps_s)
 {
-  ins_float_invariant_update_gps(gps_s);
+    ins_float_invariant_update_gps(gps_s);
 }
 
 
 void ins_float_invariant_register(void)
 {
-  ins_register_impl(ins_float_invariant_init);
+    ins_register_impl(ins_float_invariant_init);
 
- // Bind to ABI messages
-  AbiBindMsgBARO_ABS(INS_FINV_BARO_ID, &baro_ev, baro_cb);
-  AbiBindMsgIMU_MAG_INT32(INS_FINV_MAG_ID, &mag_ev, mag_cb);
-  AbiBindMsgIMU_GYRO_INT32(INS_FINV_IMU_ID, &gyro_ev, gyro_cb);
-  AbiBindMsgIMU_ACCEL_INT32(INS_FINV_IMU_ID, &accel_ev, accel_cb);
-  AbiBindMsgIMU_LOWPASSED(INS_FINV_IMU_ID, &aligner_ev, aligner_cb);
-  AbiBindMsgBODY_TO_IMU_QUAT(INS_FINV_IMU_ID, &body_to_imu_ev, body_to_imu_cb);
-  AbiBindMsgGEO_MAG(ABI_BROADCAST, &geo_mag_ev, geo_mag_cb);
-  AbiBindMsgGPS(ABI_BROADCAST, &gps_ev, gps_cb);
+// Bind to ABI messages
+    AbiBindMsgBARO_ABS(INS_FINV_BARO_ID, &baro_ev, baro_cb);
+    AbiBindMsgIMU_MAG_INT32(INS_FINV_MAG_ID, &mag_ev, mag_cb);
+    AbiBindMsgIMU_GYRO_INT32(INS_FINV_IMU_ID, &gyro_ev, gyro_cb);
+    AbiBindMsgIMU_ACCEL_INT32(INS_FINV_IMU_ID, &accel_ev, accel_cb);
+    AbiBindMsgIMU_LOWPASSED(INS_FINV_IMU_ID, &aligner_ev, aligner_cb);
+    AbiBindMsgBODY_TO_IMU_QUAT(INS_FINV_IMU_ID, &body_to_imu_ev, body_to_imu_cb);
+    AbiBindMsgGEO_MAG(ABI_BROADCAST, &geo_mag_ev, geo_mag_cb);
+    AbiBindMsgGPS(ABI_BROADCAST, &gps_ev, gps_cb);
 
 #if PERIODIC_TELEMETRY && !INS_FINV_USE_UTM
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_INS_REF, send_ins_ref);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_STATE_FILTER_STATUS, send_filter_status);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_INS_REF, send_ins_ref);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_STATE_FILTER_STATUS, send_filter_status);
 #endif
 }

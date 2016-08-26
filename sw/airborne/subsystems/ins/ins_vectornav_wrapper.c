@@ -31,5 +31,5 @@
 
 void ins_vectornav_register(void)
 {
-  ins_register_impl(ins_vectornav_init);
+    ins_register_impl(ins_vectornav_init);
 }

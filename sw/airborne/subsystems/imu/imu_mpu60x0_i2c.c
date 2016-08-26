@@ -71,32 +71,33 @@ struct ImuMpu60x0 imu_mpu_i2c;
 
 void imu_impl_init(void)
 {
-  mpu60x0_i2c_init(&imu_mpu_i2c.mpu, &(IMU_MPU60X0_I2C_DEV), IMU_MPU60X0_I2C_ADDR);
-  // change the default configuration
-  imu_mpu_i2c.mpu.config.smplrt_div = IMU_MPU60X0_SMPLRT_DIV;
-  imu_mpu_i2c.mpu.config.dlpf_cfg = IMU_MPU60X0_LOWPASS_FILTER;
-  imu_mpu_i2c.mpu.config.gyro_range = IMU_MPU60X0_GYRO_RANGE;
-  imu_mpu_i2c.mpu.config.accel_range = IMU_MPU60X0_ACCEL_RANGE;
+    mpu60x0_i2c_init(&imu_mpu_i2c.mpu, &(IMU_MPU60X0_I2C_DEV), IMU_MPU60X0_I2C_ADDR);
+    // change the default configuration
+    imu_mpu_i2c.mpu.config.smplrt_div = IMU_MPU60X0_SMPLRT_DIV;
+    imu_mpu_i2c.mpu.config.dlpf_cfg = IMU_MPU60X0_LOWPASS_FILTER;
+    imu_mpu_i2c.mpu.config.gyro_range = IMU_MPU60X0_GYRO_RANGE;
+    imu_mpu_i2c.mpu.config.accel_range = IMU_MPU60X0_ACCEL_RANGE;
 }
 
 void imu_periodic(void)
 {
-  mpu60x0_i2c_periodic(&imu_mpu_i2c.mpu);
+    mpu60x0_i2c_periodic(&imu_mpu_i2c.mpu);
 }
 
 void imu_mpu_i2c_event(void)
 {
-  uint32_t now_ts = get_sys_time_usec();
+    uint32_t now_ts = get_sys_time_usec();
 
-  // If the MPU60X0 I2C transaction has succeeded: convert the data
-  mpu60x0_i2c_event(&imu_mpu_i2c.mpu);
-  if (imu_mpu_i2c.mpu.data_available) {
-    RATES_COPY(imu.gyro_unscaled, imu_mpu_i2c.mpu.data_rates.rates);
-    VECT3_COPY(imu.accel_unscaled, imu_mpu_i2c.mpu.data_accel.vect);
-    imu_mpu_i2c.mpu.data_available = FALSE;
-    imu_scale_gyro(&imu);
-    imu_scale_accel(&imu);
-    AbiSendMsgIMU_GYRO_INT32(IMU_MPU60X0_ID, now_ts, &imu.gyro);
-    AbiSendMsgIMU_ACCEL_INT32(IMU_MPU60X0_ID, now_ts, &imu.accel);
-  }
+    // If the MPU60X0 I2C transaction has succeeded: convert the data
+    mpu60x0_i2c_event(&imu_mpu_i2c.mpu);
+    if (imu_mpu_i2c.mpu.data_available)
+    {
+        RATES_COPY(imu.gyro_unscaled, imu_mpu_i2c.mpu.data_rates.rates);
+        VECT3_COPY(imu.accel_unscaled, imu_mpu_i2c.mpu.data_accel.vect);
+        imu_mpu_i2c.mpu.data_available = FALSE;
+        imu_scale_gyro(&imu);
+        imu_scale_accel(&imu);
+        AbiSendMsgIMU_GYRO_INT32(IMU_MPU60X0_ID, now_ts, &imu.gyro);
+        AbiSendMsgIMU_ACCEL_INT32(IMU_MPU60X0_ID, now_ts, &imu.accel);
+    }
 }

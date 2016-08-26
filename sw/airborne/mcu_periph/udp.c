@@ -57,18 +57,18 @@ PRINT_CONFIG_VAR(UDP2_BROADCAST)
  */
 void udp_periph_init(struct udp_periph *p, char *host, int port_out, int port_in, bool_t broadcast)
 {
-  p->rx_insert_idx = 0;
-  p->rx_extract_idx = 0;
-  p->tx_insert_idx = 0;
-  p->device.periph = (void *)p;
-  p->device.check_free_space = (check_free_space_t) udp_check_free_space;
-  p->device.put_byte = (put_byte_t) udp_put_byte;
-  p->device.send_message = (send_message_t) udp_send_message;
-  p->device.char_available = (char_available_t) udp_char_available;
-  p->device.get_byte = (get_byte_t) udp_getch;
+    p->rx_insert_idx = 0;
+    p->rx_extract_idx = 0;
+    p->tx_insert_idx = 0;
+    p->device.periph = (void *)p;
+    p->device.check_free_space = (check_free_space_t) udp_check_free_space;
+    p->device.put_byte = (put_byte_t) udp_put_byte;
+    p->device.send_message = (send_message_t) udp_send_message;
+    p->device.char_available = (char_available_t) udp_char_available;
+    p->device.get_byte = (get_byte_t) udp_getch;
 
-  // Arch dependent initialization
-  udp_arch_periph_init(p, host, port_out, port_in, broadcast);
+    // Arch dependent initialization
+    udp_arch_periph_init(p, host, port_out, port_in, broadcast);
 }
 
 /**
@@ -79,7 +79,7 @@ void udp_periph_init(struct udp_periph *p, char *host, int port_out, int port_in
  */
 bool_t udp_check_free_space(struct udp_periph *p, uint8_t len)
 {
-  return (UDP_TX_BUFFER_SIZE - p->tx_insert_idx) >= len;
+    return (UDP_TX_BUFFER_SIZE - p->tx_insert_idx) >= len;
 }
 
 /**
@@ -89,11 +89,12 @@ bool_t udp_check_free_space(struct udp_periph *p, uint8_t len)
  */
 void udp_put_byte(struct udp_periph *p, uint8_t data)
 {
-  if (p->tx_insert_idx >= UDP_TX_BUFFER_SIZE) {
-    return;  // no room
-  }
+    if (p->tx_insert_idx >= UDP_TX_BUFFER_SIZE)
+    {
+        return;  // no room
+    }
 
-  p->tx_buf[p->tx_insert_idx] = data;
-  p->tx_insert_idx++;
+    p->tx_buf[p->tx_insert_idx] = data;
+    p->tx_insert_idx++;
 }
 

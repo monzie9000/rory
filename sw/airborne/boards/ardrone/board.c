@@ -36,30 +36,32 @@
 
 #include "peripherals/video_device.h"
 
-struct video_config_t front_camera = {
-  .w = 1280,
-  .h = 720,
-  .dev_name = "/dev/video1",
-  .subdev_name = NULL,
-  .format = V4L2_PIX_FMT_UYVY,
-  .buf_cnt = 10,
-  .filters = 0
+struct video_config_t front_camera =
+{
+    .w = 1280,
+    .h = 720,
+    .dev_name = "/dev/video1",
+    .subdev_name = NULL,
+    .format = V4L2_PIX_FMT_UYVY,
+    .buf_cnt = 10,
+    .filters = 0
 };
 
-struct video_config_t bottom_camera = {
-  .w = 320,
-  .h = 240,
-  .dev_name = "/dev/video2",
-  .subdev_name = NULL,
-  .format = V4L2_PIX_FMT_UYVY,
-  .buf_cnt = 10,
-  .filters = 0
+struct video_config_t bottom_camera =
+{
+    .w = 320,
+    .h = 240,
+    .dev_name = "/dev/video2",
+    .subdev_name = NULL,
+    .format = V4L2_PIX_FMT_UYVY,
+    .buf_cnt = 10,
+    .filters = 0
 };
 
 
 void board_init(void)
 {
-  // First we try to kill the program.elf and its respawner if it is running
-  int ret = system("killall -9 program.elf.respawner.sh; killall -9 program.elf");
-  (void) ret;
+    // First we try to kill the program.elf and its respawner if it is running
+    int ret = system("killall -9 program.elf.respawner.sh; killall -9 program.elf");
+    (void) ret;
 }

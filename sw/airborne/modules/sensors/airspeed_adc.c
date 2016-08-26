@@ -56,36 +56,36 @@ static struct adc_buf buf_airspeed;
 
 void airspeed_adc_init(void)
 {
-  airspeed_adc.airspeed = 0.0f;
-  airspeed_adc.offset = AIRSPEED_ADC_BIAS;
+    airspeed_adc.airspeed = 0.0f;
+    airspeed_adc.offset = AIRSPEED_ADC_BIAS;
 #ifdef AIRSPEED_ADC_QUADRATIC_SCALE
-  airspeed_adc.scale = AIRSPEED_ADC_QUADRATIC_SCALE;
+    airspeed_adc.scale = AIRSPEED_ADC_QUADRATIC_SCALE;
 #else
-  airspeed_adc.scale = AIRSPEED_ADC_SCALE;
+    airspeed_adc.scale = AIRSPEED_ADC_SCALE;
 #endif
 
 #ifndef SITL
-  adc_buf_channel(ADC_CHANNEL_AIRSPEED, &buf_airspeed, ADC_CHANNEL_AIRSPEED_NB_SAMPLES);
+    adc_buf_channel(ADC_CHANNEL_AIRSPEED, &buf_airspeed, ADC_CHANNEL_AIRSPEED_NB_SAMPLES);
 #endif
 }
 
 void airspeed_adc_update(void)
 {
 #ifndef SITL
-  airspeed_adc.val = buf_airspeed.sum / buf_airspeed.av_nb_sample;
-  float airspeed_unscaled = Max(airspeed_adc.val - airspeed_adc.offset, 0);
+    airspeed_adc.val = buf_airspeed.sum / buf_airspeed.av_nb_sample;
+    float airspeed_unscaled = Max(airspeed_adc.val - airspeed_adc.offset, 0);
 #ifdef AIRSPEED_ADC_QUADRATIC_SCALE
-  airspeed_adc.airspeed = airspeed_adc.scale * sqrtf(airspeed_unscaled);
+    airspeed_adc.airspeed = airspeed_adc.scale * sqrtf(airspeed_unscaled);
 #else
-  airspeed_adc.airspeed = airspeed_adc.scale * airspeed_unscaled;
+    airspeed_adc.airspeed = airspeed_adc.scale * airspeed_unscaled;
 #endif
 
 #elif !defined USE_NPS
-  extern float sim_air_speed;
-  airspeed_adc.airspeed = sim_air_speed;
+    extern float sim_air_speed;
+    airspeed_adc.airspeed = sim_air_speed;
 #endif //SITL
 
 #if USE_AIRSPEED_ADC
-  stateSetAirspeed_f(airspeed_adc.airspeed);
+    stateSetAirspeed_f(airspeed_adc.airspeed);
 #endif
 }

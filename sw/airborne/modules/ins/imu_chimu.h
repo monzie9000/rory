@@ -94,17 +94,18 @@
 
 static inline float FloatSwap(float f)
 {
-  union {
-    float f;
-    unsigned char b[4];
-  } dat1, dat2;
+    union
+    {
+        float f;
+        unsigned char b[4];
+    } dat1, dat2;
 
-  dat1.f = f;
-  dat2.b[0] = dat1.b[3];
-  dat2.b[1] = dat1.b[2];
-  dat2.b[2] = dat1.b[1];
-  dat2.b[3] = dat1.b[0];
-  return dat2.f;
+    dat1.f = f;
+    dat2.b[0] = dat1.b[3];
+    dat2.b[1] = dat1.b[2];
+    dat2.b[2] = dat1.b[1];
+    dat2.b[3] = dat1.b[0];
+    return dat2.f;
 }
 
 #else
@@ -114,26 +115,30 @@ static inline float FloatSwap(float f)
 #endif
 
 
-typedef struct {
-  float phi;
-  float theta;
-  float psi;
+typedef struct
+{
+    float phi;
+    float theta;
+    float psi;
 } CHIMU_Euler;
 
-typedef struct {
-  float x;
-  float y;
-  float z;
+typedef struct
+{
+    float x;
+    float y;
+    float z;
 } CHIMU_Vector;
 
-typedef struct {
-  float s;
-  CHIMU_Vector v;
+typedef struct
+{
+    float s;
+    CHIMU_Vector v;
 } CHIMU_Quaternion;
 
-typedef struct {
-  CHIMU_Euler euler;
-  CHIMU_Quaternion q;
+typedef struct
+{
+    CHIMU_Euler euler;
+    CHIMU_Quaternion q;
 } CHIMU_attitude_data;
 
 #ifndef FALSE
@@ -143,42 +148,44 @@ typedef struct {
 #define TRUE (1==1)
 #endif
 
-typedef struct {
-  float cputemp;
-  float acc[3];
-  float rate[3];
-  float mag[3];
-  float spare1;
+typedef struct
+{
+    float cputemp;
+    float acc[3];
+    float rate[3];
+    float mag[3];
+    float spare1;
 } CHIMU_sensor_data;
 
 #define CHIMU_RX_BUFFERSIZE 128
 
-typedef struct {
-  unsigned char m_State;      // Current state protocol parser is in
-  unsigned char   m_Checksum;     // Calculated CHIMU sentence checksum
-  unsigned char   m_ReceivedChecksum;   // Received CHIMU sentence checksum (if exists)
-  unsigned char   m_Index;      // Index used for command and data
-  unsigned char   m_PayloadIndex;
-  unsigned char   m_MsgID;
-  unsigned char   m_MsgLen;
-  unsigned char   m_TempDeviceID;
-  unsigned char   m_DeviceID;
-  unsigned char   m_Payload[CHIMU_RX_BUFFERSIZE];        // CHIMU data
-  unsigned char   m_FullMessage[CHIMU_RX_BUFFERSIZE]; // CHIMU data
-  CHIMU_attitude_data m_attitude;
-  CHIMU_attitude_data m_attrates;
-  CHIMU_sensor_data   m_sensor;
+typedef struct
+{
+    unsigned char m_State;      // Current state protocol parser is in
+    unsigned char   m_Checksum;     // Calculated CHIMU sentence checksum
+    unsigned char   m_ReceivedChecksum;   // Received CHIMU sentence checksum (if exists)
+    unsigned char   m_Index;      // Index used for command and data
+    unsigned char   m_PayloadIndex;
+    unsigned char   m_MsgID;
+    unsigned char   m_MsgLen;
+    unsigned char   m_TempDeviceID;
+    unsigned char   m_DeviceID;
+    unsigned char   m_Payload[CHIMU_RX_BUFFERSIZE];        // CHIMU data
+    unsigned char   m_FullMessage[CHIMU_RX_BUFFERSIZE]; // CHIMU data
+    CHIMU_attitude_data m_attitude;
+    CHIMU_attitude_data m_attrates;
+    CHIMU_sensor_data   m_sensor;
 
-  // Ping data
-  uint8_t gCHIMU_SW_Exclaim;
-  uint8_t gCHIMU_SW_Major;
-  uint8_t gCHIMU_SW_Minor;
-  uint16_t gCHIMU_SW_SerialNumber;
+    // Ping data
+    uint8_t gCHIMU_SW_Exclaim;
+    uint8_t gCHIMU_SW_Major;
+    uint8_t gCHIMU_SW_Minor;
+    uint16_t gCHIMU_SW_SerialNumber;
 
-  // Config
-  uint8_t gCalStatus;
-  uint8_t gCHIMU_BIT;
-  uint8_t gConfigInfo;
+    // Config
+    uint8_t gCalStatus;
+    uint8_t gCHIMU_BIT;
+    uint8_t gConfigInfo;
 
 } CHIMU_PARSER_DATA;
 

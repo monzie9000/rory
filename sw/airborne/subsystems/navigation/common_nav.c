@@ -49,13 +49,13 @@ float max_dist_from_home = MAX_DIST_FROM_HOME;
  */
 void compute_dist2_to_home(void)
 {
-  struct EnuCoor_f *pos = stateGetPositionEnu_f();
-  float ph_x = waypoints[WP_HOME].x - pos->x;
-  float ph_y = waypoints[WP_HOME].y - pos->y;
-  dist2_to_home = ph_x * ph_x + ph_y * ph_y;
-  too_far_from_home = dist2_to_home > (MAX_DIST_FROM_HOME * MAX_DIST_FROM_HOME);
+    struct EnuCoor_f *pos = stateGetPositionEnu_f();
+    float ph_x = waypoints[WP_HOME].x - pos->x;
+    float ph_y = waypoints[WP_HOME].y - pos->y;
+    dist2_to_home = ph_x * ph_x + ph_y * ph_y;
+    too_far_from_home = dist2_to_home > (MAX_DIST_FROM_HOME * MAX_DIST_FROM_HOME);
 #if defined InAirspace
-  too_far_from_home = too_far_from_home || !(InAirspace(pos_x, pos_y));
+    too_far_from_home = too_far_from_home || !(InAirspace(pos_x, pos_y));
 #endif
 }
 
@@ -66,64 +66,65 @@ static float previous_ground_alt;
 unit_t nav_reset_utm_zone(void)
 {
 
-  struct UtmCoor_f utm0;
-  utm0.zone = nav_utm_zone0;
-  utm0.north = nav_utm_north0;
-  utm0.east = nav_utm_east0;
-  utm0.alt = ground_alt;
-  ins_reset_utm_zone(&utm0);
+    struct UtmCoor_f utm0;
+    utm0.zone = nav_utm_zone0;
+    utm0.north = nav_utm_north0;
+    utm0.east = nav_utm_east0;
+    utm0.alt = ground_alt;
+    ins_reset_utm_zone(&utm0);
 
-  /* Set the real UTM ref */
-  nav_utm_zone0 = utm0.zone;
-  nav_utm_east0 = utm0.east;
-  nav_utm_north0 = utm0.north;
+    /* Set the real UTM ref */
+    nav_utm_zone0 = utm0.zone;
+    nav_utm_east0 = utm0.east;
+    nav_utm_north0 = utm0.north;
 
-  return 0;
+    return 0;
 }
 
 /** Reset the geographic reference to the current GPS fix */
 unit_t nav_reset_reference(void)
 {
-  /* realign INS */
-  ins_reset_local_origin();
+    /* realign INS */
+    ins_reset_local_origin();
 
-  /* Set nav UTM ref */
-  nav_utm_east0 = state.utm_origin_f.east;
-  nav_utm_north0 = state.utm_origin_f.north;
-  nav_utm_zone0 = state.utm_origin_f.zone;
+    /* Set nav UTM ref */
+    nav_utm_east0 = state.utm_origin_f.east;
+    nav_utm_north0 = state.utm_origin_f.north;
+    nav_utm_zone0 = state.utm_origin_f.zone;
 
-  /* Ground alt */
-  previous_ground_alt = ground_alt;
-  ground_alt = state.utm_origin_f.alt;
+    /* Ground alt */
+    previous_ground_alt = ground_alt;
+    ground_alt = state.utm_origin_f.alt;
 
-  return 0;
+    return 0;
 }
 
 /** Reset the altitude reference to the current GPS alt */
 unit_t nav_reset_alt(void)
 {
-  ins_reset_altitude_ref();
+    ins_reset_altitude_ref();
 
-  /* Ground alt */
-  previous_ground_alt = ground_alt;
-  ground_alt = state.utm_origin_f.alt;
+    /* Ground alt */
+    previous_ground_alt = ground_alt;
+    ground_alt = state.utm_origin_f.alt;
 
-  return 0;
+    return 0;
 }
 
 /** Shift altitude of the waypoint according to a new ground altitude */
 unit_t nav_update_waypoints_alt(void)
 {
-  uint8_t i;
-  for (i = 0; i < NB_WAYPOINT; i++) {
-    waypoints[i].a += ground_alt - previous_ground_alt;
-  }
-  return 0;
+    uint8_t i;
+    for (i = 0; i < NB_WAYPOINT; i++)
+    {
+        waypoints[i].a += ground_alt - previous_ground_alt;
+    }
+    return 0;
 }
 
 void common_nav_periodic_task_4Hz()
 {
-  RunOnceEvery(4, { stage_time++;  block_time++; });
+    RunOnceEvery(4, { stage_time++;  block_time++; });
 }
 
 /** Move a waypoint to given UTM coordinates.
@@ -134,14 +135,15 @@ void common_nav_periodic_task_4Hz()
  */
 void nav_move_waypoint(uint8_t wp_id, float ux, float uy, float alt)
 {
-  if (wp_id < nb_waypoint) {
-    float dx, dy;
-    dx = ux - nav_utm_east0 - waypoints[WP_HOME].x;
-    dy = uy - nav_utm_north0 - waypoints[WP_HOME].y;
-    BoundAbs(dx, max_dist_from_home);
-    BoundAbs(dy, max_dist_from_home);
-    waypoints[wp_id].x = waypoints[WP_HOME].x + dx;
-    waypoints[wp_id].y = waypoints[WP_HOME].y + dy;
-    waypoints[wp_id].a = alt;
-  }
+    if (wp_id < nb_waypoint)
+    {
+        float dx, dy;
+        dx = ux - nav_utm_east0 - waypoints[WP_HOME].x;
+        dy = uy - nav_utm_north0 - waypoints[WP_HOME].y;
+        BoundAbs(dx, max_dist_from_home);
+        BoundAbs(dy, max_dist_from_home);
+        waypoints[wp_id].x = waypoints[WP_HOME].x + dx;
+        waypoints[wp_id].y = waypoints[WP_HOME].y + dy;
+        waypoints[wp_id].a = alt;
+    }
 }

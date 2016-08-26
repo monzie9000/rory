@@ -59,16 +59,17 @@ PRINT_CONFIG_VAR(SW_MIXING_TRIM_COLL)
  */
 void swashplate_mixing_init()
 {
-  uint8_t i;
+    uint8_t i;
 
-  // Go trough all the motors and calculate the trim value and set the initial command
-  for (i = 0; i < SW_NB; i++) {
-    swashplate_mixing.commands[i] = 0;
-    swashplate_mixing.trim[i] =
-      roll_coef[i]  * SW_MIXING_TRIM_ROLL +
-      pitch_coef[i] * SW_MIXING_TRIM_PITCH +
-      coll_coef[i]  * SW_MIXING_TRIM_COLL;
-  }
+    // Go trough all the motors and calculate the trim value and set the initial command
+    for (i = 0; i < SW_NB; i++)
+    {
+        swashplate_mixing.commands[i] = 0;
+        swashplate_mixing.trim[i] =
+            roll_coef[i]  * SW_MIXING_TRIM_ROLL +
+            pitch_coef[i] * SW_MIXING_TRIM_PITCH +
+            coll_coef[i]  * SW_MIXING_TRIM_COLL;
+    }
 }
 
 /*
@@ -78,14 +79,15 @@ void swashplate_mixing_init()
  */
 void swashplate_mixing_run(pprz_t in_cmd[])
 {
-  uint8_t i;
+    uint8_t i;
 
-  // Go trough all the motors and calculate the command
-  for (i = 0; i < SW_NB; i++) {
-    swashplate_mixing.commands[i] = swashplate_mixing.trim[i] +
-        roll_coef[i] * in_cmd[COMMAND_ROLL] +
-        pitch_coef[i] * in_cmd[COMMAND_PITCH] +
-        coll_coef[i] * throttle_curve.collective;
-    BoundAbs(swashplate_mixing.commands[i], MAX_PPRZ);
-  }
+    // Go trough all the motors and calculate the command
+    for (i = 0; i < SW_NB; i++)
+    {
+        swashplate_mixing.commands[i] = swashplate_mixing.trim[i] +
+                                        roll_coef[i] * in_cmd[COMMAND_ROLL] +
+                                        pitch_coef[i] * in_cmd[COMMAND_PITCH] +
+                                        coll_coef[i] * throttle_curve.collective;
+        BoundAbs(swashplate_mixing.commands[i], MAX_PPRZ);
+    }
 }

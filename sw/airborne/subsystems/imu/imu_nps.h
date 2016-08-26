@@ -69,10 +69,11 @@
 #endif
 
 
-struct ImuNps {
-  uint8_t mag_available;
-  uint8_t accel_available;
-  uint8_t gyro_available;
+struct ImuNps
+{
+    uint8_t mag_available;
+    uint8_t accel_available;
+    uint8_t gyro_available;
 };
 
 extern struct ImuNps imu_nps;

@@ -30,11 +30,13 @@
 #include <inttypes.h>
 #include "inter_mcu.h"
 
-struct link_mcu_msg {
-  union  {
-    struct fbw_state from_fbw;
-    struct ap_state  from_ap;
-  } payload;
+struct link_mcu_msg
+{
+    union
+    {
+        struct fbw_state from_fbw;
+        struct ap_state  from_ap;
+    } payload;
 };
 
 extern struct link_mcu_msg link_mcu_from_ap_msg;

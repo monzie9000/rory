@@ -51,32 +51,34 @@ struct i2c_transaction lm75_trans;
 
 void lm75_init(void)
 {
-  lm75_trans.status = I2CTransDone;
+    lm75_trans.status = I2CTransDone;
 }
 
 void lm75_periodic(void)
 {
-  lm75_trans.buf[0] = LM75_TEMP_REG;
-  i2c_transceive(&LM75_I2C_DEV, &lm75_trans, LM75_SLAVE_ADDR, 1, 2);
+    lm75_trans.buf[0] = LM75_TEMP_REG;
+    i2c_transceive(&LM75_I2C_DEV, &lm75_trans, LM75_SLAVE_ADDR, 1, 2);
 }
 
 void lm75_event(void)
 {
-  if (lm75_trans.status == I2CTransSuccess) {
-    uint16_t lm75_temperature;
-    float flm75_temperature;
+    if (lm75_trans.status == I2CTransSuccess)
+    {
+        uint16_t lm75_temperature;
+        float flm75_temperature;
 
-    /* read two byte temperature */
-    lm75_temperature  = lm75_trans.buf[0] << 8;
-    lm75_temperature |= lm75_trans.buf[1];
-    lm75_temperature >>= 7;
-    if (lm75_temperature & 0x0100) {
-      lm75_temperature |= 0xFE00;
+        /* read two byte temperature */
+        lm75_temperature  = lm75_trans.buf[0] << 8;
+        lm75_temperature |= lm75_trans.buf[1];
+        lm75_temperature >>= 7;
+        if (lm75_temperature & 0x0100)
+        {
+            lm75_temperature |= 0xFE00;
+        }
+
+        flm75_temperature = ((int16_t) lm75_temperature) / 2.;
+
+        DOWNLINK_SEND_TMP_STATUS(DefaultChannel, DefaultDevice, &lm75_temperature, &flm75_temperature);
+        lm75_trans.status = I2CTransDone;
     }
-
-    flm75_temperature = ((int16_t) lm75_temperature) / 2.;
-
-    DOWNLINK_SEND_TMP_STATUS(DefaultChannel, DefaultDevice, &lm75_temperature, &flm75_temperature);
-    lm75_trans.status = I2CTransDone;
-  }
 }

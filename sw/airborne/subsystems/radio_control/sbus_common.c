@@ -56,17 +56,17 @@
 
 void sbus_common_init(struct Sbus *sbus_p, struct uart_periph *dev)
 {
-  sbus_p->frame_available = FALSE;
-  sbus_p->status = SBUS_STATUS_UNINIT;
+    sbus_p->frame_available = FALSE;
+    sbus_p->status = SBUS_STATUS_UNINIT;
 
-  // Set UART parameters (100K, 8 bits, 2 stops, even parity)
-  uart_periph_set_bits_stop_parity(dev, UBITS_8, USTOP_2, UPARITY_EVEN);
-  uart_periph_set_baudrate(dev, B100000);
+    // Set UART parameters (100K, 8 bits, 2 stops, even parity)
+    uart_periph_set_bits_stop_parity(dev, UBITS_8, USTOP_2, UPARITY_EVEN);
+    uart_periph_set_baudrate(dev, B100000);
 
-  // Set polarity
+    // Set polarity
 #ifdef RC_POLARITY_GPIO_PORT
-  gpio_setup_output(RC_POLARITY_GPIO_PORT, RC_POLARITY_GPIO_PIN);
-  RC_SET_POLARITY(RC_POLARITY_GPIO_PORT, RC_POLARITY_GPIO_PIN);
+    gpio_setup_output(RC_POLARITY_GPIO_PORT, RC_POLARITY_GPIO_PIN);
+    RC_SET_POLARITY(RC_POLARITY_GPIO_PORT, RC_POLARITY_GPIO_PIN);
 #endif
 
 }
@@ -76,71 +76,82 @@ void sbus_common_init(struct Sbus *sbus_p, struct uart_periph *dev)
 static void decode_sbus_buffer(const uint8_t *src, uint16_t *dst, bool_t *available,
                                uint16_t *dstppm)
 {
-  // reset counters
-  uint8_t byteInRawBuf = 0;
-  uint8_t bitInRawBuf = 0;
-  uint8_t channel = 0;
-  uint8_t bitInChannel = 0;
+    // reset counters
+    uint8_t byteInRawBuf = 0;
+    uint8_t bitInRawBuf = 0;
+    uint8_t channel = 0;
+    uint8_t bitInChannel = 0;
 
-  // clear bits
-  memset(dst, 0, SBUS_NB_CHANNEL * sizeof(uint16_t));
+    // clear bits
+    memset(dst, 0, SBUS_NB_CHANNEL * sizeof(uint16_t));
 
-  // decode sbus data
-  for (uint8_t i = 0; i < (SBUS_NB_CHANNEL * SBUS_BIT_PER_CHANNEL); i++) {
-    if (src[byteInRawBuf] & (1 << bitInRawBuf)) {
-      dst[channel] |= (1 << bitInChannel);
-    }
+    // decode sbus data
+    for (uint8_t i = 0; i < (SBUS_NB_CHANNEL * SBUS_BIT_PER_CHANNEL); i++)
+    {
+        if (src[byteInRawBuf] & (1 << bitInRawBuf))
+        {
+            dst[channel] |= (1 << bitInChannel);
+        }
 
-    bitInRawBuf++;
-    bitInChannel++;
+        bitInRawBuf++;
+        bitInChannel++;
 
-    if (bitInRawBuf == SBUS_BIT_PER_BYTE) {
-      bitInRawBuf = 0;
-      byteInRawBuf++;
-    }
-    if (bitInChannel == SBUS_BIT_PER_CHANNEL) {
-      bitInChannel = 0;
+        if (bitInRawBuf == SBUS_BIT_PER_BYTE)
+        {
+            bitInRawBuf = 0;
+            byteInRawBuf++;
+        }
+        if (bitInChannel == SBUS_BIT_PER_CHANNEL)
+        {
+            bitInChannel = 0;
 #if PERIODIC_TELEMETRY
-      dstppm[channel] = USEC_OF_RC_PPM_TICKS(dst[channel]);
+            dstppm[channel] = USEC_OF_RC_PPM_TICKS(dst[channel]);
 #endif
-      channel++;
+            channel++;
+        }
     }
-  }
-  // test frame lost flag
-  *available = !bit_is_set(src[SBUS_FLAGS_BYTE], SBUS_FRAME_LOST_BIT);
+    // test frame lost flag
+    *available = !bit_is_set(src[SBUS_FLAGS_BYTE], SBUS_FRAME_LOST_BIT);
 }
 
 // Decoding event function
 // Reading from UART
 void sbus_common_decode_event(struct Sbus *sbus_p, struct uart_periph *dev)
 {
-  uint8_t rbyte;
-  if (uart_char_available(dev)) {
-    do {
-      rbyte = uart_getch(dev);
-      switch (sbus_p->status) {
-        case SBUS_STATUS_UNINIT:
-          // Wait for the start byte
-          if (rbyte == SBUS_START_BYTE) {
-            sbus_p->status++;
-            sbus_p->idx = 0;
-          }
-          break;
-        case SBUS_STATUS_GOT_START:
-          // Store buffer
-          sbus_p->buffer[sbus_p->idx] = rbyte;
-          sbus_p->idx++;
-          if (sbus_p->idx == SBUS_BUF_LENGTH) {
-            // Decode if last byte is the correct end byte
-            if (rbyte == SBUS_END_BYTE) {
-              decode_sbus_buffer(sbus_p->buffer, sbus_p->pulses, &sbus_p->frame_available, sbus_p->ppm);
+    uint8_t rbyte;
+    if (uart_char_available(dev))
+    {
+        do
+        {
+            rbyte = uart_getch(dev);
+            switch (sbus_p->status)
+            {
+            case SBUS_STATUS_UNINIT:
+                // Wait for the start byte
+                if (rbyte == SBUS_START_BYTE)
+                {
+                    sbus_p->status++;
+                    sbus_p->idx = 0;
+                }
+                break;
+            case SBUS_STATUS_GOT_START:
+                // Store buffer
+                sbus_p->buffer[sbus_p->idx] = rbyte;
+                sbus_p->idx++;
+                if (sbus_p->idx == SBUS_BUF_LENGTH)
+                {
+                    // Decode if last byte is the correct end byte
+                    if (rbyte == SBUS_END_BYTE)
+                    {
+                        decode_sbus_buffer(sbus_p->buffer, sbus_p->pulses, &sbus_p->frame_available, sbus_p->ppm);
+                    }
+                    sbus_p->status = SBUS_STATUS_UNINIT;
+                }
+                break;
+            default:
+                break;
             }
-            sbus_p->status = SBUS_STATUS_UNINIT;
-          }
-          break;
-        default:
-          break;
-      }
-    } while (uart_char_available(dev));
-  }
+        }
+        while (uart_char_available(dev));
+    }
 }

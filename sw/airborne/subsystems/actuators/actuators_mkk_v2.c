@@ -36,66 +36,78 @@ struct actuators_mkk_v2_struct actuators_mkk_v2;
 void actuators_mkk_v2_init(void)
 {
 
-  const uint8_t actuators_addr[ACTUATORS_MKK_V2_NB] = ACTUATORS_MKK_V2_ADDR;
-  for (uint8_t i = 0; i < ACTUATORS_MKK_V2_NB; i++) {
-    actuators_mkk_v2.trans[i].type       = I2CTransTx;
-    actuators_mkk_v2.trans[i].len_w      = 2;
-    actuators_mkk_v2.trans[i].slave_addr = actuators_addr[i];
-    actuators_mkk_v2.trans[i].status     = I2CTransSuccess;
+    const uint8_t actuators_addr[ACTUATORS_MKK_V2_NB] = ACTUATORS_MKK_V2_ADDR;
+    for (uint8_t i = 0; i < ACTUATORS_MKK_V2_NB; i++)
+    {
+        actuators_mkk_v2.trans[i].type       = I2CTransTx;
+        actuators_mkk_v2.trans[i].len_w      = 2;
+        actuators_mkk_v2.trans[i].slave_addr = actuators_addr[i];
+        actuators_mkk_v2.trans[i].status     = I2CTransSuccess;
 
-    actuators_mkk_v2.data[i].Version     = 0;
-    actuators_mkk_v2.data[i].Current     = 0;
-    actuators_mkk_v2.data[i].MaxPWM      = 0;
-    actuators_mkk_v2.data[i].Temperature = 0;
-  }
+        actuators_mkk_v2.data[i].Version     = 0;
+        actuators_mkk_v2.data[i].Current     = 0;
+        actuators_mkk_v2.data[i].MaxPWM      = 0;
+        actuators_mkk_v2.data[i].Temperature = 0;
+    }
 
-  actuators_mkk_v2.read_number = 0;
+    actuators_mkk_v2.read_number = 0;
 
 }
 
 static inline void actuators_mkk_v2_read(void)
 {
-  actuators_mkk_v2.read_number++;
-  if (actuators_mkk_v2.read_number >= ACTUATORS_MKK_V2_NB) {
-    actuators_mkk_v2.read_number = 0;
-  }
+    actuators_mkk_v2.read_number++;
+    if (actuators_mkk_v2.read_number >= ACTUATORS_MKK_V2_NB)
+    {
+        actuators_mkk_v2.read_number = 0;
+    }
 
-  actuators_mkk_v2.trans[actuators_mkk_v2.read_number].type = I2CTransTxRx;
-  actuators_mkk_v2.trans[actuators_mkk_v2.read_number].len_r = 3;
+    actuators_mkk_v2.trans[actuators_mkk_v2.read_number].type = I2CTransTxRx;
+    actuators_mkk_v2.trans[actuators_mkk_v2.read_number].len_r = 3;
 }
 
 void actuators_mkk_v2_set(void)
 {
 #if defined ACTUATORS_START_DELAY && ! defined SITL
-  if (!actuators_delay_done) {
-    if (SysTimeTimer(actuators_delay_time) < USEC_OF_SEC(ACTUATORS_START_DELAY)) { return; }
-    else { actuators_delay_done = TRUE; }
-  }
+    if (!actuators_delay_done)
+    {
+        if (SysTimeTimer(actuators_delay_time) < USEC_OF_SEC(ACTUATORS_START_DELAY))
+        {
+            return;
+        }
+        else
+        {
+            actuators_delay_done = TRUE;
+        }
+    }
 #endif
 
-  // Read result
-  for (uint8_t i = 0; i < ACTUATORS_MKK_V2_NB; i++) {
-    if (actuators_mkk_v2.trans[i].type != I2CTransTx) {
-      actuators_mkk_v2.trans[i].type = I2CTransTx;
+    // Read result
+    for (uint8_t i = 0; i < ACTUATORS_MKK_V2_NB; i++)
+    {
+        if (actuators_mkk_v2.trans[i].type != I2CTransTx)
+        {
+            actuators_mkk_v2.trans[i].type = I2CTransTx;
 
-      actuators_mkk_v2.data[i].Current     = actuators_mkk_v2.trans[i].buf[0];
-      actuators_mkk_v2.data[i].MaxPWM      = actuators_mkk_v2.trans[i].buf[1];
-      actuators_mkk_v2.data[i].Temperature = actuators_mkk_v2.trans[i].buf[2];
+            actuators_mkk_v2.data[i].Current     = actuators_mkk_v2.trans[i].buf[0];
+            actuators_mkk_v2.data[i].MaxPWM      = actuators_mkk_v2.trans[i].buf[1];
+            actuators_mkk_v2.data[i].Temperature = actuators_mkk_v2.trans[i].buf[2];
+        }
     }
-  }
 
-  RunOnceEvery(10, actuators_mkk_v2_read());
+    RunOnceEvery(10, actuators_mkk_v2_read());
 
-  for (uint8_t i = 0; i < ACTUATORS_MKK_V2_NB; i++) {
+    for (uint8_t i = 0; i < ACTUATORS_MKK_V2_NB; i++)
+    {
 
 #ifdef KILL_MOTORS
-    actuators_mkk_v2.trans[i].buf[0] = 0;
-    actuators_mkk_v2.trans[i].buf[1] = 0;
+        actuators_mkk_v2.trans[i].buf[0] = 0;
+        actuators_mkk_v2.trans[i].buf[1] = 0;
 #else
-    actuators_mkk_v2.trans[i].buf[0] = (actuators_mkk_v2.setpoint[i] >> 3);
-    actuators_mkk_v2.trans[i].buf[1] = actuators_mkk_v2.setpoint[i] & 0x07;
+        actuators_mkk_v2.trans[i].buf[0] = (actuators_mkk_v2.setpoint[i] >> 3);
+        actuators_mkk_v2.trans[i].buf[1] = actuators_mkk_v2.setpoint[i] & 0x07;
 #endif
 
-    i2c_submit(&ACTUATORS_MKK_V2_I2C_DEV, &actuators_mkk_v2.trans[i]);
-  }
+        i2c_submit(&ACTUATORS_MKK_V2_I2C_DEV, &actuators_mkk_v2.trans[i]);
+    }
 }

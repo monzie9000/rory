@@ -41,14 +41,16 @@
 /** LIS302DL device identifier contained in LIS302DL_REG_WHO_AM_I */
 #define LIS302DL_WHO_AM_I       0x3B
 
-enum Lis302dlRates {
-  LIS302DL_RATE_100HZ = 0,
-  LIS302DL_RATE_400HZ = 1
+enum Lis302dlRates
+{
+    LIS302DL_RATE_100HZ = 0,
+    LIS302DL_RATE_400HZ = 1
 };
 
-enum Lis302dlRanges {
-  LIS302DL_RANGE_2G = 0,
-  LIS302DL_RANGE_8G = 1
+enum Lis302dlRanges
+{
+    LIS302DL_RANGE_2G = 0,
+    LIS302DL_RANGE_8G = 1
 };
 
 

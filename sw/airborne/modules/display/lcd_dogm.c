@@ -40,89 +40,89 @@
 
 void lcd_cmd(uint8_t command)
 {
-  uint32_t i;
-  for (i = 0; i < 20000; i++);
-  lcddogmSelect();
-  lcddogmCmdMode();
-  lcd_spi_tx(command);
+    uint32_t i;
+    for (i = 0; i < 20000; i++);
+    lcddogmSelect();
+    lcddogmCmdMode();
+    lcd_spi_tx(command);
 }
 
 void lcd_data(uint8_t data)
 {
-  uint32_t i;
-  for (i = 0; i < 100000; i++);
-  lcddogmSelect();
-  lcddogmDataMode();
-  lcd_spi_tx(data);
+    uint32_t i;
+    for (i = 0; i < 100000; i++);
+    lcddogmSelect();
+    lcddogmDataMode();
+    lcd_spi_tx(data);
 }
 
 void lcd_dogm_init(void)
 {
-  uint32_t i;
+    uint32_t i;
 
-  for (i = 0; i < 100000; i++);
-  lcd_dogm_init_hw();
+    for (i = 0; i < 100000; i++);
+    lcd_dogm_init_hw();
 
-  /* Write configuration */
-  lcd_cmd(DOGM_FUN_SET_1);
-  lcd_cmd(DOGM_BIAS_SET);
-  lcd_cmd(DOGM_PWR_CTRL);
-  lcd_cmd(DOGM_FOLLOWER);
-  lcd_cmd(DOGM_CONTRAST);
-  lcd_cmd(DOGM_DISP_ON);
-  lcd_cmd(DOGM_CLEAR);
-  lcd_cmd(DOGM_ENTRY_MODE);
+    /* Write configuration */
+    lcd_cmd(DOGM_FUN_SET_1);
+    lcd_cmd(DOGM_BIAS_SET);
+    lcd_cmd(DOGM_PWR_CTRL);
+    lcd_cmd(DOGM_FOLLOWER);
+    lcd_cmd(DOGM_CONTRAST);
+    lcd_cmd(DOGM_DISP_ON);
+    lcd_cmd(DOGM_CLEAR);
+    lcd_cmd(DOGM_ENTRY_MODE);
 
-  /* sample data */
-  lcd_data('C');
-  lcd_data('i');
-  lcd_data('r');
-  lcd_data('c');
-  lcd_data('l');
-  lcd_data('e');
-  lcd_data('C');
-  lcd_data('W');
-  lcd_data(' ');
-  lcd_data('9');
-  lcd_data('9');
-  lcd_data(' ');
-  lcd_data('1');
-  lcd_data('0');
-  lcd_data('.');
-  lcd_data('3');
+    /* sample data */
+    lcd_data('C');
+    lcd_data('i');
+    lcd_data('r');
+    lcd_data('c');
+    lcd_data('l');
+    lcd_data('e');
+    lcd_data('C');
+    lcd_data('W');
+    lcd_data(' ');
+    lcd_data('9');
+    lcd_data('9');
+    lcd_data(' ');
+    lcd_data('1');
+    lcd_data('0');
+    lcd_data('.');
+    lcd_data('3');
 
-  lcd_data('1');
-  lcd_data('2');
-  lcd_data('.');
-  lcd_data('6');
-  lcd_data(' ');
-  lcd_data('M');
-  lcd_data(' ');
-  lcd_data('1');
-  lcd_data('2');
-  lcd_data('+');
-  lcd_data('3');
-  lcd_data(' ');
-  lcd_data('1');
-  lcd_data('4');
-  lcd_data('9');
-  lcd_data('3');
+    lcd_data('1');
+    lcd_data('2');
+    lcd_data('.');
+    lcd_data('6');
+    lcd_data(' ');
+    lcd_data('M');
+    lcd_data(' ');
+    lcd_data('1');
+    lcd_data('2');
+    lcd_data('+');
+    lcd_data('3');
+    lcd_data(' ');
+    lcd_data('1');
+    lcd_data('4');
+    lcd_data('9');
+    lcd_data('3');
 
-  lcd_data('o');
-  lcd_data('k');
-  lcd_data(' ');
-  lcd_data('3');
-  lcd_data(' ');
-  lcd_data('0');
-  lcd_data('2');
-  lcd_data('1');
-  lcd_data(':');
-  lcd_data('3');
-  lcd_data('4');
-  lcd_data(' ');
-  lcd_data('1');
-  lcd_data('5');
-  lcd_data('0');
-  lcd_data('0');
+    lcd_data('o');
+    lcd_data('k');
+    lcd_data(' ');
+    lcd_data('3');
+    lcd_data(' ');
+    lcd_data('0');
+    lcd_data('2');
+    lcd_data('1');
+    lcd_data(':');
+    lcd_data('3');
+    lcd_data('4');
+    lcd_data(' ');
+    lcd_data('1');
+    lcd_data('5');
+    lcd_data('0');
+    lcd_data('0');
 }
 

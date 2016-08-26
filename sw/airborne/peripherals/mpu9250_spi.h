@@ -39,32 +39,36 @@
 #define MPU9250_BUFFER_LEN 32
 #define MPU9250_BUFFER_EXT_LEN 16
 
-enum Mpu9250SpiSlaveInitStatus {
-  MPU9250_SPI_CONF_UNINIT,
-  MPU9250_SPI_CONF_I2C_MST_CLK,
-  MPU9250_SPI_CONF_I2C_MST_DELAY,
-  MPU9250_SPI_CONF_I2C_MST_EN,
-  MPU9250_SPI_CONF_SLAVES_CONFIGURE,
-  MPU9250_SPI_CONF_DONE
+enum Mpu9250SpiSlaveInitStatus
+{
+    MPU9250_SPI_CONF_UNINIT,
+    MPU9250_SPI_CONF_I2C_MST_CLK,
+    MPU9250_SPI_CONF_I2C_MST_DELAY,
+    MPU9250_SPI_CONF_I2C_MST_EN,
+    MPU9250_SPI_CONF_SLAVES_CONFIGURE,
+    MPU9250_SPI_CONF_DONE
 };
 
-struct Mpu9250_Spi {
-  struct spi_periph *spi_p;
-  struct spi_transaction spi_trans;
-  volatile uint8_t tx_buf[2];
-  volatile uint8_t rx_buf[MPU9250_BUFFER_LEN];
-  volatile bool_t data_available;     ///< data ready flag
-  union {
-    struct Int16Vect3 vect;           ///< accel data vector in accel coordinate system
-    int16_t value[3];                 ///< accel data values accessible by channel index
-  } data_accel;
-  union {
-    struct Int16Rates rates;          ///< rates data as angular rates in gyro coordinate system
-    int16_t value[3];                 ///< rates data values accessible by channel index
-  } data_rates;
-  uint8_t data_ext[MPU9250_BUFFER_EXT_LEN];
-  struct Mpu9250Config config;
-  enum Mpu9250SpiSlaveInitStatus slave_init_status;
+struct Mpu9250_Spi
+{
+    struct spi_periph *spi_p;
+    struct spi_transaction spi_trans;
+    volatile uint8_t tx_buf[2];
+    volatile uint8_t rx_buf[MPU9250_BUFFER_LEN];
+    volatile bool_t data_available;     ///< data ready flag
+    union
+    {
+        struct Int16Vect3 vect;           ///< accel data vector in accel coordinate system
+        int16_t value[3];                 ///< accel data values accessible by channel index
+    } data_accel;
+    union
+    {
+        struct Int16Rates rates;          ///< rates data as angular rates in gyro coordinate system
+        int16_t value[3];                 ///< rates data values accessible by channel index
+    } data_rates;
+    uint8_t data_ext[MPU9250_BUFFER_EXT_LEN];
+    struct Mpu9250Config config;
+    enum Mpu9250SpiSlaveInitStatus slave_init_status;
 };
 
 // Functions
@@ -76,11 +80,14 @@ extern void mpu9250_spi_event(struct Mpu9250_Spi *mpu);
 /// convenience function: read or start configuration if not already initialized
 static inline void mpu9250_spi_periodic(struct Mpu9250_Spi *mpu)
 {
-  if (mpu->config.initialized) {
-    mpu9250_spi_read(mpu);
-  } else {
-    mpu9250_spi_start_configure(mpu);
-  }
+    if (mpu->config.initialized)
+    {
+        mpu9250_spi_read(mpu);
+    }
+    else
+    {
+        mpu9250_spi_start_configure(mpu);
+    }
 }
 
 #endif // MPU9250_SPI_H

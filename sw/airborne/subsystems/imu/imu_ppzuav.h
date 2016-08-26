@@ -79,10 +79,11 @@
 #endif
 
 
-struct ImuPpzuav {
-  struct Adxl345_I2c acc_adxl;
-  struct Itg3200 gyro_itg;
-  struct Hmc58xx mag_hmc;
+struct ImuPpzuav
+{
+    struct Adxl345_I2c acc_adxl;
+    struct Itg3200 gyro_itg;
+    struct Hmc58xx mag_hmc;
 };
 
 extern struct ImuPpzuav imu_ppzuav;

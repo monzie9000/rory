@@ -34,14 +34,15 @@ int pleaseResetOdroid = 0;
 
 void write_serial_rot()
 {
-  struct Int32RMat *ltp_to_body_mat = stateGetNedToBodyRMat_i();
-  static int32_t lengthArrayInformation = 11 * sizeof(int32_t);
-  uint8_t ar[lengthArrayInformation];
-  int32_t *pointer = (int32_t *) ar;
-  for (int indexRot = 0; indexRot < 9; indexRot++) {
-    pointer[indexRot] = ltp_to_body_mat->m[indexRot];
-  }
-  pointer[9] = (int32_t)(state.alt_agl_f * 100);  //height above ground level in CM.
-  pointer[10] = frame_number_sending++;
-  stereoprot_sendArray(&((UART_LINK).device), ar, lengthArrayInformation, 1);
+    struct Int32RMat *ltp_to_body_mat = stateGetNedToBodyRMat_i();
+    static int32_t lengthArrayInformation = 11 * sizeof(int32_t);
+    uint8_t ar[lengthArrayInformation];
+    int32_t *pointer = (int32_t *) ar;
+    for (int indexRot = 0; indexRot < 9; indexRot++)
+    {
+        pointer[indexRot] = ltp_to_body_mat->m[indexRot];
+    }
+    pointer[9] = (int32_t)(state.alt_agl_f * 100);  //height above ground level in CM.
+    pointer[10] = frame_number_sending++;
+    stereoprot_sendArray(&((UART_LINK).device), ar, lengthArrayInformation, 1);
 }

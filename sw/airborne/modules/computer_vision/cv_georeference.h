@@ -34,12 +34,13 @@ extern int32_t focus_length;
 extern void georeference_init(void);
 extern void georeference_run(void);
 
-struct camera_frame_t {
-  int32_t w;     ///< Frame width [px]
-  int32_t h;     ///< Frame height [px]
-  int32_t f;     ///< Camera Focal length in [px]
-  int32_t px;    ///< Target pixel coordinate (left = 0)
-  int32_t py;    ///< Target pixel coordinate (top = 0)
+struct camera_frame_t
+{
+    int32_t w;     ///< Frame width [px]
+    int32_t h;     ///< Frame height [px]
+    int32_t f;     ///< Camera Focal length in [px]
+    int32_t px;    ///< Target pixel coordinate (left = 0)
+    int32_t py;    ///< Target pixel coordinate (top = 0)
 };
 
 void georeference_project(struct camera_frame_t *tar, int wp);

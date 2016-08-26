@@ -36,20 +36,22 @@
 #endif
 
 /// State machine
-enum MAVLINK_MISSION_MGR_STATES {
-  STATE_IDLE = 0,
-  STATE_SEND_LIST,
-  STATE_SEND_ITEM,
-  STATE_WAYPOINT_WRITE_TRANSACTION
+enum MAVLINK_MISSION_MGR_STATES
+{
+    STATE_IDLE = 0,
+    STATE_SEND_LIST,
+    STATE_SEND_ITEM,
+    STATE_WAYPOINT_WRITE_TRANSACTION
 };
 
-struct mavlink_mission_mgr {
-  uint8_t current_block; // Counter that holds the index of the current block
-  enum MAVLINK_MISSION_MGR_STATES state; // The current state of the mission handler
-  uint16_t seq; // Sequence id (position of the current item on the list)
-  uint8_t rem_sysid; // Remote system id
-  uint8_t rem_compid; // Remote component id
-  int timer_id; // Timer id
+struct mavlink_mission_mgr
+{
+    uint8_t current_block; // Counter that holds the index of the current block
+    enum MAVLINK_MISSION_MGR_STATES state; // The current state of the mission handler
+    uint16_t seq; // Sequence id (position of the current item on the list)
+    uint8_t rem_sysid; // Remote system id
+    uint8_t rem_compid; // Remote component id
+    int timer_id; // Timer id
 };
 
 typedef struct mavlink_mission_mgr mavlink_mission_mgr;

@@ -39,22 +39,24 @@
 #endif
 
 /** Attitude reference model parameters (float) */
-struct FloatRefModel {
-  struct FloatRates omega;
-  struct FloatRates zeta;
-  /// cached value of 2*omega*omega
-  struct FloatRates two_omega2;
+struct FloatRefModel
+{
+    struct FloatRates omega;
+    struct FloatRates zeta;
+    /// cached value of 2*omega*omega
+    struct FloatRates two_omega2;
 };
 
 /** Attitude reference models and state/output (float) */
-struct AttRefQuatFloat {
-  struct FloatEulers euler;
-  struct FloatQuat   quat;
-  struct FloatRates  rate;
-  struct FloatRates  accel;
-  uint8_t cur_idx;
-  struct FloatRefModel  model[STABILIZATION_ATTITUDE_GAIN_NB];
-  struct FloatRefSat saturation;
+struct AttRefQuatFloat
+{
+    struct FloatEulers euler;
+    struct FloatQuat   quat;
+    struct FloatRates  rate;
+    struct FloatRates  accel;
+    uint8_t cur_idx;
+    struct FloatRefModel  model[STABILIZATION_ATTITUDE_GAIN_NB];
+    struct FloatRefSat saturation;
 };
 
 

@@ -35,26 +35,28 @@
 #include "math/pprz_algebra_int.h"
 #include "math/pprz_orientation_conversion.h"
 
-enum AhrsICEStatus {
-  AHRS_ICE_UNINIT,
-  AHRS_ICE_RUNNING
+enum AhrsICEStatus
+{
+    AHRS_ICE_UNINIT,
+    AHRS_ICE_RUNNING
 };
 
-struct AhrsIntCmplEuler {
-  struct Int32Rates  gyro_bias;
-  struct Int32Rates  imu_rate;
-  struct Int32Eulers hi_res_euler;
-  struct Int32Eulers measure;
-  struct Int32Eulers residual;
-  struct Int32Eulers measurement;
-  struct Int32Eulers ltp_to_imu_euler;
-  int32_t reinj_1;
-  float mag_offset;
+struct AhrsIntCmplEuler
+{
+    struct Int32Rates  gyro_bias;
+    struct Int32Rates  imu_rate;
+    struct Int32Eulers hi_res_euler;
+    struct Int32Eulers measure;
+    struct Int32Eulers residual;
+    struct Int32Eulers measurement;
+    struct Int32Eulers ltp_to_imu_euler;
+    int32_t reinj_1;
+    float mag_offset;
 
-  struct OrientationReps body_to_imu;
+    struct OrientationReps body_to_imu;
 
-  enum AhrsICEStatus status;
-  bool_t is_aligned;
+    enum AhrsICEStatus status;
+    bool_t is_aligned;
 };
 
 extern struct AhrsIntCmplEuler ahrs_ice;

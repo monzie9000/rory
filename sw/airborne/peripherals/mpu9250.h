@@ -47,19 +47,20 @@
 /// Default clock: PLL with X gyro reference
 #define MPU9250_DEFAULT_CLK_SEL 1
 
-enum Mpu9250ConfStatus {
-  MPU9250_CONF_UNINIT,
-  MPU9250_CONF_RESET,
-  MPU9250_CONF_USER_RESET,
-  MPU9250_CONF_PWR,
-  MPU9250_CONF_SD,
-  MPU9250_CONF_DLPF_ACCEL,
-  MPU9250_CONF_DLPF_GYRO,
-  MPU9250_CONF_GYRO,
-  MPU9250_CONF_ACCEL,
-  MPU9250_CONF_I2C_SLAVES,
-  MPU9250_CONF_INT_ENABLE,
-  MPU9250_CONF_DONE
+enum Mpu9250ConfStatus
+{
+    MPU9250_CONF_UNINIT,
+    MPU9250_CONF_RESET,
+    MPU9250_CONF_USER_RESET,
+    MPU9250_CONF_PWR,
+    MPU9250_CONF_SD,
+    MPU9250_CONF_DLPF_ACCEL,
+    MPU9250_CONF_DLPF_GYRO,
+    MPU9250_CONF_GYRO,
+    MPU9250_CONF_ACCEL,
+    MPU9250_CONF_I2C_SLAVES,
+    MPU9250_CONF_INT_ENABLE,
+    MPU9250_CONF_DONE
 };
 
 /// Configuration function prototype
@@ -68,31 +69,33 @@ typedef void (*Mpu9250ConfigSet)(void *mpu, uint8_t _reg, uint8_t _val);
 /// function prototype for configuration of a single I2C slave
 typedef bool_t (*Mpu9250I2cSlaveConfigure)(Mpu9250ConfigSet mpu_set, void *mpu);
 
-struct Mpu9250I2cSlave {
-  Mpu9250I2cSlaveConfigure configure;
+struct Mpu9250I2cSlave
+{
+    Mpu9250I2cSlaveConfigure configure;
 };
 
-struct Mpu9250Config {
-  uint8_t smplrt_div;                   ///< Sample rate divider
-  enum Mpu9250DLPFAccel dlpf_accel_cfg; ///< Digital Low Pass Filter for accelerometer
-  enum Mpu9250DLPFGyro dlpf_gyro_cfg;   ///< Digital Low Pass Filter for gyroscope
-  enum Mpu9250GyroRanges gyro_range;    ///< deg/s Range
-  enum Mpu9250AccelRanges accel_range;  ///< g Range
-  bool_t drdy_int_enable;               ///< Enable Data Ready Interrupt
-  uint8_t clk_sel;                      ///< Clock select
-  uint8_t nb_bytes;                     ///< number of bytes to read starting with MPU9250_REG_INT_STATUS
-  enum Mpu9250ConfStatus init_status;   ///< init status
-  bool_t initialized;                   ///< config done flag
+struct Mpu9250Config
+{
+    uint8_t smplrt_div;                   ///< Sample rate divider
+    enum Mpu9250DLPFAccel dlpf_accel_cfg; ///< Digital Low Pass Filter for accelerometer
+    enum Mpu9250DLPFGyro dlpf_gyro_cfg;   ///< Digital Low Pass Filter for gyroscope
+    enum Mpu9250GyroRanges gyro_range;    ///< deg/s Range
+    enum Mpu9250AccelRanges accel_range;  ///< g Range
+    bool_t drdy_int_enable;               ///< Enable Data Ready Interrupt
+    uint8_t clk_sel;                      ///< Clock select
+    uint8_t nb_bytes;                     ///< number of bytes to read starting with MPU9250_REG_INT_STATUS
+    enum Mpu9250ConfStatus init_status;   ///< init status
+    bool_t initialized;                   ///< config done flag
 
-  /** Bypass MPU I2C.
-   * Only effective if using the I2C implementation.
-   */
-  bool_t i2c_bypass;
+    /** Bypass MPU I2C.
+     * Only effective if using the I2C implementation.
+     */
+    bool_t i2c_bypass;
 
-  uint8_t nb_slaves;                    ///< number of used I2C slaves
-  struct Mpu9250I2cSlave slaves[5];     ///< I2C slaves
-  enum Mpu9250MstClk i2c_mst_clk;       ///< MPU I2C master clock speed
-  uint8_t i2c_mst_delay;                ///< MPU I2C slaves delayed sample rate
+    uint8_t nb_slaves;                    ///< number of used I2C slaves
+    struct Mpu9250I2cSlave slaves[5];     ///< I2C slaves
+    enum Mpu9250MstClk i2c_mst_clk;       ///< MPU I2C master clock speed
+    uint8_t i2c_mst_delay;                ///< MPU I2C slaves delayed sample rate
 };
 
 extern void mpu9250_set_default_config(struct Mpu9250Config *c);

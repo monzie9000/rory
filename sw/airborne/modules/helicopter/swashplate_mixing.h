@@ -68,9 +68,10 @@
 #endif
 
 /* Swashplate mixing structure */
-struct swashplate_mixing_t {
-  int32_t commands[SW_NB];      ///< The output commands
-  int32_t trim[SW_NB];          ///< Trim values for the different actuators
+struct swashplate_mixing_t
+{
+    int32_t commands[SW_NB];      ///< The output commands
+    int32_t trim[SW_NB];          ///< Trim values for the different actuators
 };
 extern struct swashplate_mixing_t swashplate_mixing;
 

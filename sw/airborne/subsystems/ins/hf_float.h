@@ -35,19 +35,20 @@
 
 #define HFF_STATE_SIZE 2
 
-struct HfilterFloat {
-  float x;
-  /* float xbias; */
-  float xdot;
-  float xdotdot;
-  float y;
-  /* float ybias; */
-  float ydot;
-  float ydotdot;
-  float xP[HFF_STATE_SIZE][HFF_STATE_SIZE];
-  float yP[HFF_STATE_SIZE][HFF_STATE_SIZE];
-  uint8_t lag_counter;
-  bool_t rollback;
+struct HfilterFloat
+{
+    float x;
+    /* float xbias; */
+    float xdot;
+    float xdotdot;
+    float y;
+    /* float ybias; */
+    float ydot;
+    float ydotdot;
+    float xP[HFF_STATE_SIZE][HFF_STATE_SIZE];
+    float yP[HFF_STATE_SIZE][HFF_STATE_SIZE];
+    uint8_t lag_counter;
+    bool_t rollback;
 };
 
 extern struct HfilterFloat b2_hff_state;

@@ -43,38 +43,41 @@
 
 /** I2C transaction type.
  */
-enum I2CTransactionType {
-  I2CTransTx,   ///< transmit only transaction
-  I2CTransRx,   ///< receive only transaction
-  I2CTransTxRx  ///< transmit and receive transaction
+enum I2CTransactionType
+{
+    I2CTransTx,   ///< transmit only transaction
+    I2CTransRx,   ///< receive only transaction
+    I2CTransTxRx  ///< transmit and receive transaction
 };
 
 /** I2C transaction status.
  */
-enum I2CTransactionStatus {
-  I2CTransPending,  ///< transaction is pending in queue
-  I2CTransRunning,  ///< transaction is currently ongoing
-  I2CTransSuccess,  ///< transaction successfully finished by I2C driver
-  I2CTransFailed,   ///< transaction failed
-  I2CTransDone      ///< transaction set to done by user level
+enum I2CTransactionStatus
+{
+    I2CTransPending,  ///< transaction is pending in queue
+    I2CTransRunning,  ///< transaction is currently ongoing
+    I2CTransSuccess,  ///< transaction successfully finished by I2C driver
+    I2CTransFailed,   ///< transaction failed
+    I2CTransDone      ///< transaction set to done by user level
 };
 
 /** I2C peripheral status.
  * Used by each architecture specifc implementation.
  */
-enum I2CStatus {
-  I2CIdle,
-  I2CStartRequested,
-  I2CAddrWrSent,
-  I2CAddrRdSent,
-  I2CSendingByte,
-  /*  I2CSendingLastByte, */
-  I2CReadingByte,
-  I2CReadingLastByte,
-  I2CStopRequested,
-  I2CRestartRequested,
-  I2CComplete,
-  I2CFailed
+enum I2CStatus
+{
+    I2CIdle,
+    I2CStartRequested,
+    I2CAddrWrSent,
+    I2CAddrRdSent,
+    I2CSendingByte,
+    /*  I2CSendingLastByte, */
+    I2CReadingByte,
+    I2CReadingLastByte,
+    I2CStopRequested,
+    I2CRestartRequested,
+    I2CComplete,
+    I2CFailed
 };
 
 /** I2C buffer length.
@@ -90,40 +93,41 @@ enum I2CStatus {
  * (#i2c_receive, #i2c_transmit or #i2c_transceive) or the
  * #i2c_submit function.
  */
-struct i2c_transaction {
-  /** Transaction type.
-   * Always set by #i2c_receive, #i2c_transmit and #i2c_transceive,
-   * needs to be manually set every time if using #i2c_submit.
-   */
-  enum I2CTransactionType type;
+struct i2c_transaction
+{
+    /** Transaction type.
+     * Always set by #i2c_receive, #i2c_transmit and #i2c_transceive,
+     * needs to be manually set every time if using #i2c_submit.
+     */
+    enum I2CTransactionType type;
 
-  /** Slave address.
-   * Always set by #i2c_receive, #i2c_transmit and #i2c_transceive,
-   * needs to be manually set if using #i2c_submit.
-   */
-  uint8_t  slave_addr;
+    /** Slave address.
+     * Always set by #i2c_receive, #i2c_transmit and #i2c_transceive,
+     * needs to be manually set if using #i2c_submit.
+     */
+    uint8_t  slave_addr;
 
-  /** Number of bytes to read/receive.
-   * Always set by #i2c_receive, #i2c_transmit and #i2c_transceive,
-   * needs to be manually set if using #i2c_submit.
-   */
-  uint16_t len_r;
+    /** Number of bytes to read/receive.
+     * Always set by #i2c_receive, #i2c_transmit and #i2c_transceive,
+     * needs to be manually set if using #i2c_submit.
+     */
+    uint16_t len_r;
 
-  /** Number of bytes to write/transmit.
-   * Always set by #i2c_receive, #i2c_transmit and #i2c_transceive,
-   * needs to be manually set if using #i2c_submit.
-   */
-  uint8_t  len_w;
+    /** Number of bytes to write/transmit.
+     * Always set by #i2c_receive, #i2c_transmit and #i2c_transceive,
+     * needs to be manually set if using #i2c_submit.
+     */
+    uint8_t  len_w;
 
-  /** Transaction buffer
-   * With #I2C_BUF_LEN number of bytes.
-   * Must be able to hold tranmitted + received bytes.
-   */
-  volatile uint8_t  buf[I2C_BUF_LEN];
+    /** Transaction buffer
+     * With #I2C_BUF_LEN number of bytes.
+     * Must be able to hold tranmitted + received bytes.
+     */
+    volatile uint8_t  buf[I2C_BUF_LEN];
 
-  /** Transaction status.
-   */
-  volatile enum I2CTransactionStatus status;
+    /** Transaction status.
+     */
+    volatile enum I2CTransactionStatus status;
 };
 
 /** I2C transaction queue length.
@@ -135,35 +139,37 @@ struct i2c_transaction {
 
 /** I2C peripheral structure.
  */
-struct i2c_periph {
-  /* circular buffer holding transactions */
-  struct i2c_transaction *trans[I2C_TRANSACTION_QUEUE_LEN];
-  uint8_t trans_insert_idx;
-  uint8_t trans_extract_idx;
-  /* internal state of the peripheral */
-  volatile enum I2CStatus status;
-  volatile uint8_t idx_buf;
-  void *reg_addr;
-  void *init_struct;
-  struct i2c_errors *errors;
-  volatile int16_t watchdog;
+struct i2c_periph
+{
+    /* circular buffer holding transactions */
+    struct i2c_transaction *trans[I2C_TRANSACTION_QUEUE_LEN];
+    uint8_t trans_insert_idx;
+    uint8_t trans_extract_idx;
+    /* internal state of the peripheral */
+    volatile enum I2CStatus status;
+    volatile uint8_t idx_buf;
+    void *reg_addr;
+    void *init_struct;
+    struct i2c_errors *errors;
+    volatile int16_t watchdog;
 };
 
 /** I2C errors counter.
  */
-struct i2c_errors {
-  volatile uint16_t wd_reset_cnt;
-  volatile uint16_t queue_full_cnt;
-  volatile uint16_t ack_fail_cnt;
-  volatile uint16_t miss_start_stop_cnt;
-  volatile uint16_t arb_lost_cnt;
-  volatile uint16_t over_under_cnt;
-  volatile uint16_t pec_recep_cnt;
-  volatile uint16_t timeout_tlow_cnt;
-  volatile uint16_t smbus_alert_cnt;
-  volatile uint16_t unexpected_event_cnt;
-  volatile uint32_t last_unexpected_event;
-  volatile uint32_t er_irq_cnt;
+struct i2c_errors
+{
+    volatile uint16_t wd_reset_cnt;
+    volatile uint16_t queue_full_cnt;
+    volatile uint16_t ack_fail_cnt;
+    volatile uint16_t miss_start_stop_cnt;
+    volatile uint16_t arb_lost_cnt;
+    volatile uint16_t over_under_cnt;
+    volatile uint16_t pec_recep_cnt;
+    volatile uint16_t timeout_tlow_cnt;
+    volatile uint16_t smbus_alert_cnt;
+    volatile uint16_t unexpected_event_cnt;
+    volatile uint32_t last_unexpected_event;
+    volatile uint32_t er_irq_cnt;
 };
 
 

@@ -40,7 +40,7 @@
 // In I2C mode we can not inline this function:
 void dc_send_command(uint8_t cmd)
 {
-  atmega_i2c_cam_ctrl_send(cmd);
+    atmega_i2c_cam_ctrl_send(cmd);
 }
 
 static struct i2c_transaction atmega_i2c_cam_ctrl_trans;
@@ -58,42 +58,45 @@ uint8_t atmega_i2c_cam_ctrl_just_sent_command = 0;
 
 void atmega_i2c_cam_ctrl_init(void)
 {
-  atmega_i2c_cam_ctrl_trans.status = I2CTransDone;
-  dc_init();
+    atmega_i2c_cam_ctrl_trans.status = I2CTransDone;
+    dc_init();
 }
 
 void atmega_i2c_cam_ctrl_periodic(void)
 {
-  atmega_i2c_cam_ctrl_just_sent_command = 0;
-  dc_periodic();
+    atmega_i2c_cam_ctrl_just_sent_command = 0;
+    dc_periodic();
 
-  // Request Status
-  if (atmega_i2c_cam_ctrl_just_sent_command == 0) {
-    atmega_i2c_cam_ctrl_send(DC_GET_STATUS);
-  }
+    // Request Status
+    if (atmega_i2c_cam_ctrl_just_sent_command == 0)
+    {
+        atmega_i2c_cam_ctrl_send(DC_GET_STATUS);
+    }
 }
 
 
 
 void atmega_i2c_cam_ctrl_send(uint8_t cmd)
 {
-  atmega_i2c_cam_ctrl_just_sent_command = 1;
+    atmega_i2c_cam_ctrl_just_sent_command = 1;
 
-  // Send Command
-  atmega_i2c_cam_ctrl_trans.buf[0] = cmd;
-  i2c_transceive(&ATMEGA_I2C_DEV, &atmega_i2c_cam_ctrl_trans, ATMEGA_SLAVE_ADDR, 1, 1);
+    // Send Command
+    atmega_i2c_cam_ctrl_trans.buf[0] = cmd;
+    i2c_transceive(&ATMEGA_I2C_DEV, &atmega_i2c_cam_ctrl_trans, ATMEGA_SLAVE_ADDR, 1, 1);
 
-  if (cmd == DC_SHOOT) {
-    dc_send_shot_position();
-  }
+    if (cmd == DC_SHOOT)
+    {
+        dc_send_shot_position();
+    }
 }
 
 void atmega_i2c_cam_ctrl_event(void)
 {
-  if (atmega_i2c_cam_ctrl_trans.status == I2CTransSuccess) {
-    unsigned char cam_ret[1];
-    cam_ret[0] = atmega_i2c_cam_ctrl_trans.buf[0];
-    RunOnceEvery(6, DOWNLINK_SEND_PAYLOAD(DefaultChannel, DefaultDevice, 1, cam_ret));
-    atmega_i2c_cam_ctrl_trans.status = I2CTransDone;
-  }
+    if (atmega_i2c_cam_ctrl_trans.status == I2CTransSuccess)
+    {
+        unsigned char cam_ret[1];
+        cam_ret[0] = atmega_i2c_cam_ctrl_trans.buf[0];
+        RunOnceEvery(6, DOWNLINK_SEND_PAYLOAD(DefaultChannel, DefaultDevice, 1, cam_ret));
+        atmega_i2c_cam_ctrl_trans.status = I2CTransDone;
+    }
 }

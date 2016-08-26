@@ -36,65 +36,67 @@
  * Main navdata structure from the navdata board
  * This is received from the navdata board at ~200Hz
  */
-struct navdata_measure_t {
-  uint16_t taille;
-  uint16_t nu_trame;
+struct navdata_measure_t
+{
+    uint16_t taille;
+    uint16_t nu_trame;
 
-  uint16_t ax;
-  uint16_t ay;
-  uint16_t az;
+    uint16_t ax;
+    uint16_t ay;
+    uint16_t az;
 
-  int16_t vx;
-  int16_t vy;
-  int16_t vz;
-  uint16_t temperature_acc;
-  uint16_t temperature_gyro;
+    int16_t vx;
+    int16_t vy;
+    int16_t vz;
+    uint16_t temperature_acc;
+    uint16_t temperature_gyro;
 
-  uint16_t ultrasound;
+    uint16_t ultrasound;
 
-  uint16_t us_debut_echo;
-  uint16_t us_fin_echo;
-  uint16_t us_association_echo;
-  uint16_t us_distance_echo;
+    uint16_t us_debut_echo;
+    uint16_t us_fin_echo;
+    uint16_t us_association_echo;
+    uint16_t us_distance_echo;
 
-  uint16_t us_curve_time;
-  uint16_t us_curve_value;
-  uint16_t us_curve_ref;
+    uint16_t us_curve_time;
+    uint16_t us_curve_value;
+    uint16_t us_curve_ref;
 
-  uint16_t nb_echo;
+    uint16_t nb_echo;
 
-  uint32_t sum_echo; //unsigned long
-  int16_t gradient;
+    uint32_t sum_echo; //unsigned long
+    int16_t gradient;
 
-  uint16_t flag_echo_ini;
+    uint16_t flag_echo_ini;
 
-  int32_t pressure;
-  uint16_t temperature_pressure;
+    int32_t pressure;
+    uint16_t temperature_pressure;
 
-  int16_t my;
-  int16_t mx;
-  int16_t mz;
+    int16_t my;
+    int16_t mx;
+    int16_t mz;
 
-  uint16_t chksum;
+    uint16_t chksum;
 
 } __attribute__((packed));
 
 /* The baro calibration received from the navboard */
-struct bmp180_calib_t {
-  int16_t ac1;
-  int16_t ac2;
-  int16_t ac3;
-  uint16_t ac4;
-  uint16_t ac5;
-  uint16_t ac6;
-  int16_t b1;
-  int16_t b2;
-  int16_t mb;
-  int16_t mc;
-  int16_t md;
+struct bmp180_calib_t
+{
+    int16_t ac1;
+    int16_t ac2;
+    int16_t ac3;
+    uint16_t ac4;
+    uint16_t ac5;
+    uint16_t ac6;
+    int16_t b1;
+    int16_t b2;
+    int16_t mb;
+    int16_t mc;
+    int16_t md;
 
-  // These values are calculated
-  int32_t b5;
+    // These values are calculated
+    int32_t b5;
 };
 
 /* Navdata board defines */
@@ -108,22 +110,23 @@ struct bmp180_calib_t {
 #define ARDRONE_GPIO_PIN_NAVDATA  177
 
 /* Main navdata structure */
-struct navdata_t {
-  bool_t is_initialized;                  ///< Check if the navdata board is initialized
-  int fd;                                 ///< The navdata file pointer
+struct navdata_t
+{
+    bool_t is_initialized;                  ///< Check if the navdata board is initialized
+    int fd;                                 ///< The navdata file pointer
 
-  uint32_t totalBytesRead;
-  uint32_t packetsRead;
-  uint32_t checksum_errors;
-  uint32_t lost_imu_frames;
-  uint16_t last_packet_number;
+    uint32_t totalBytesRead;
+    uint32_t packetsRead;
+    uint32_t checksum_errors;
+    uint32_t lost_imu_frames;
+    uint16_t last_packet_number;
 
-  struct navdata_measure_t measure;       ///< Main navdata packet receieved from navboard
-  struct bmp180_calib_t bmp180_calib;     ///< BMP180 calibration receieved from navboard
+    struct navdata_measure_t measure;       ///< Main navdata packet receieved from navboard
+    struct bmp180_calib_t bmp180_calib;     ///< BMP180 calibration receieved from navboard
 
-  bool_t baro_calibrated;                 ///< Whenever the baro is calibrated
-  bool_t baro_available;                  ///< Whenever the baro is available
-  bool_t imu_lost;                        ///< Whenever the imu is lost
+    bool_t baro_calibrated;                 ///< Whenever the baro is calibrated
+    bool_t baro_available;                  ///< Whenever the baro is available
+    bool_t imu_lost;                        ///< Whenever the imu is lost
 };
 extern struct navdata_t navdata;
 

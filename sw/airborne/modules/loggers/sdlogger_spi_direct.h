@@ -31,34 +31,36 @@
 #include "mcu_periph/link_device.h"
 #include "peripherals/sdcard_spi.h"
 
-enum SDLoggerStatus {
-  SDLogger_UnInit,
-  SDLogger_Error,
-  SDLogger_Initializing,
-  SDLogger_RetreivingIndex,
-  SDLogger_Ready,
-  SDLogger_Logging,
-  SDLogger_LoggingFinalBlock,
-  SDLogger_StoppedLogging,
-  SDLogger_GettingIndexForUpdate,
-  SDLogger_UpdatingIndex,
-  SDLogger_GettingIndexForDownload,
-  SDLogger_Downloading
+enum SDLoggerStatus
+{
+    SDLogger_UnInit,
+    SDLogger_Error,
+    SDLogger_Initializing,
+    SDLogger_RetreivingIndex,
+    SDLogger_Ready,
+    SDLogger_Logging,
+    SDLogger_LoggingFinalBlock,
+    SDLogger_StoppedLogging,
+    SDLogger_GettingIndexForUpdate,
+    SDLogger_UpdatingIndex,
+    SDLogger_GettingIndexForDownload,
+    SDLogger_Downloading
 };
 
-struct sdlogger_spi_periph{
-  enum SDLoggerStatus status;
-  uint32_t next_available_address;
-  uint8_t last_completed;
-  uint16_t sdcard_buf_idx;
-  uint8_t buffer[SDLOGGER_BUFFER_SIZE];
-  uint8_t idx;
-  uint32_t log_len;
-  uint8_t command;
-  uint8_t download_id;
-  uint32_t download_address;
-  uint32_t download_length;
-  struct link_device device;
+struct sdlogger_spi_periph
+{
+    enum SDLoggerStatus status;
+    uint32_t next_available_address;
+    uint8_t last_completed;
+    uint16_t sdcard_buf_idx;
+    uint8_t buffer[SDLOGGER_BUFFER_SIZE];
+    uint8_t idx;
+    uint32_t log_len;
+    uint8_t command;
+    uint8_t download_id;
+    uint32_t download_address;
+    uint32_t download_length;
+    struct link_device device;
 };
 
 extern struct sdlogger_spi_periph sdlogger_spi;

@@ -36,13 +36,14 @@
 #define AHRS_ALIGNER_RUNNING 1
 #define AHRS_ALIGNER_LOCKED  2
 
-struct AhrsAligner {
-  struct Int32Rates lp_gyro;
-  struct Int32Vect3 lp_accel;
-  struct Int32Vect3 lp_mag;
-  int32_t           noise;
-  int32_t           low_noise_cnt;
-  uint8_t           status;
+struct AhrsAligner
+{
+    struct Int32Rates lp_gyro;
+    struct Int32Vect3 lp_accel;
+    struct Int32Vect3 lp_mag;
+    int32_t           noise;
+    int32_t           low_noise_cnt;
+    uint8_t           status;
 };
 
 extern struct AhrsAligner ahrs_aligner;

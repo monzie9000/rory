@@ -48,65 +48,73 @@
  */
 int udp_socket_create(struct UdpSocket *sock, char *host, int port_out, int port_in, bool_t broadcast)
 {
-  if (sock == NULL) {
-    return -1;
-  }
+    if (sock == NULL)
+    {
+        return -1;
+    }
 
 #ifndef LINUX_LINK_STATIC
-  /* try to convert host ipv4 address to binary format */
-  struct in_addr host_ip;
-  if (host[0] != '\0' && !inet_aton(host, &host_ip)) {
-    /* not an IP address, try to resolve hostname */
-    struct hostent *hp;
-    hp = gethostbyname(host);
-    if (!hp) {
-      fprintf(stderr, "could not obtain address of %s\n", host);
-      return -1;
+    /* try to convert host ipv4 address to binary format */
+    struct in_addr host_ip;
+    if (host[0] != '\0' && !inet_aton(host, &host_ip))
+    {
+        /* not an IP address, try to resolve hostname */
+        struct hostent *hp;
+        hp = gethostbyname(host);
+        if (!hp)
+        {
+            fprintf(stderr, "could not obtain address of %s\n", host);
+            return -1;
+        }
+        /* check if IPv4 address */
+        if (hp->h_addrtype == AF_INET && hp->h_length == 4)
+        {
+            /* simply use first address */
+            memcpy(&host_ip.s_addr, hp->h_addr_list[0], hp->h_length);
+        }
+        else
+        {
+            return -1;
+        }
     }
-    /* check if IPv4 address */
-    if (hp->h_addrtype == AF_INET && hp->h_length == 4) {
-      /* simply use first address */
-      memcpy(&host_ip.s_addr, hp->h_addr_list[0], hp->h_length);
-    } else {
-      return -1;
-    }
-  }
 #endif
 
-  // Create the socket with the correct protocl
-  sock->sockfd = socket(PF_INET, SOCK_DGRAM, 0);
-  int one = 1;
-  // Enable reusing of address
-  setsockopt(sock->sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
+    // Create the socket with the correct protocl
+    sock->sockfd = socket(PF_INET, SOCK_DGRAM, 0);
+    int one = 1;
+    // Enable reusing of address
+    setsockopt(sock->sockfd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
 #ifdef SO_REUSEPORT
-  // needed for OSX
-  setsockopt(sock->sockfd, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one));
+    // needed for OSX
+    setsockopt(sock->sockfd, SOL_SOCKET, SO_REUSEPORT, &one, sizeof(one));
 #endif
 
-  // Enable broadcasting
-  if (broadcast) {
-    setsockopt(sock->sockfd, SOL_SOCKET, SO_BROADCAST, &one, sizeof(one));
-  }
+    // Enable broadcasting
+    if (broadcast)
+    {
+        setsockopt(sock->sockfd, SOL_SOCKET, SO_BROADCAST, &one, sizeof(one));
+    }
 
-  // if an input port was specified, bind to it
-  if (port_in >= 0) {
-    // Create the input address
-    sock->addr_in.sin_family = PF_INET;
-    sock->addr_in.sin_port = htons(port_in);
-    sock->addr_in.sin_addr.s_addr = htonl(INADDR_ANY);
+    // if an input port was specified, bind to it
+    if (port_in >= 0)
+    {
+        // Create the input address
+        sock->addr_in.sin_family = PF_INET;
+        sock->addr_in.sin_port = htons(port_in);
+        sock->addr_in.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    bind(sock->sockfd, (struct sockaddr *)&sock->addr_in, sizeof(sock->addr_in));
-  }
+        bind(sock->sockfd, (struct sockaddr *)&sock->addr_in, sizeof(sock->addr_in));
+    }
 
-  // set the output/destination address for use in sendto later
-  sock->addr_out.sin_family = PF_INET;
-  sock->addr_out.sin_port = htons(port_out);
+    // set the output/destination address for use in sendto later
+    sock->addr_out.sin_family = PF_INET;
+    sock->addr_out.sin_port = htons(port_out);
 #ifndef LINUX_LINK_STATIC
-  sock->addr_out.sin_addr.s_addr = host_ip.s_addr;
+    sock->addr_out.sin_addr.s_addr = host_ip.s_addr;
 #else
-  sock->addr_out.sin_addr.s_addr = inet_addr(host);
+    sock->addr_out.sin_addr.s_addr = inet_addr(host);
 #endif
-  return 0;
+    return 0;
 }
 
 /**
@@ -118,16 +126,18 @@ int udp_socket_create(struct UdpSocket *sock, char *host, int port_out, int port
  */
 int udp_socket_send(struct UdpSocket *sock, uint8_t *buffer, uint32_t len)
 {
-  if (sock == NULL) {
-    return -1;
-  }
+    if (sock == NULL)
+    {
+        return -1;
+    }
 
-  ssize_t bytes_sent = sendto(sock->sockfd, buffer, len, 0,
-                              (struct sockaddr *)&sock->addr_out, sizeof(sock->addr_out));
-  if (bytes_sent != ((ssize_t)len)) {
-    TRACE(TRACE_ERROR, "error sending to sock %d (%d)\n", (int)bytes_sent, strerror(errno));
-  }
-  return bytes_sent;
+    ssize_t bytes_sent = sendto(sock->sockfd, buffer, len, 0,
+                                (struct sockaddr *)&sock->addr_out, sizeof(sock->addr_out));
+    if (bytes_sent != ((ssize_t)len))
+    {
+        TRACE(TRACE_ERROR, "error sending to sock %d (%d)\n", (int)bytes_sent, strerror(errno));
+    }
+    return bytes_sent;
 }
 
 /**
@@ -139,13 +149,14 @@ int udp_socket_send(struct UdpSocket *sock, uint8_t *buffer, uint32_t len)
  */
 int udp_socket_send_dontwait(struct UdpSocket *sock, uint8_t *buffer, uint32_t len)
 {
-  if (sock == NULL) {
-    return -1;
-  }
+    if (sock == NULL)
+    {
+        return -1;
+    }
 
-  ssize_t bytes_sent = sendto(sock->sockfd, buffer, len, MSG_DONTWAIT,
-                       (struct sockaddr *)&sock->addr_out, sizeof(sock->addr_out));
-  return bytes_sent;
+    ssize_t bytes_sent = sendto(sock->sockfd, buffer, len, MSG_DONTWAIT,
+                                (struct sockaddr *)&sock->addr_out, sizeof(sock->addr_out));
+    return bytes_sent;
 }
 
 /**
@@ -158,20 +169,24 @@ int udp_socket_send_dontwait(struct UdpSocket *sock, uint8_t *buffer, uint32_t l
  */
 int udp_socket_recv_dontwait(struct UdpSocket *sock, uint8_t *buffer, uint32_t len)
 {
-  socklen_t slen = sizeof(struct sockaddr_in);
-  ssize_t bytes_read = recvfrom(sock->sockfd, buffer, len, MSG_DONTWAIT,
-                                (struct sockaddr *)&sock->addr_in, &slen);
+    socklen_t slen = sizeof(struct sockaddr_in);
+    ssize_t bytes_read = recvfrom(sock->sockfd, buffer, len, MSG_DONTWAIT,
+                                  (struct sockaddr *)&sock->addr_in, &slen);
 
-  if (bytes_read == -1) {
-    // If not data is available, simply return zero bytes read, no error
-    if (errno == EWOULDBLOCK) {
-      return 0;
-    } else {
-      TRACE(TRACE_ERROR, "error reading from sock error %d \n", errno);
+    if (bytes_read == -1)
+    {
+        // If not data is available, simply return zero bytes read, no error
+        if (errno == EWOULDBLOCK)
+        {
+            return 0;
+        }
+        else
+        {
+            TRACE(TRACE_ERROR, "error reading from sock error %d \n", errno);
+        }
     }
-  }
 
-  return bytes_read;
+    return bytes_read;
 }
 
 /**
@@ -183,32 +198,34 @@ int udp_socket_recv_dontwait(struct UdpSocket *sock, uint8_t *buffer, uint32_t l
  */
 int udp_socket_recv(struct UdpSocket *sock, uint8_t *buffer, uint32_t len)
 {
-  socklen_t slen = sizeof(struct sockaddr_in);
-  ssize_t bytes_read = recvfrom(sock->sockfd, buffer, len, 0,
-                                (struct sockaddr *)&sock->addr_in, &slen);
+    socklen_t slen = sizeof(struct sockaddr_in);
+    ssize_t bytes_read = recvfrom(sock->sockfd, buffer, len, 0,
+                                  (struct sockaddr *)&sock->addr_in, &slen);
 
-  return (int)bytes_read;
+    return (int)bytes_read;
 }
 
-int udp_socket_subscribe_multicast(struct UdpSocket *sock, const char* multicast_addr) {
-  // Create the request
-  struct ip_mreq mreq;
-  mreq.imr_multiaddr.s_addr = inet_addr(multicast_addr);
-  mreq.imr_interface.s_addr = htonl(INADDR_ANY);
+int udp_socket_subscribe_multicast(struct UdpSocket *sock, const char* multicast_addr)
+{
+    // Create the request
+    struct ip_mreq mreq;
+    mreq.imr_multiaddr.s_addr = inet_addr(multicast_addr);
+    mreq.imr_interface.s_addr = htonl(INADDR_ANY);
 
-  // Send the request
-  return setsockopt(sock->sockfd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&mreq, sizeof(mreq));
+    // Send the request
+    return setsockopt(sock->sockfd, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&mreq, sizeof(mreq));
 }
 
-int udp_socket_set_recvbuf(struct UdpSocket *sock, int buf_size) {
-  // Set and check
-  unsigned int optval_size = 4;
-  int buf_ret;
-  setsockopt(sock->sockfd, SOL_SOCKET, SO_RCVBUF, (char *)&buf_size, optval_size);
-  getsockopt(sock->sockfd, SOL_SOCKET, SO_RCVBUF, (char *)&buf_ret, &optval_size);
+int udp_socket_set_recvbuf(struct UdpSocket *sock, int buf_size)
+{
+    // Set and check
+    unsigned int optval_size = 4;
+    int buf_ret;
+    setsockopt(sock->sockfd, SOL_SOCKET, SO_RCVBUF, (char *)&buf_size, optval_size);
+    getsockopt(sock->sockfd, SOL_SOCKET, SO_RCVBUF, (char *)&buf_ret, &optval_size);
 
-  if(buf_size != buf_ret)
-    return -1;
+    if(buf_size != buf_ret)
+        return -1;
 
-  return 0;
+    return 0;
 }

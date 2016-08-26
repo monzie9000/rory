@@ -47,29 +47,34 @@ PRINT_CONFIG_MSG("Catching SIGINT. Press CTRL-C twice to stop program.")
  */
 static void sig_handler(int signo)
 {
-  static int nb_signal = 0;
+    static int nb_signal = 0;
 
-  if (signo == SIGINT) {
-    printf("Received SIGINT\n");
-    if (nb_signal == 0) {
-      printf("Press Ctrl-C again to stop the program\n");
-      nb_signal++;
-    } else {
-      printf("Leaving now\n");
-      exit(0);
+    if (signo == SIGINT)
+    {
+        printf("Received SIGINT\n");
+        if (nb_signal == 0)
+        {
+            printf("Press Ctrl-C again to stop the program\n");
+            nb_signal++;
+        }
+        else
+        {
+            printf("Leaving now\n");
+            exit(0);
+        }
     }
-  }
 }
 
 void mcu_arch_init(void)
 {
-  struct sigaction sa;
-  sigemptyset(&sa.sa_mask);
-  sa.sa_flags = 0;
-  sa.sa_handler = &sig_handler;
-  if (sigaction(SIGINT, &sa, NULL) == -1) {
-    printf("Can't catch SIGINT\n");
-  }
+    struct sigaction sa;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sa.sa_handler = &sig_handler;
+    if (sigaction(SIGINT, &sa, NULL) == -1)
+    {
+        printf("Can't catch SIGINT\n");
+    }
 }
 
 #else

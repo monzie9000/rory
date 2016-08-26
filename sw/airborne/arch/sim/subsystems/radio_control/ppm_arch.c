@@ -48,27 +48,27 @@ void ppm_arch_init(void)
 
 void radio_control_feed(void)
 {
-  ppm_pulses[RADIO_ROLL]     = PPM_OF_NPS(nps_radio_control.roll,       \
-                                          RADIO_ROLL_NEUTRAL,          \
-                                          RADIO_ROLL_MIN,              \
-                                          RADIO_ROLL_MAX);
-  ppm_pulses[RADIO_PITCH]    = PPM_OF_NPS(nps_radio_control.pitch,      \
-                                          RADIO_PITCH_NEUTRAL,         \
-                                          RADIO_PITCH_MIN,             \
-                                          RADIO_PITCH_MAX);
-  ppm_pulses[RADIO_YAW]      = PPM_OF_NPS(nps_radio_control.yaw,        \
-                                          RADIO_YAW_NEUTRAL,           \
-                                          RADIO_YAW_MIN,               \
-                                          RADIO_YAW_MAX);
-  ppm_pulses[RADIO_THROTTLE] = PPM_OF_NPS(nps_radio_control.throttle,   \
-                                          RADIO_THROTTLE_NEUTRAL,      \
-                                          RADIO_THROTTLE_MIN,          \
-                                          RADIO_THROTTLE_MAX);
-  ppm_pulses[RADIO_MODE]     = PPM_OF_NPS(nps_radio_control.mode,       \
-                                          RADIO_MODE_NEUTRAL,          \
-                                          RADIO_MODE_MIN,              \
-                                          RADIO_MODE_MAX);
-  ppm_frame_available = TRUE;
+    ppm_pulses[RADIO_ROLL]     = PPM_OF_NPS(nps_radio_control.roll,       \
+                                            RADIO_ROLL_NEUTRAL,          \
+                                            RADIO_ROLL_MIN,              \
+                                            RADIO_ROLL_MAX);
+    ppm_pulses[RADIO_PITCH]    = PPM_OF_NPS(nps_radio_control.pitch,      \
+                                            RADIO_PITCH_NEUTRAL,         \
+                                            RADIO_PITCH_MIN,             \
+                                            RADIO_PITCH_MAX);
+    ppm_pulses[RADIO_YAW]      = PPM_OF_NPS(nps_radio_control.yaw,        \
+                                            RADIO_YAW_NEUTRAL,           \
+                                            RADIO_YAW_MIN,               \
+                                            RADIO_YAW_MAX);
+    ppm_pulses[RADIO_THROTTLE] = PPM_OF_NPS(nps_radio_control.throttle,   \
+                                            RADIO_THROTTLE_NEUTRAL,      \
+                                            RADIO_THROTTLE_MIN,          \
+                                            RADIO_THROTTLE_MAX);
+    ppm_pulses[RADIO_MODE]     = PPM_OF_NPS(nps_radio_control.mode,       \
+                                            RADIO_MODE_NEUTRAL,          \
+                                            RADIO_MODE_MIN,              \
+                                            RADIO_MODE_MAX);
+    ppm_frame_available = TRUE;
 }
 #else //RADIO_CONTROL
 void radio_control_feed(void) {}
@@ -78,20 +78,23 @@ void radio_control_feed(void) {}
 #ifdef RADIO_CONTROL
 value update_rc_channel(value c, value v)
 {
-  ppm_pulses[Int_val(c)] = Double_val(v);
-  return Val_unit;
+    ppm_pulses[Int_val(c)] = Double_val(v);
+    return Val_unit;
 }
 
 value send_ppm(value unit)
 {
-  ppm_frame_available = TRUE;
-  return unit;
+    ppm_frame_available = TRUE;
+    return unit;
 }
 #else // RADIO_CONTROL
 value update_rc_channel(value c __attribute__((unused)), value v __attribute__((unused)))
 {
-  return Val_unit;
+    return Val_unit;
 }
-value send_ppm(value unit) {return unit;}
+value send_ppm(value unit)
+{
+    return unit;
+}
 #endif // RADIO_CONTROL
 #endif // USE_NPS

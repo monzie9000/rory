@@ -81,81 +81,88 @@ static uint16_t startup_delay;
 
 void pbn_init(void)
 {
-  startup_delay = PBN_START_DELAY;
-  pbn.altitude_offset = 0;
-  pbn.airspeed_offset = 0;
-  pbn.airspeed_adc = 0;
-  pbn.altitude_adc = 0;
-  pbn.data_valid = TRUE;
-  offset_cnt = OFFSET_NBSAMPLES_AVRG;
-  pbn.airspeed = 0.;
-  pbn.altitude = 0.;
-  pbn.airspeed_filter = PBN_OFFSET_FILTER;
+    startup_delay = PBN_START_DELAY;
+    pbn.altitude_offset = 0;
+    pbn.airspeed_offset = 0;
+    pbn.airspeed_adc = 0;
+    pbn.altitude_adc = 0;
+    pbn.data_valid = TRUE;
+    offset_cnt = OFFSET_NBSAMPLES_AVRG;
+    pbn.airspeed = 0.;
+    pbn.altitude = 0.;
+    pbn.airspeed_filter = PBN_OFFSET_FILTER;
 }
 
 
 void pbn_periodic(void)
 {
 
-  if (startup_delay > 0) {
-    --startup_delay;
-    return;
-  }
+    if (startup_delay > 0)
+    {
+        --startup_delay;
+        return;
+    }
 
-  // Initiate next read
-  pbn_trans.buf[0] = 0;
-  i2c_transceive(&PBN_I2C_DEV, &pbn_trans, PBN_I2C_ADDR, 1, 4);
+    // Initiate next read
+    pbn_trans.buf[0] = 0;
+    i2c_transceive(&PBN_I2C_DEV, &pbn_trans, PBN_I2C_ADDR, 1, 4);
 
 }
 
 void pbn_read_event(void)
 {
 
-  pbn_trans.status = I2CTransDone;
+    pbn_trans.status = I2CTransDone;
 
-  // Get raw values from buffer
-  pbn.airspeed_adc = ((uint16_t)(pbn_trans.buf[0]) << 8) | (uint16_t)(pbn_trans.buf[1]);
-  pbn.altitude_adc = ((uint16_t)(pbn_trans.buf[2]) << 8) | (uint16_t)(pbn_trans.buf[3]);
+    // Get raw values from buffer
+    pbn.airspeed_adc = ((uint16_t)(pbn_trans.buf[0]) << 8) | (uint16_t)(pbn_trans.buf[1]);
+    pbn.altitude_adc = ((uint16_t)(pbn_trans.buf[2]) << 8) | (uint16_t)(pbn_trans.buf[3]);
 
-  // Consider 0 as a wrong value
-  if (pbn.airspeed_adc == 0 || pbn.altitude_adc == 0) {
-    pbn.data_valid = FALSE;
-  } else {
-    pbn.data_valid = TRUE;
+    // Consider 0 as a wrong value
+    if (pbn.airspeed_adc == 0 || pbn.altitude_adc == 0)
+    {
+        pbn.data_valid = FALSE;
+    }
+    else
+    {
+        pbn.data_valid = TRUE;
 
-    if (offset_cnt > 0) {
-      // IIR filter to compute an initial offset
+        if (offset_cnt > 0)
+        {
+            // IIR filter to compute an initial offset
 #ifndef PBN_AIRSPEED_OFFSET
-      pbn.airspeed_offset = (PBN_OFFSET_FILTER * pbn.airspeed_offset + pbn.airspeed_adc) /
-                            (PBN_OFFSET_FILTER + 1);
+            pbn.airspeed_offset = (PBN_OFFSET_FILTER * pbn.airspeed_offset + pbn.airspeed_adc) /
+                                  (PBN_OFFSET_FILTER + 1);
 #else
-      pbn.airspeed_offset = PBN_AIRSPEED_OFFSET;
+            pbn.airspeed_offset = PBN_AIRSPEED_OFFSET;
 #endif
 #ifndef PBN_ALTITUDE_OFFSET
-      pbn.altitude_offset = (PBN_OFFSET_FILTER * pbn.altitude_offset + pbn.altitude_adc) /
-                            (PBN_OFFSET_FILTER + 1);
+            pbn.altitude_offset = (PBN_OFFSET_FILTER * pbn.altitude_offset + pbn.altitude_adc) /
+                                  (PBN_OFFSET_FILTER + 1);
 #else
-      pbn.altitude_offset = PBN_ALTITUDE_OFFSET;
+            pbn.altitude_offset = PBN_ALTITUDE_OFFSET;
 #endif
 
-      // decrease init counter
-      --offset_cnt;
-    } else {
-      // Compute pressure
-      float pressure = PBN_ALTITUDE_SCALE * (float) pbn.altitude_adc + PBN_PRESSURE_OFFSET;
-      AbiSendMsgBARO_ABS(BARO_PBN_SENDER_ID, pressure);
-      // Compute airspeed and altitude
-      //pbn_airspeed = (-4.45 + sqrtf(19.84-0.57*(float)(airspeed_offset-airspeed_adc)))/0.28;
-      uint16_t diff = Max(pbn.airspeed_adc - pbn.airspeed_offset, 0);
-      float tmp_airspeed = sqrtf((float)diff * PBN_AIRSPEED_SCALE);
-      pbn.airspeed = (pbn.airspeed_filter * pbn.airspeed + tmp_airspeed) /
-                     (pbn.airspeed_filter + 1.);
+            // decrease init counter
+            --offset_cnt;
+        }
+        else
+        {
+            // Compute pressure
+            float pressure = PBN_ALTITUDE_SCALE * (float) pbn.altitude_adc + PBN_PRESSURE_OFFSET;
+            AbiSendMsgBARO_ABS(BARO_PBN_SENDER_ID, pressure);
+            // Compute airspeed and altitude
+            //pbn_airspeed = (-4.45 + sqrtf(19.84-0.57*(float)(airspeed_offset-airspeed_adc)))/0.28;
+            uint16_t diff = Max(pbn.airspeed_adc - pbn.airspeed_offset, 0);
+            float tmp_airspeed = sqrtf((float)diff * PBN_AIRSPEED_SCALE);
+            pbn.airspeed = (pbn.airspeed_filter * pbn.airspeed + tmp_airspeed) /
+                           (pbn.airspeed_filter + 1.);
 #if USE_AIRSPEED_PBN
-      stateSetAirspeed_f(pbn.airspeed);
+            stateSetAirspeed_f(pbn.airspeed);
 #endif
 
-      pbn.altitude = PBN_ALTITUDE_SCALE * (float)(pbn.altitude_adc - pbn.altitude_offset);
-    }
+            pbn.altitude = PBN_ALTITUDE_SCALE * (float)(pbn.altitude_adc - pbn.altitude_offset);
+        }
 
-  }
+    }
 }

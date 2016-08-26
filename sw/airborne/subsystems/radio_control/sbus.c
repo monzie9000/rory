@@ -38,20 +38,20 @@ struct Sbus sbus;
 
 static void send_sbus(struct transport_tx *trans, struct link_device *dev)
 {
-  // Using PPM message
-  pprz_msg_send_PPM(trans, dev, AC_ID,
-                    &radio_control.frame_rate, SBUS_NB_CHANNEL, sbus.ppm);
+    // Using PPM message
+    pprz_msg_send_PPM(trans, dev, AC_ID,
+                      &radio_control.frame_rate, SBUS_NB_CHANNEL, sbus.ppm);
 }
 #endif
 
 // Init function
 void radio_control_impl_init(void)
 {
-  sbus_common_init(&sbus, &SBUS_UART_DEV);
+    sbus_common_init(&sbus, &SBUS_UART_DEV);
 
-  // Register telemetry message
+    // Register telemetry message
 #if PERIODIC_TELEMETRY
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_PPM, send_sbus);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_PPM, send_sbus);
 #endif
 }
 
@@ -60,22 +60,26 @@ void radio_control_impl_init(void)
 // Reading from UART
 static inline void sbus_decode_event(void)
 {
-  sbus_common_decode_event(&sbus, &SBUS_UART_DEV);
+    sbus_common_decode_event(&sbus, &SBUS_UART_DEV);
 }
 
 void radio_control_impl_event(void (* _received_frame_handler)(void))
 {
-  sbus_decode_event();
-  if (sbus.frame_available) {
-    radio_control.frame_cpt++;
-    radio_control.time_since_last_frame = 0;
-    if (radio_control.radio_ok_cpt > 0) {
-      radio_control.radio_ok_cpt--;
-    } else {
-      radio_control.status = RC_OK;
-      NormalizePpmIIR(sbus.pulses, radio_control);
-      _received_frame_handler();
+    sbus_decode_event();
+    if (sbus.frame_available)
+    {
+        radio_control.frame_cpt++;
+        radio_control.time_since_last_frame = 0;
+        if (radio_control.radio_ok_cpt > 0)
+        {
+            radio_control.radio_ok_cpt--;
+        }
+        else
+        {
+            radio_control.status = RC_OK;
+            NormalizePpmIIR(sbus.pulses, radio_control);
+            _received_frame_handler();
+        }
+        sbus.frame_available = FALSE;
     }
-    sbus.frame_available = FALSE;
-  }
 }

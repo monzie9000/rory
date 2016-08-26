@@ -43,11 +43,12 @@ bool_t settings_clear_flag;
 void settings_init(void)
 {
 #if USE_PERSISTENT_SETTINGS
-  if (persistent_read((void *)&pers_settings, sizeof(struct PersistentSettings))) {
-    return;  // return -1 ?
-  }
-  /* from generated/settings.h */
-  persistent_settings_load();
+    if (persistent_read((void *)&pers_settings, sizeof(struct PersistentSettings)))
+    {
+        return;  // return -1 ?
+    }
+    /* from generated/settings.h */
+    persistent_settings_load();
 #endif
 }
 
@@ -57,18 +58,20 @@ void settings_init(void)
 int32_t settings_store(void)
 {
 #if USE_PERSISTENT_SETTINGS
-  if (settings_store_flag) {
-    /* from generated/settings.h */
-    persistent_settings_store();
-    if (!persistent_write((void *)&pers_settings, sizeof(struct PersistentSettings))) {
-      /* persistent write was successful */
-      settings_store_flag = TRUE;
-      return 0;
+    if (settings_store_flag)
+    {
+        /* from generated/settings.h */
+        persistent_settings_store();
+        if (!persistent_write((void *)&pers_settings, sizeof(struct PersistentSettings)))
+        {
+            /* persistent write was successful */
+            settings_store_flag = TRUE;
+            return 0;
+        }
     }
-  }
 #endif
-  settings_store_flag = FALSE;
-  return -1;
+    settings_store_flag = FALSE;
+    return -1;
 }
 
 /** clear all persistent settings from flash
@@ -77,14 +80,16 @@ int32_t settings_store(void)
 int32_t settings_clear(void)
 {
 #if USE_PERSISTENT_SETTINGS
-  if (settings_clear_flag) {
-    if (!persistent_clear()) {
-      /* clearing all persistent settings was successful */
-      settings_clear_flag = TRUE;
-      return 0;
+    if (settings_clear_flag)
+    {
+        if (!persistent_clear())
+        {
+            /* clearing all persistent settings was successful */
+            settings_clear_flag = TRUE;
+            return 0;
+        }
     }
-  }
 #endif
-  settings_clear_flag = FALSE;
-  return -1;
+    settings_clear_flag = FALSE;
+    return -1;
 }

@@ -35,14 +35,14 @@ void cam_segment_init(void)
 
 void cam_segment_stop(void)
 {
-  cam_mode = CAM_MODE_OFF;
+    cam_mode = CAM_MODE_OFF;
 }
 
 void cam_segment_periodic(void)
 {
-  cam_mode = CAM_MODE_XY_TARGET;
-  cam_target_x = desired_x;
-  cam_target_y = desired_y;
-  cam_target_alt = ground_alt;
+    cam_mode = CAM_MODE_XY_TARGET;
+    cam_target_x = desired_x;
+    cam_target_y = desired_y;
+    cam_target_alt = ground_alt;
 }
 

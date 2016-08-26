@@ -38,10 +38,10 @@ TODO:
 
 typedef struct
 {
-  volatile uint16_t writePointer; /* write pointer */
-  volatile uint16_t readPointer;  /* read pointer */
-  const    uint16_t size;         /* size of circular buffer */
-  uint8_t * const   keys;    /* pointer to Element of circular buffer */
+    volatile uint16_t writePointer; /* write pointer */
+    volatile uint16_t readPointer;  /* read pointer */
+    const    uint16_t size;         /* size of circular buffer */
+    uint8_t * const   keys;    /* pointer to Element of circular buffer */
 } CircularBuffer;
 
 
@@ -54,49 +54,56 @@ int32_t ringBufferFreeSize(const CircularBuffer* que);
 int32_t ringBufferEnqueBuffer(CircularBuffer* que, const uint8_t* pK, size_t len);
 int32_t ringBufferDequeBuffer(CircularBuffer* que, uint8_t* pK, size_t len);
 int32_t ringBufferCopyFromAddr(CircularBuffer* que, const uint16_t readFrom,
-    uint8_t* pK, size_t len);
+                               uint8_t* pK, size_t len);
 
-static inline uint16_t ringBufferGetSize(const CircularBuffer* que) {
-  return que->size;
+static inline uint16_t ringBufferGetSize(const CircularBuffer* que)
+{
+    return que->size;
 }
 
-static inline uint16_t ringBufferGetWritePointer(const CircularBuffer* que) {
-  return que->writePointer;
+static inline uint16_t ringBufferGetWritePointer(const CircularBuffer* que)
+{
+    return que->writePointer;
 }
 
-static inline void ringBufferSetWritePointer(CircularBuffer* que, uint16_t writePointer) {
-  que->writePointer = writePointer;
+static inline void ringBufferSetWritePointer(CircularBuffer* que, uint16_t writePointer)
+{
+    que->writePointer = writePointer;
 }
 
-static inline uint16_t ringBufferGetReadPointer(const CircularBuffer* que) {
-  return que->readPointer;
+static inline uint16_t ringBufferGetReadPointer(const CircularBuffer* que)
+{
+    return que->readPointer;
 }
 
-static inline void ringBufferSetReadPointer(CircularBuffer* que, uint16_t readPointer) {
-  que->readPointer = readPointer;
+static inline void ringBufferSetReadPointer(CircularBuffer* que, uint16_t readPointer)
+{
+    que->readPointer = readPointer;
 }
 
-static inline void ringBufferReadSeek(CircularBuffer* que, size_t len) {
-  que->readPointer = (que->readPointer+len) % que->size;
+static inline void ringBufferReadSeek(CircularBuffer* que, size_t len)
+{
+    que->readPointer = (que->readPointer+len) % que->size;
 }
 
-static inline void ringBufferWriteSeek(CircularBuffer* que, size_t len) {
-  que->writePointer = (que->writePointer+len) % que->size;
+static inline void ringBufferWriteSeek(CircularBuffer* que, size_t len)
+{
+    que->writePointer = (que->writePointer+len) % que->size;
 }
 
 static inline int32_t ringBufferFreeSizeToEndOfCircular(const CircularBuffer* que)
 {
-  return (que->size - que->writePointer);
+    return (que->size - que->writePointer);
 }
 
 static inline uint8_t *ringBufferGetAddrOfElem(const CircularBuffer* que, const uint16_t elem)
 {
-  return (&que->keys[elem]);
+    return (&que->keys[elem]);
 }
 
 static inline uint16_t ringBufferGetIndexOfElemAddr(const CircularBuffer* que, const uint8_t* elemAddr)
 {
-  return (elemAddr - que->keys);
+    return (elemAddr - que->keys);
 }
 
 

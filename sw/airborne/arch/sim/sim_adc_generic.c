@@ -14,6 +14,6 @@ void adc_generic_periodic(void)
 
 value update_adc1(value adc1)
 {
-  adc_generic_val1 = Int_val(adc1);
-  return Val_unit;
+    adc_generic_val1 = Int_val(adc1);
+    return Val_unit;
 }

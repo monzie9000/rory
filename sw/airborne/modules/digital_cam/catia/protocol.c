@@ -21,57 +21,66 @@ void parse_mora(struct mora_transport *t, uint8_t c)
 {
 //printf("%02X %d %d\n",c, t->status, t->error);
 
-  switch (t->status) {
+    switch (t->status)
+    {
     case UNINIT:
-      if (c == STX) {
-        t->status++;
-      }
-      break;
+        if (c == STX)
+        {
+            t->status++;
+        }
+        break;
     case GOT_STX:
-      if (t->msg_received) {
-        t->error++;
-        goto error;
-      }
-      t->payload_len = c - 5; /* Counting STX, LENGTH and CRC1 and CRC2 */
-      t->ck_a = t->ck_b = c;
-      t->status++;
-      t->payload_idx = 0;
-      break;
+        if (t->msg_received)
+        {
+            t->error++;
+            goto error;
+        }
+        t->payload_len = c - 5; /* Counting STX, LENGTH and CRC1 and CRC2 */
+        t->ck_a = t->ck_b = c;
+        t->status++;
+        t->payload_idx = 0;
+        break;
     case GOT_LENGTH:
-      t->msg_id = c;
-      t->ck_a += c; t->ck_b += t->ck_a;
-      t->status++;
-      if (t->payload_len == 0) {
+        t->msg_id = c;
+        t->ck_a += c;
+        t->ck_b += t->ck_a;
         t->status++;
-      }
-      break;
+        if (t->payload_len == 0)
+        {
+            t->status++;
+        }
+        break;
     case GOT_MSGID:
-      t->payload[t->payload_idx] = c;
-      t->ck_a += c; t->ck_b += t->ck_a;
-      t->payload_idx++;
-      if (t->payload_idx == t->payload_len) {
-        t->status++;
-      }
-      break;
+        t->payload[t->payload_idx] = c;
+        t->ck_a += c;
+        t->ck_b += t->ck_a;
+        t->payload_idx++;
+        if (t->payload_idx == t->payload_len)
+        {
+            t->status++;
+        }
+        break;
     case GOT_PAYLOAD:
-      if (c != t->ck_a) {
-        goto error;
-      }
-      t->status++;
-      break;
+        if (c != t->ck_a)
+        {
+            goto error;
+        }
+        t->status++;
+        break;
     case GOT_CRC1:
-      if (c != t->ck_b) {
-        goto error;
-      }
-      t->msg_received = TRUE;
-      goto restart;
+        if (c != t->ck_b)
+        {
+            goto error;
+        }
+        t->msg_received = TRUE;
+        goto restart;
     default:
-      goto error;
-  }
-  return;
+        goto error;
+    }
+    return;
 error:
-  t->error++;
+    t->error++;
 restart:
-  t->status = UNINIT;
-  return;
+    t->status = UNINIT;
+    return;
 }

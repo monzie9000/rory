@@ -47,8 +47,9 @@ PRINT_CONFIG_VAR(SECONDARY_AHRS)
 #endif
 
 /** references a registered AHRS implementation */
-struct AhrsImpl {
-  AhrsEnableOutput enable;
+struct AhrsImpl
+{
+    AhrsEnableOutput enable;
 };
 
 struct AhrsImpl ahrs_impls[AHRS_NB_IMPL];
@@ -56,44 +57,55 @@ uint8_t ahrs_output_idx;
 
 void ahrs_register_impl(AhrsEnableOutput enable)
 {
-  int i;
-  for (i=0; i < AHRS_NB_IMPL; i++) {
-    if (ahrs_impls[i].enable == NULL) {
-      ahrs_impls[i].enable = enable;
-      break;
+    int i;
+    for (i=0; i < AHRS_NB_IMPL; i++)
+    {
+        if (ahrs_impls[i].enable == NULL)
+        {
+            ahrs_impls[i].enable = enable;
+            break;
+        }
     }
-  }
 }
 
 void ahrs_init(void)
 {
-  int i;
-  for (i=0; i < AHRS_NB_IMPL; i++) {
-    ahrs_impls[i].enable = NULL;
-  }
+    int i;
+    for (i=0; i < AHRS_NB_IMPL; i++)
+    {
+        ahrs_impls[i].enable = NULL;
+    }
 
-  RegisterAhrs(PRIMARY_AHRS);
+    RegisterAhrs(PRIMARY_AHRS);
 #ifdef SECONDARY_AHRS
-  RegisterAhrs(SECONDARY_AHRS);
+    RegisterAhrs(SECONDARY_AHRS);
 #endif
 
-  // enable primary AHRS by default
-  ahrs_switch(0);
+    // enable primary AHRS by default
+    ahrs_switch(0);
 }
 
 int ahrs_switch(uint8_t idx)
 {
-  if (idx >= AHRS_NB_IMPL) { return -1; }
-  if (ahrs_impls[idx].enable == NULL) { return -1; }
-  /* first disable other AHRS output */
-  int i;
-  for (i=0; i < AHRS_NB_IMPL; i++) {
-    if (ahrs_impls[i].enable != NULL) {
-      ahrs_impls[i].enable(FALSE);
+    if (idx >= AHRS_NB_IMPL)
+    {
+        return -1;
     }
-  }
-  /* enable requested AHRS */
-  ahrs_impls[idx].enable(TRUE);
-  ahrs_output_idx = idx;
-  return ahrs_output_idx;
+    if (ahrs_impls[idx].enable == NULL)
+    {
+        return -1;
+    }
+    /* first disable other AHRS output */
+    int i;
+    for (i=0; i < AHRS_NB_IMPL; i++)
+    {
+        if (ahrs_impls[i].enable != NULL)
+        {
+            ahrs_impls[i].enable(FALSE);
+        }
+    }
+    /* enable requested AHRS */
+    ahrs_impls[idx].enable(TRUE);
+    ahrs_output_idx = idx;
+    return ahrs_output_idx;
 }

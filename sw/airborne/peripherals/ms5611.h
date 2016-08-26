@@ -34,26 +34,28 @@
 #include "peripherals/ms5611_regs.h"
 
 
-enum Ms5611Status {
-  MS5611_STATUS_UNINIT,
-  MS5611_STATUS_RESET,
-  MS5611_STATUS_RESET_OK,
-  MS5611_STATUS_PROM,
-  MS5611_STATUS_IDLE,
-  MS5611_STATUS_CONV_D1,
-  MS5611_STATUS_CONV_D1_OK,
-  MS5611_STATUS_ADC_D1,
-  MS5611_STATUS_CONV_D2,
-  MS5611_STATUS_CONV_D2_OK,
-  MS5611_STATUS_ADC_D2
+enum Ms5611Status
+{
+    MS5611_STATUS_UNINIT,
+    MS5611_STATUS_RESET,
+    MS5611_STATUS_RESET_OK,
+    MS5611_STATUS_PROM,
+    MS5611_STATUS_IDLE,
+    MS5611_STATUS_CONV_D1,
+    MS5611_STATUS_CONV_D1_OK,
+    MS5611_STATUS_ADC_D1,
+    MS5611_STATUS_CONV_D2,
+    MS5611_STATUS_CONV_D2_OK,
+    MS5611_STATUS_ADC_D2
 };
 
-struct Ms5611Data {
-  uint32_t pressure;    ///< pressure in Pascal (0.01mbar)
-  int32_t temperature;  ///< temperature with 0.01 degrees Celsius resolution
-  uint16_t c[PROM_NB];
-  uint32_t d1;
-  uint32_t d2;
+struct Ms5611Data
+{
+    uint32_t pressure;    ///< pressure in Pascal (0.01mbar)
+    int32_t temperature;  ///< temperature with 0.01 degrees Celsius resolution
+    uint16_t c[PROM_NB];
+    uint32_t d1;
+    uint32_t d2;
 };
 
 extern bool_t ms5611_prom_crc_ok(uint16_t *prom);

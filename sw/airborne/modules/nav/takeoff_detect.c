@@ -54,16 +54,18 @@
 #endif
 
 /** Takeoff detection states */
-enum takeoff_detect_state {
-  TO_DETECT_DISABLED,
-  TO_DETECT_ARMED,
-  TO_DETECT_LAUNCHING
+enum takeoff_detect_state
+{
+    TO_DETECT_DISABLED,
+    TO_DETECT_ARMED,
+    TO_DETECT_LAUNCHING
 };
 
 /** Takeoff detection structure */
-struct takeoff_detect_struct {
-  enum takeoff_detect_state state;
-  uint32_t timer;
+struct takeoff_detect_struct
+{
+    enum takeoff_detect_state state;
+    uint32_t timer;
 };
 
 static struct takeoff_detect_struct takeoff_detect;
@@ -71,60 +73,67 @@ static struct takeoff_detect_struct takeoff_detect;
 // Init
 void takeoff_detect_init(void)
 {
-  // variable init is done in start function
+    // variable init is done in start function
 }
 
 // Start
 void takeoff_detect_start(void)
 {
-  takeoff_detect.state = TO_DETECT_ARMED; // always start periodic with ARMED state
-  takeoff_detect.timer = 0; // and reset timer
+    takeoff_detect.state = TO_DETECT_ARMED; // always start periodic with ARMED state
+    takeoff_detect.timer = 0; // and reset timer
 }
 
 // Periodic
 void takeoff_detect_periodic(void)
 {
-  // Run detection state machine here
-  switch (takeoff_detect.state) {
+    // Run detection state machine here
+    switch (takeoff_detect.state)
+    {
     case TO_DETECT_ARMED:
-      // test for "nose up" + AP in AUTO2 (+ GPS OK ? FIXME)
-      if (stateGetNedToBodyEulers_f()->theta > TAKEOFF_DETECT_LAUNCH_PITCH
-          && pprz_mode == PPRZ_MODE_AUTO2) {
-        takeoff_detect.timer++;
-      } else {
-        // else reset timer
-        takeoff_detect.timer = 0;
-      }
-      // if timer is finished, start launching
-      if (takeoff_detect.timer > (int)(TAKEOFF_DETECT_PERIODIC_FREQ * TAKEOFF_DETECT_TIMER)) {
-        launch = TRUE;
-        takeoff_detect.state = TO_DETECT_LAUNCHING;
-        takeoff_detect.timer = 0;
-      }
-      break;
+        // test for "nose up" + AP in AUTO2 (+ GPS OK ? FIXME)
+        if (stateGetNedToBodyEulers_f()->theta > TAKEOFF_DETECT_LAUNCH_PITCH
+                && pprz_mode == PPRZ_MODE_AUTO2)
+        {
+            takeoff_detect.timer++;
+        }
+        else
+        {
+            // else reset timer
+            takeoff_detect.timer = 0;
+        }
+        // if timer is finished, start launching
+        if (takeoff_detect.timer > (int)(TAKEOFF_DETECT_PERIODIC_FREQ * TAKEOFF_DETECT_TIMER))
+        {
+            launch = TRUE;
+            takeoff_detect.state = TO_DETECT_LAUNCHING;
+            takeoff_detect.timer = 0;
+        }
+        break;
     case TO_DETECT_LAUNCHING:
-      // abort if pitch goes below threshold while launching
-      if (stateGetNedToBodyEulers_f()->theta < TAKEOFF_DETECT_ABORT_PITCH
-          || pprz_mode != PPRZ_MODE_AUTO2) {
-        // back to ARMED state
-        launch = FALSE;
-        takeoff_detect.state = TO_DETECT_ARMED;
-      }
-      // increment timer and disable detection after some time
-      takeoff_detect.timer++;
-      if (takeoff_detect.timer > (int)(TAKEOFF_DETECT_PERIODIC_FREQ * TAKEOFF_DETECT_DISABLE_TIMER)) {
-        takeoff_detect.state = TO_DETECT_DISABLED;
-      }
-      break;
+        // abort if pitch goes below threshold while launching
+        if (stateGetNedToBodyEulers_f()->theta < TAKEOFF_DETECT_ABORT_PITCH
+                || pprz_mode != PPRZ_MODE_AUTO2)
+        {
+            // back to ARMED state
+            launch = FALSE;
+            takeoff_detect.state = TO_DETECT_ARMED;
+        }
+        // increment timer and disable detection after some time
+        takeoff_detect.timer++;
+        if (takeoff_detect.timer > (int)(TAKEOFF_DETECT_PERIODIC_FREQ * TAKEOFF_DETECT_DISABLE_TIMER))
+        {
+            takeoff_detect.state = TO_DETECT_DISABLED;
+        }
+        break;
     case TO_DETECT_DISABLED:
-      // stop periodic call
-      takeoff_detect_takeoff_detect_periodic_status = MODULES_STOP;
-      break;
+        // stop periodic call
+        takeoff_detect_takeoff_detect_periodic_status = MODULES_STOP;
+        break;
     default:
-      // No kidding ?!
-      takeoff_detect.state = TO_DETECT_DISABLED;
-      break;
-  }
+        // No kidding ?!
+        takeoff_detect.state = TO_DETECT_DISABLED;
+        break;
+    }
 }
 
 

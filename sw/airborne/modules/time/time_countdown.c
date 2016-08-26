@@ -41,13 +41,14 @@ uint16_t time_until_end;
 
 void time_countdown_init(void)
 {
-  time_until_end = TIME_COUNTDOWN_START_VALUE;
+    time_until_end = TIME_COUNTDOWN_START_VALUE;
 }
 
 void time_countdown_periodic_1hz(void)
 {
-  // Count downwards
-  if (time_until_end > 0) {
-    time_until_end--;
-  }
+    // Count downwards
+    if (time_until_end > 0)
+    {
+        time_until_end--;
+    }
 }

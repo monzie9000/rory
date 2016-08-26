@@ -40,10 +40,11 @@
 #include "peripherals/hmc58xx.h"
 #include "peripherals/adxl345_i2c.h"
 
-struct ImuGL1I2c {
-  struct Adxl345_I2c acc_adxl;
-  struct L3g4200 gyro_l3g;
-  struct Hmc58xx mag_hmc;
+struct ImuGL1I2c
+{
+    struct Adxl345_I2c acc_adxl;
+    struct L3g4200 gyro_l3g;
+    struct Hmc58xx mag_hmc;
 };
 
 extern struct ImuGL1I2c imu_gl1;

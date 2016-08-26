@@ -31,14 +31,14 @@ void max1167_read(void) {}
 void max1167_hw_feed_value(VEC *gyro, VEC *accel)
 {
 
-  max1167_values[0] = gyro->ve[AXIS_P];
-  max1167_values[1] = gyro->ve[AXIS_Q];
-  max1167_values[2] = gyro->ve[AXIS_R];
+    max1167_values[0] = gyro->ve[AXIS_P];
+    max1167_values[1] = gyro->ve[AXIS_Q];
+    max1167_values[2] = gyro->ve[AXIS_R];
 
-  buf_ax.sum =  accel->ve[AXIS_X];
-  buf_ay.sum =  accel->ve[AXIS_Y];
-  buf_az.sum =  accel->ve[AXIS_Z];
+    buf_ax.sum =  accel->ve[AXIS_X];
+    buf_ay.sum =  accel->ve[AXIS_Y];
+    buf_az.sum =  accel->ve[AXIS_Z];
 
-  max1167_status = MAX1167_DATA_AVAILABLE;
+    max1167_status = MAX1167_DATA_AVAILABLE;
 
 }

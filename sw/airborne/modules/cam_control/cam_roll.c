@@ -56,22 +56,23 @@ uint8_t cam_roll_mode;
 
 void cam_init(void)
 {
-  cam_roll_mode = CAM_ROLL_START_MODE;
+    cam_roll_mode = CAM_ROLL_START_MODE;
 }
 
 void cam_periodic(void)
 {
-  switch (cam_roll_mode) {
+    switch (cam_roll_mode)
+    {
     case MODE_STABILIZED:
-      phi_c = cam_roll_phi + stateGetNedToBodyEulers_f()->phi;
-      break;
+        phi_c = cam_roll_phi + stateGetNedToBodyEulers_f()->phi;
+        break;
     case MODE_MANUAL:
-      phi_c = cam_roll_phi;
-      break;
+        phi_c = cam_roll_phi;
+        break;
     default:
-      phi_c = 0;
-  }
-  ap_state->commands[COMMAND_CAM_ROLL] = TRIM_PPRZ(phi_c * MAX_PPRZ / CAM_PHI_MAX);
+        phi_c = 0;
+    }
+    ap_state->commands[COMMAND_CAM_ROLL] = TRIM_PPRZ(phi_c * MAX_PPRZ / CAM_PHI_MAX);
 }
 
 #endif // MOBILE_CAM

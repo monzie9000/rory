@@ -49,35 +49,39 @@
 #define ITG3200_DEFAULT_CLK_SEL 1
 
 
-struct Itg3200Config {
-  uint8_t smplrt_div; ///< Sample rate divider
-  uint8_t fs_sel;     ///< Full scale range
-  enum Itg3200DLPF dlpf_cfg;  ///< Digital Low Pass Filter
-  uint8_t int_cfg;    ///< Interrupt config
-  uint8_t clk_sel;    ///< Clock select
+struct Itg3200Config
+{
+    uint8_t smplrt_div; ///< Sample rate divider
+    uint8_t fs_sel;     ///< Full scale range
+    enum Itg3200DLPF dlpf_cfg;  ///< Digital Low Pass Filter
+    uint8_t int_cfg;    ///< Interrupt config
+    uint8_t clk_sel;    ///< Clock select
 };
 
 /** config status states */
-enum Itg3200ConfStatus {
-  ITG_CONF_UNINIT,
-  ITG_CONF_SD,
-  ITG_CONF_DF,
-  ITG_CONF_INT,
-  ITG_CONF_PWR,
-  ITG_CONF_DONE
+enum Itg3200ConfStatus
+{
+    ITG_CONF_UNINIT,
+    ITG_CONF_SD,
+    ITG_CONF_DF,
+    ITG_CONF_INT,
+    ITG_CONF_PWR,
+    ITG_CONF_DONE
 };
 
-struct Itg3200 {
-  struct i2c_periph *i2c_p;
-  struct i2c_transaction i2c_trans;
-  bool_t initialized;                 ///< config done flag
-  enum Itg3200ConfStatus init_status; ///< init status
-  volatile bool_t data_available;     ///< data ready flag
-  union {
-    struct Int32Rates rates;          ///< data as angular rates in gyro coordinate system
-    int32_t value[3];                 ///< data values accessible by channel index
-  } data;
-  struct Itg3200Config config;
+struct Itg3200
+{
+    struct i2c_periph *i2c_p;
+    struct i2c_transaction i2c_trans;
+    bool_t initialized;                 ///< config done flag
+    enum Itg3200ConfStatus init_status; ///< init status
+    volatile bool_t data_available;     ///< data ready flag
+    union
+    {
+        struct Int32Rates rates;          ///< data as angular rates in gyro coordinate system
+        int32_t value[3];                 ///< data values accessible by channel index
+    } data;
+    struct Itg3200Config config;
 };
 
 // TODO IRQ handling
@@ -92,11 +96,14 @@ extern void itg3200_event(struct Itg3200 *itg);
 /// convenience function: read or start configuration if not already initialized
 static inline void itg3200_periodic(struct Itg3200 *itg)
 {
-  if (itg->initialized) {
-    itg3200_read(itg);
-  } else {
-    itg3200_start_configure(itg);
-  }
+    if (itg->initialized)
+    {
+        itg3200_read(itg);
+    }
+    else
+    {
+        itg3200_start_configure(itg);
+    }
 }
 
 #endif // ITG3200_H

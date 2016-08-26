@@ -31,7 +31,7 @@
 
 void airspeed_periodic(void)
 {
-  ads1114_read(&BARO_DIFF_ADS);
+    ads1114_read(&BARO_DIFF_ADS);
 }
 
 

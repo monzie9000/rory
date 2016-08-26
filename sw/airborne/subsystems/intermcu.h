@@ -35,14 +35,16 @@
 
 #define INTERMCU_LOST_CNT 25  /* 50ms with a 512Hz timer TODO fixed value */
 
-enum intermcu_status {
-  INTERMCU_OK,
-  INTERMCU_LOST
+enum intermcu_status
+{
+    INTERMCU_OK,
+    INTERMCU_LOST
 };
 
-struct intermcu_t {
-  enum intermcu_status status;
-  uint8_t time_since_last_frame;
+struct intermcu_t
+{
+    enum intermcu_status status;
+    uint8_t time_since_last_frame;
 };
 extern struct intermcu_t inter_mcu;
 

@@ -56,20 +56,21 @@
 #endif
 
 /** Raw sensors structure */
-struct MeteoStick {
-  struct Ads1220 pressure;      ///< absolute pressure
-  struct Ads1220 diff_pressure; ///< differential pressure
-  struct Ads1220 temperature;   ///< temperature
-  uint32_t humidity_period;     ///< humidity (in ticks)
-  float current_temperature;    ///< calibrated temperature
-  float current_pressure;       ///< calibrated pressure
-  float current_humidity;       ///< calibrated humidity
-  float current_airspeed;       ///< calibrated airspeed
+struct MeteoStick
+{
+    struct Ads1220 pressure;      ///< absolute pressure
+    struct Ads1220 diff_pressure; ///< differential pressure
+    struct Ads1220 temperature;   ///< temperature
+    uint32_t humidity_period;     ///< humidity (in ticks)
+    float current_temperature;    ///< calibrated temperature
+    float current_pressure;       ///< calibrated pressure
+    float current_humidity;       ///< calibrated humidity
+    float current_airspeed;       ///< calibrated airspeed
 #if USE_MS_EEPROM
-  struct Eeprom25AA256 eeprom;  ///< eeprom with calibration data
-  Calibration_params calib;     ///< calibration
+    struct Eeprom25AA256 eeprom;  ///< eeprom with calibration data
+    Calibration_params calib;     ///< calibration
 #endif
-  bool_t reset_dp_offset;       ///< reset differential pressure offset
+    bool_t reset_dp_offset;       ///< reset differential pressure offset
 };
 
 extern struct MeteoStick meteo_stick;

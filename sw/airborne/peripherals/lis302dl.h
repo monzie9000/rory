@@ -31,36 +31,38 @@
 /* Include address and register definition */
 #include "peripherals/lis302dl_regs.h"
 
-enum Lis302dlConfStatus {
-  LIS_CONF_UNINIT = 0,
-  LIS_CONF_WHO_AM_I = 1,
-  LIS_CONF_WHO_AM_I_OK = 2,
-  LIS_CONF_REG2   = 3,
-  LIS_CONF_REG3   = 4,
-  LIS_CONF_ENABLE = 5,
-  LIS_CONF_DONE   = 6
+enum Lis302dlConfStatus
+{
+    LIS_CONF_UNINIT = 0,
+    LIS_CONF_WHO_AM_I = 1,
+    LIS_CONF_WHO_AM_I_OK = 2,
+    LIS_CONF_REG2   = 3,
+    LIS_CONF_REG3   = 4,
+    LIS_CONF_ENABLE = 5,
+    LIS_CONF_DONE   = 6
 };
 
-struct Lis302dlConfig {
-  bool_t int_invert;        ///< Invert Interrupt FALSE: active high, TRUE: active low
-  bool_t spi_3_wire;        ///< Set 3-wire SPI mode, if FALSE: 4-wire SPI mode
+struct Lis302dlConfig
+{
+    bool_t int_invert;        ///< Invert Interrupt FALSE: active high, TRUE: active low
+    bool_t spi_3_wire;        ///< Set 3-wire SPI mode, if FALSE: 4-wire SPI mode
 
-  /** Filtered Data Selection.
-   * FALSE: internal filter bypassed;
-   * TRUE: data from internal filter sent to output register */
-  bool_t filt_data;
-  enum Lis302dlRanges range; ///< g Range
-  enum Lis302dlRates rate;   ///< Data Output Rate
+    /** Filtered Data Selection.
+     * FALSE: internal filter bypassed;
+     * TRUE: data from internal filter sent to output register */
+    bool_t filt_data;
+    enum Lis302dlRanges range; ///< g Range
+    enum Lis302dlRates rate;   ///< Data Output Rate
 };
 
 static inline void lis302dl_set_default_config(struct Lis302dlConfig *c)
 {
-  c->int_invert = TRUE;
-  c->filt_data = FALSE;
-  c->spi_3_wire = FALSE;
+    c->int_invert = TRUE;
+    c->filt_data = FALSE;
+    c->spi_3_wire = FALSE;
 
-  c->rate = LIS302DL_RATE_100HZ;
-  c->range = LIS302DL_RANGE_2G;
+    c->rate = LIS302DL_RATE_100HZ;
+    c->range = LIS302DL_RANGE_2G;
 }
 
 #endif /* LIS302DL_H */

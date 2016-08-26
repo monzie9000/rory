@@ -45,22 +45,24 @@
 /* ADC0 */
 #if USE_ADC0
 static uint8_t adc0_channels[] = {ADC0_CHANNELS};
-struct adc_t adc0 = {
-  .dev_id = ADC0_ID,
-  .channels = adc0_channels,
-  .channels_cnt = ADC0_CHANNELS_CNT,
-  .buf_length = ADC0_BUF_LENGTH
+struct adc_t adc0 =
+{
+    .dev_id = ADC0_ID,
+    .channels = adc0_channels,
+    .channels_cnt = ADC0_CHANNELS_CNT,
+    .buf_length = ADC0_BUF_LENGTH
 };
 #endif
 
 /* ADC1 */
 #if USE_ADC1
 static uint8_t adc1_channels[] = {ADC1_CHANNELS};
-struct adc_t adc1 = {
-  .dev_id = ADC1_ID,
-  .channels = adc1_channels,
-  .channels_cnt = ADC1_CHANNELS_CNT,
-  .buf_length = ADC1_BUF_LENGTH
+struct adc_t adc1 =
+{
+    .dev_id = ADC1_ID,
+    .channels = adc1_channels,
+    .channels_cnt = ADC1_CHANNELS_CNT,
+    .buf_length = ADC1_BUF_LENGTH
 };
 #endif
 
@@ -78,10 +80,10 @@ static void write_sysfs_int(uint8_t dev_id, char *filename, int val);
 void adc_init(void)
 {
 #if USE_ADC0
-  adc_dev_init(&adc0);
+    adc_dev_init(&adc0);
 #endif
 #if USE_ADC1
-  adc_dev_init(&adc1);
+    adc_dev_init(&adc1);
 #endif
 }
 
@@ -100,8 +102,8 @@ void adc_buf_channel(uint8_t adc_channel, struct adc_buf *s, uint8_t av_nb_sampl
  */
 void adc_enable(struct adc_t *adc, uint8_t value)
 {
-  /* Write 1 or 0 to enable/disable the ADC */
-  write_sysfs_int(adc->dev_id, "buffer/enable", value);
+    /* Write 1 or 0 to enable/disable the ADC */
+    write_sysfs_int(adc->dev_id, "buffer/enable", value);
 }
 
 /**
@@ -112,29 +114,31 @@ void adc_enable(struct adc_t *adc, uint8_t value)
  */
 int adc_read(struct adc_t *adc, uint16_t *buf, uint16_t size)
 {
-  /* Allocate dev_id + name */
-  char *temp;
-  if(asprintf(&temp, "/dev/iio:device%d", adc->dev_id) < 0) {
-    return -1;
-  }
+    /* Allocate dev_id + name */
+    char *temp;
+    if(asprintf(&temp, "/dev/iio:device%d", adc->dev_id) < 0)
+    {
+        return -1;
+    }
 
-  /* Open the file */
-  int fd = open(temp, O_RDONLY | O_NONBLOCK);
-  free(temp);
+    /* Open the file */
+    int fd = open(temp, O_RDONLY | O_NONBLOCK);
+    free(temp);
 
-  if(fd < 0) {
-    return -2;
-  }
+    if(fd < 0)
+    {
+        return -2;
+    }
 
-  struct pollfd pfd;
-  pfd.fd = fd;
-  pfd.events = POLLIN;
-  poll(&pfd, 1, -1);
+    struct pollfd pfd;
+    pfd.fd = fd;
+    pfd.events = POLLIN;
+    poll(&pfd, 1, -1);
 
-  /* Read the file */
-  int ret = read(fd, buf, size);
-  close(fd);
-  return ret;
+    /* Read the file */
+    int ret = read(fd, buf, size);
+    close(fd);
+    return ret;
 }
 
 /****************************************/
@@ -147,17 +151,18 @@ int adc_read(struct adc_t *adc, uint16_t *buf, uint16_t size)
  */
 static inline void adc_dev_init(struct adc_t *adc)
 {
-  char filename[32];
-  uint8_t i;
+    char filename[32];
+    uint8_t i;
 
-  /* Enable all linked channels */
-  for(i = 0; i < adc->channels_cnt; i++) {
-    sprintf(filename, "scan_elemens/in_voltage%d_en", adc->channels[i]);
-    write_sysfs_int(adc->dev_id, filename, 1);
-  }
+    /* Enable all linked channels */
+    for(i = 0; i < adc->channels_cnt; i++)
+    {
+        sprintf(filename, "scan_elemens/in_voltage%d_en", adc->channels[i]);
+        write_sysfs_int(adc->dev_id, filename, 1);
+    }
 
-  /* Set the buffer length */
-  write_sysfs_int(adc->dev_id, "buffer/length", adc->buf_length);
+    /* Set the buffer length */
+    write_sysfs_int(adc->dev_id, "buffer/length", adc->buf_length);
 }
 
 /**
@@ -168,21 +173,23 @@ static inline void adc_dev_init(struct adc_t *adc)
  */
 static void write_sysfs_int(uint8_t dev_id, char *filename, int val)
 {
-  /* Allocate dev_id + filename */
-  char *temp;
-  if (asprintf(&temp, "/sys/bus/iio/devices/iio:device%d/%s", dev_id, filename) < 0) {
-    return;
-  }
+    /* Allocate dev_id + filename */
+    char *temp;
+    if (asprintf(&temp, "/sys/bus/iio/devices/iio:device%d/%s", dev_id, filename) < 0)
+    {
+        return;
+    }
 
-  /* Open the file */
-  FILE *fd = fopen(temp, "w");
-  free(temp);
+    /* Open the file */
+    FILE *fd = fopen(temp, "w");
+    free(temp);
 
-  if (fd == NULL) {
-    return;
-  }
+    if (fd == NULL)
+    {
+        return;
+    }
 
-  /* Write the value to the file */
-  fprintf(fd, "%d", val);
-  fclose(fd);
+    /* Write the value to the file */
+    fprintf(fd, "%d", val);
+    fclose(fd);
 }

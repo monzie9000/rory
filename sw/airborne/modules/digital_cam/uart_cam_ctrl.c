@@ -64,114 +64,127 @@ static uint8_t thumb_pointer = 0;
 
 void digital_cam_uart_event(void)
 {
-  while (CameraLinkChAvailable()) {
-    parse_mora(&mora_protocol, CameraLinkGetch());
-    if (mora_protocol.msg_received) {
-      switch (mora_protocol.msg_id) {
-        case MORA_STATUS:
-          for (int i = 0; i < MORA_STATUS_MSG_SIZE; i++) {
-            mora_status_msg.bin[i] = mora_protocol.payload[i];
-          }
-          digital_cam_uart_status = mora_status_msg.data.shots;
-          break;
-        case MORA_PAYLOAD:
-          for (int i = 0; i < MORA_PAYLOAD_MSG_SIZE; i++) {
-            thumbs[thumb_pointer][i] = mora_protocol.payload[i];
-          }
-          break;
-        default:
-          break;
-      }
-      mora_protocol.msg_received = 0;
+    while (CameraLinkChAvailable())
+    {
+        parse_mora(&mora_protocol, CameraLinkGetch());
+        if (mora_protocol.msg_received)
+        {
+            switch (mora_protocol.msg_id)
+            {
+            case MORA_STATUS:
+                for (int i = 0; i < MORA_STATUS_MSG_SIZE; i++)
+                {
+                    mora_status_msg.bin[i] = mora_protocol.payload[i];
+                }
+                digital_cam_uart_status = mora_status_msg.data.shots;
+                break;
+            case MORA_PAYLOAD:
+                for (int i = 0; i < MORA_PAYLOAD_MSG_SIZE; i++)
+                {
+                    thumbs[thumb_pointer][i] = mora_protocol.payload[i];
+                }
+                break;
+            default:
+                break;
+            }
+            mora_protocol.msg_received = 0;
+        }
     }
-  }
 }
 
 #if PERIODIC_TELEMETRY
 static void send_thumbnails(struct transport_tx *trans, struct link_device *dev)
 {
-  static int cnt = 0;
-  if (digital_cam_uart_thumbnails > 0) {
-    if (digital_cam_uart_thumbnails == 1) {
-      cnt++;
-      if (cnt > 1) {
-        cnt = 0;
-        return;
-      }
-    }
-    pprz_msg_send_PAYLOAD(trans, dev, AC_ID, THUMB_MSG_SIZE, thumbs[thumb_pointer]);
+    static int cnt = 0;
+    if (digital_cam_uart_thumbnails > 0)
+    {
+        if (digital_cam_uart_thumbnails == 1)
+        {
+            cnt++;
+            if (cnt > 1)
+            {
+                cnt = 0;
+                return;
+            }
+        }
+        pprz_msg_send_PAYLOAD(trans, dev, AC_ID, THUMB_MSG_SIZE, thumbs[thumb_pointer]);
 
-    // Update the write/read pointer: if we receive a new thumb part, that will be sent, otherwise the oldest infor is repeated
-    thumb_pointer++;
-    if (thumb_pointer >= THUMB_COUNT) {
-      thumb_pointer = 0;
-    }
+        // Update the write/read pointer: if we receive a new thumb part, that will be sent, otherwise the oldest infor is repeated
+        thumb_pointer++;
+        if (thumb_pointer >= THUMB_COUNT)
+        {
+            thumb_pointer = 0;
+        }
 
-    MoraHeader(MORA_BUFFER_EMPTY, 0);
-    MoraTrailer();
-  }
+        MoraHeader(MORA_BUFFER_EMPTY, 0);
+        MoraTrailer();
+    }
 }
 #endif
 
 void digital_cam_uart_init(void)
 {
-  // Call common DC init
-  dc_init();
-  digital_cam_uart_thumbnails = 0;
-  for (int t = 0; t < THUMB_COUNT; t++) {
-    for (int i = 0; i < THUMB_MSG_SIZE; i++) {
-      thumbs[t][i] = 0;
+    // Call common DC init
+    dc_init();
+    digital_cam_uart_thumbnails = 0;
+    for (int t = 0; t < THUMB_COUNT; t++)
+    {
+        for (int i = 0; i < THUMB_MSG_SIZE; i++)
+        {
+            thumbs[t][i] = 0;
+        }
     }
-  }
 #if PERIODIC_TELEMETRY
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_PAYLOAD, send_thumbnails);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_PAYLOAD, send_thumbnails);
 #endif
 
 #ifdef SITL
-  serial_init("/dev/ttyUSB0");
+    serial_init("/dev/ttyUSB0");
 #endif
 }
 
 void digital_cam_uart_periodic(void)
 {
-  // Common DC Periodic task
-  dc_periodic();
+    // Common DC Periodic task
+    dc_periodic();
 }
 
 
 /* Command The Camera */
 void dc_send_command(uint8_t cmd)
 {
-  switch (cmd) {
+    switch (cmd)
+    {
     case DC_SHOOT:
-      // Send Photo Position To Camera
-      dc_shot_msg.data.nr = dc_photo_nr + 1;
-      dc_shot_msg.data.lat = stateGetPositionLla_i()->lat;
-      dc_shot_msg.data.lon = stateGetPositionLla_i()->lon;
-      dc_shot_msg.data.alt = stateGetPositionLla_i()->alt;
-      dc_shot_msg.data.phi = stateGetNedToBodyEulers_i()->phi;
-      dc_shot_msg.data.theta = stateGetNedToBodyEulers_i()->theta;
-      dc_shot_msg.data.psi = stateGetNedToBodyEulers_i()->psi;
-      dc_shot_msg.data.vground = stateGetHorizontalSpeedNorm_i();
-      dc_shot_msg.data.course = stateGetHorizontalSpeedDir_i();
-      dc_shot_msg.data.groundalt = POS_BFP_OF_REAL(state.alt_agl_f);
+        // Send Photo Position To Camera
+        dc_shot_msg.data.nr = dc_photo_nr + 1;
+        dc_shot_msg.data.lat = stateGetPositionLla_i()->lat;
+        dc_shot_msg.data.lon = stateGetPositionLla_i()->lon;
+        dc_shot_msg.data.alt = stateGetPositionLla_i()->alt;
+        dc_shot_msg.data.phi = stateGetNedToBodyEulers_i()->phi;
+        dc_shot_msg.data.theta = stateGetNedToBodyEulers_i()->theta;
+        dc_shot_msg.data.psi = stateGetNedToBodyEulers_i()->psi;
+        dc_shot_msg.data.vground = stateGetHorizontalSpeedNorm_i();
+        dc_shot_msg.data.course = stateGetHorizontalSpeedDir_i();
+        dc_shot_msg.data.groundalt = POS_BFP_OF_REAL(state.alt_agl_f);
 
-      MoraHeader(MORA_SHOOT, MORA_SHOOT_MSG_SIZE);
-      for (int i = 0; i < (MORA_SHOOT_MSG_SIZE); i++) {
-        MoraPutUint8(dc_shot_msg.bin[i]);
-      }
-      MoraTrailer();
-      dc_send_shot_position();
-      break;
+        MoraHeader(MORA_SHOOT, MORA_SHOOT_MSG_SIZE);
+        for (int i = 0; i < (MORA_SHOOT_MSG_SIZE); i++)
+        {
+            MoraPutUint8(dc_shot_msg.bin[i]);
+        }
+        MoraTrailer();
+        dc_send_shot_position();
+        break;
     case DC_TALLER:
-      break;
+        break;
     case DC_WIDER:
-      break;
+        break;
     case DC_ON:
-      break;
+        break;
     case DC_OFF:
-      break;
+        break;
     default:
-      break;
-  }
+        break;
+    }
 }

@@ -97,51 +97,56 @@ static uint8_t baro_health_counter;
 
 static void pressure_abs_cb(uint8_t __attribute__((unused)) sender_id, float pressure)
 {
-  air_data.pressure = pressure;
+    air_data.pressure = pressure;
 
-  // calculate QNH from pressure and absolute altitude if that is available
-  if (air_data.calc_qnh_once && stateIsGlobalCoordinateValid()) {
-    /// FIXME: use height above MSL (geoid) and not WGS84 ellipsoid here
-    // in the meantime use geoid separation at local reference frame origin
-    float geoid_separation = 0;
-    if (state.ned_initialized_f) {
-      geoid_separation = state.ned_origin_f.lla.alt - state.ned_origin_f.hmsl;
+    // calculate QNH from pressure and absolute altitude if that is available
+    if (air_data.calc_qnh_once && stateIsGlobalCoordinateValid())
+    {
+        /// FIXME: use height above MSL (geoid) and not WGS84 ellipsoid here
+        // in the meantime use geoid separation at local reference frame origin
+        float geoid_separation = 0;
+        if (state.ned_initialized_f)
+        {
+            geoid_separation = state.ned_origin_f.lla.alt - state.ned_origin_f.hmsl;
+        }
+        float h = stateGetPositionLla_f()->alt - geoid_separation;
+        air_data.qnh = pprz_isa_ref_pressure_of_height_full(air_data.pressure, h) / 100.f;
+        air_data.calc_qnh_once = FALSE;
     }
-    float h = stateGetPositionLla_f()->alt - geoid_separation;
-    air_data.qnh = pprz_isa_ref_pressure_of_height_full(air_data.pressure, h) / 100.f;
-    air_data.calc_qnh_once = FALSE;
-  }
 
-  if (air_data.calc_amsl_baro && air_data.qnh > 0) {
-    air_data.amsl_baro = pprz_isa_height_of_pressure_full(air_data.pressure,
-                         air_data.qnh * 100.f);
-    air_data.amsl_baro_valid = TRUE;
-  }
+    if (air_data.calc_amsl_baro && air_data.qnh > 0)
+    {
+        air_data.amsl_baro = pprz_isa_height_of_pressure_full(air_data.pressure,
+                             air_data.qnh * 100.f);
+        air_data.amsl_baro_valid = TRUE;
+    }
 
-  /* reset baro health counter */
-  baro_health_counter = 10;
+    /* reset baro health counter */
+    baro_health_counter = 10;
 }
 
 static void pressure_diff_cb(uint8_t __attribute__((unused)) sender_id, float pressure)
 {
-  air_data.differential = pressure;
-  if (air_data.calc_airspeed) {
-    air_data.airspeed = eas_from_dynamic_pressure(air_data.differential);
-    air_data.tas = tas_from_eas(air_data.airspeed);
+    air_data.differential = pressure;
+    if (air_data.calc_airspeed)
+    {
+        air_data.airspeed = eas_from_dynamic_pressure(air_data.differential);
+        air_data.tas = tas_from_eas(air_data.airspeed);
 #if USE_AIRSPEED_AIR_DATA
-    stateSetAirspeed_f(air_data.airspeed);
+        stateSetAirspeed_f(air_data.airspeed);
 #endif
-  }
+    }
 }
 
 static void temperature_cb(uint8_t __attribute__((unused)) sender_id, float temp)
 {
-  air_data.temperature = temp;
-  /* only calculate tas factor if enabled and we have airspeed and valid data */
-  if (air_data.calc_tas_factor && air_data.airspeed > 0 && baro_health_counter > 0 &&
-      air_data.pressure > 0) {
-    air_data.tas_factor = get_tas_factor(air_data.pressure, air_data.temperature);
-  }
+    air_data.temperature = temp;
+    /* only calculate tas factor if enabled and we have airspeed and valid data */
+    if (air_data.calc_tas_factor && air_data.airspeed > 0 && baro_health_counter > 0 &&
+            air_data.pressure > 0)
+    {
+        air_data.tas_factor = get_tas_factor(air_data.pressure, air_data.temperature);
+    }
 }
 
 #if PERIODIC_TELEMETRY
@@ -149,25 +154,25 @@ static void temperature_cb(uint8_t __attribute__((unused)) sender_id, float temp
 
 static void send_baro_raw(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_BARO_RAW(trans, dev, AC_ID,
-                         &air_data.pressure, &air_data.differential);
+    pprz_msg_send_BARO_RAW(trans, dev, AC_ID,
+                           &air_data.pressure, &air_data.differential);
 }
 
 static void send_air_data(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_AIR_DATA(trans, dev, AC_ID,
-                         &air_data.pressure, &air_data.differential,
-                         &air_data.temperature, &air_data.qnh,
-                         &air_data.amsl_baro, &air_data.airspeed,
-                         &air_data.tas);
+    pprz_msg_send_AIR_DATA(trans, dev, AC_ID,
+                           &air_data.pressure, &air_data.differential,
+                           &air_data.temperature, &air_data.qnh,
+                           &air_data.amsl_baro, &air_data.airspeed,
+                           &air_data.tas);
 }
 
 static void send_amsl(struct transport_tx *trans, struct link_device *dev)
 {
-  const float MeterPerFeet = 0.3048;
-  float amsl_baro_ft = air_data.amsl_baro / MeterPerFeet;
-  float amsl_gps_ft = stateGetPositionLla_f()->alt / MeterPerFeet;
-  pprz_msg_send_AMSL(trans, dev, AC_ID, &amsl_baro_ft, &amsl_gps_ft);
+    const float MeterPerFeet = 0.3048;
+    float amsl_baro_ft = air_data.amsl_baro / MeterPerFeet;
+    float amsl_gps_ft = stateGetPositionLla_f()->alt / MeterPerFeet;
+    pprz_msg_send_AMSL(trans, dev, AC_ID, &amsl_baro_ft, &amsl_gps_ft);
 }
 #endif
 
@@ -176,61 +181,65 @@ static void send_amsl(struct transport_tx *trans, struct link_device *dev)
  */
 void air_data_init(void)
 {
-  air_data.calc_airspeed = AIR_DATA_CALC_AIRSPEED;
-  air_data.calc_tas_factor = AIR_DATA_CALC_TAS_FACTOR;
-  air_data.calc_amsl_baro = AIR_DATA_CALC_AMSL_BARO;
-  air_data.tas_factor = AIR_DATA_TAS_FACTOR;
-  air_data.calc_qnh_once = TRUE;
-  air_data.amsl_baro_valid = FALSE;
+    air_data.calc_airspeed = AIR_DATA_CALC_AIRSPEED;
+    air_data.calc_tas_factor = AIR_DATA_CALC_TAS_FACTOR;
+    air_data.calc_amsl_baro = AIR_DATA_CALC_AMSL_BARO;
+    air_data.tas_factor = AIR_DATA_TAS_FACTOR;
+    air_data.calc_qnh_once = TRUE;
+    air_data.amsl_baro_valid = FALSE;
 
-  /* initialize the output variables
-   * pressure, qnh, temperature and airspeed to invalid values,
-   * rest to zero
-   */
-  air_data.pressure = -1.0f;
-  air_data.qnh = -1.0f;
-  air_data.airspeed = -1.0f;
-  air_data.tas = -1.0f;
-  air_data.temperature = -1000.0f;
-  air_data.differential = 0.0f;
-  air_data.amsl_baro = 0.0f;
-  air_data.aoa = 0.0f;
-  air_data.sideslip = 0.0f;
-  air_data.wind_speed = 0.0f;
-  air_data.wind_dir = 0.0f;
+    /* initialize the output variables
+     * pressure, qnh, temperature and airspeed to invalid values,
+     * rest to zero
+     */
+    air_data.pressure = -1.0f;
+    air_data.qnh = -1.0f;
+    air_data.airspeed = -1.0f;
+    air_data.tas = -1.0f;
+    air_data.temperature = -1000.0f;
+    air_data.differential = 0.0f;
+    air_data.amsl_baro = 0.0f;
+    air_data.aoa = 0.0f;
+    air_data.sideslip = 0.0f;
+    air_data.wind_speed = 0.0f;
+    air_data.wind_dir = 0.0f;
 
-  /* internal variables */
-  baro_health_counter = 0;
+    /* internal variables */
+    baro_health_counter = 0;
 
-  AbiBindMsgBARO_ABS(AIR_DATA_BARO_ABS_ID, &pressure_abs_ev, pressure_abs_cb);
-  AbiBindMsgBARO_DIFF(AIR_DATA_BARO_DIFF_ID, &pressure_diff_ev, pressure_diff_cb);
-  AbiBindMsgTEMPERATURE(AIR_DATA_TEMPERATURE_ID, &temperature_ev, temperature_cb);
+    AbiBindMsgBARO_ABS(AIR_DATA_BARO_ABS_ID, &pressure_abs_ev, pressure_abs_cb);
+    AbiBindMsgBARO_DIFF(AIR_DATA_BARO_DIFF_ID, &pressure_diff_ev, pressure_diff_cb);
+    AbiBindMsgTEMPERATURE(AIR_DATA_TEMPERATURE_ID, &temperature_ev, temperature_cb);
 
 #if PERIODIC_TELEMETRY
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_BARO_RAW, send_baro_raw);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AIR_DATA, send_air_data);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AMSL, send_amsl);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_BARO_RAW, send_baro_raw);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AIR_DATA, send_air_data);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AMSL, send_amsl);
 #endif
 }
 
 float air_data_get_amsl(void)
 {
-  // If it has be calculated and baro is OK
-  if (air_data.amsl_baro_valid) {
-    return air_data.amsl_baro;
-  }
-  // Otherwise use real altitude (from GPS)
-  return stateGetPositionLla_f()->alt;
+    // If it has be calculated and baro is OK
+    if (air_data.amsl_baro_valid)
+    {
+        return air_data.amsl_baro;
+    }
+    // Otherwise use real altitude (from GPS)
+    return stateGetPositionLla_f()->alt;
 }
 
 void air_data_periodic(void)
 {
-  // Watchdog on baro
-  if (baro_health_counter > 0) {
-    baro_health_counter--;
-  } else {
-    air_data.amsl_baro_valid = FALSE;
-  }
+    // Watchdog on baro
+    if (baro_health_counter > 0)
+    {
+        baro_health_counter--;
+    }
+    else
+    {
+        air_data.amsl_baro_valid = FALSE;
+    }
 }
 
 
@@ -249,14 +258,14 @@ void air_data_periodic(void)
  */
 float eas_from_dynamic_pressure(float q)
 {
-  /* q (dynamic pressure) = total pressure - static pressure
-   * q = 1/2*rho*speed^2
-   * speed = sqrt(2*q/rho)
-   * With rho = air density at sea level.
-   * Lower bound of q at zero, no flying backwards guys...
-   */
-  const float two_div_rho_0 = 2.0 / PPRZ_ISA_AIR_DENSITY;
-  return sqrtf(Max(q * two_div_rho_0, 0));
+    /* q (dynamic pressure) = total pressure - static pressure
+     * q = 1/2*rho*speed^2
+     * speed = sqrt(2*q/rho)
+     * With rho = air density at sea level.
+     * Lower bound of q at zero, no flying backwards guys...
+     */
+    const float two_div_rho_0 = 2.0 / PPRZ_ISA_AIR_DENSITY;
+    return sqrtf(Max(q * two_div_rho_0, 0));
 }
 
 /**
@@ -277,12 +286,12 @@ float eas_from_dynamic_pressure(float q)
  */
 float get_tas_factor(float p, float t)
 {
-  /* factor to convert EAS to TAS:
-   * sqrt(rho0 / rho) = sqrt((p0 * T) / (p * T0))
-   * convert input temp to Kelvin
-   */
-  return sqrtf((PPRZ_ISA_SEA_LEVEL_PRESSURE * (t + 274.15)) /
-               (p * PPRZ_ISA_SEA_LEVEL_TEMP));
+    /* factor to convert EAS to TAS:
+     * sqrt(rho0 / rho) = sqrt((p0 * T) / (p * T0))
+     * convert input temp to Kelvin
+     */
+    return sqrtf((PPRZ_ISA_SEA_LEVEL_PRESSURE * (t + 274.15)) /
+                 (p * PPRZ_ISA_SEA_LEVEL_TEMP));
 }
 
 /**
@@ -296,7 +305,7 @@ float get_tas_factor(float p, float t)
  */
 float tas_from_eas(float eas)
 {
-  return air_data.tas_factor * eas;
+    return air_data.tas_factor * eas;
 }
 
 /**
@@ -309,5 +318,5 @@ float tas_from_eas(float eas)
  */
 float tas_from_dynamic_pressure(float q)
 {
-  return tas_from_eas(eas_from_dynamic_pressure(q));
+    return tas_from_eas(eas_from_dynamic_pressure(q));
 }

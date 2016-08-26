@@ -35,26 +35,28 @@
 
 #include "firmwares/rotorcraft/stabilization/stabilization_attitude_ref_quat_int.h"
 
-struct ReferenceSystem {
-  float err_p;
-  float err_q;
-  float err_r;
-  float rate_p;
-  float rate_q;
-  float rate_r;
+struct ReferenceSystem
+{
+    float err_p;
+    float err_q;
+    float err_r;
+    float rate_p;
+    float rate_q;
+    float rate_r;
 };
 
-struct IndiVariables {
-  struct FloatRates filtered_rate;
-  struct FloatRates filtered_rate_deriv;
-  struct FloatRates filtered_rate_2deriv;
-  struct FloatRates angular_accel_ref;
-  struct FloatRates du;
-  struct FloatRates u_act_dyn;
-  struct FloatRates u_in;
-  struct FloatRates u;
-  struct FloatRates udot;
-  struct FloatRates udotdot;
+struct IndiVariables
+{
+    struct FloatRates filtered_rate;
+    struct FloatRates filtered_rate_deriv;
+    struct FloatRates filtered_rate_2deriv;
+    struct FloatRates angular_accel_ref;
+    struct FloatRates du;
+    struct FloatRates u_act_dyn;
+    struct FloatRates u_in;
+    struct FloatRates u;
+    struct FloatRates udot;
+    struct FloatRates udotdot;
 };
 
 extern struct FloatRates g1;
@@ -68,7 +70,7 @@ extern struct Int32Eulers stab_att_sp_euler; ///< with #INT32_ANGLE_FRAC
 extern struct Int32Quat   stab_att_sp_quat;  ///< with #INT32_QUAT_FRAC
 
 void stabilization_indi_second_order_filter(struct FloatRates *input, struct FloatRates *filter_ddx,
-    struct FloatRates *filter_dx, struct FloatRates *filter_x, float omega, float zeta, float omega_r);
+        struct FloatRates *filter_dx, struct FloatRates *filter_x, float omega, float zeta, float omega_r);
 void lms_estimation(void);
 
 #endif /* STABILIZATION_ATTITUDE_QUAT_INT_H */

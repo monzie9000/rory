@@ -42,119 +42,128 @@ static enum line_status line_status;
 
 bool_t nav_vertical_raster_setup(void)
 {
-  line_status = LR12;
-  return FALSE;
+    line_status = LR12;
+    return FALSE;
 }
 
 bool_t nav_vertical_raster_run(uint8_t l1, uint8_t l2, float radius, float AltSweep)
 {
-  radius = fabs(radius);
-  float alt = waypoints[l1].a;
-  waypoints[l2].a = alt;
+    radius = fabs(radius);
+    float alt = waypoints[l1].a;
+    waypoints[l2].a = alt;
 
-  float l2_l1_x = WaypointX(l1) - WaypointX(l2);
-  float l2_l1_y = WaypointY(l1) - WaypointY(l2);
-  float d = sqrt(l2_l1_x * l2_l1_x + l2_l1_y * l2_l1_y);
+    float l2_l1_x = WaypointX(l1) - WaypointX(l2);
+    float l2_l1_y = WaypointY(l1) - WaypointY(l2);
+    float d = sqrt(l2_l1_x * l2_l1_x + l2_l1_y * l2_l1_y);
 
-  /* Unit vector from l1 to l2 */
-  float u_x = l2_l1_x / d;
-  float u_y = l2_l1_y / d;
+    /* Unit vector from l1 to l2 */
+    float u_x = l2_l1_x / d;
+    float u_y = l2_l1_y / d;
 
-  /* The half circle centers and the other leg */
-  struct point l2_c1 = { WaypointX(l1) + radius * u_y,
-           WaypointY(l1) + radius * -u_x,
-           alt
-  };
-  struct point l2_c2 = { WaypointX(l1) + 1.732 * radius * u_x,
-           WaypointY(l1) + 1.732 * radius * u_y,
-           alt
-  };
-  struct point l2_c3 = { WaypointX(l1) + radius * -u_y,
-           WaypointY(l1) + radius * u_x,
-           alt
-  };
+    /* The half circle centers and the other leg */
+    struct point l2_c1 = { WaypointX(l1) + radius * u_y,
+               WaypointY(l1) + radius * -u_x,
+               alt
+    };
+    struct point l2_c2 = { WaypointX(l1) + 1.732 * radius * u_x,
+               WaypointY(l1) + 1.732 * radius * u_y,
+               alt
+    };
+    struct point l2_c3 = { WaypointX(l1) + radius * -u_y,
+               WaypointY(l1) + radius * u_x,
+               alt
+    };
 
-  struct point l1_c1 = { WaypointX(l2) + radius * -u_y,
-           WaypointY(l2) + radius * u_x,
-           alt
-  };
-  struct point l1_c2 = { WaypointX(l2) + 1.732 * radius * -u_x,
-           WaypointY(l2) + 1.732 * radius * -u_y,
-           alt
-  };
-  struct point l1_c3 = { WaypointX(l2) + radius * u_y,
-           WaypointY(l2) + radius * -u_x,
-           alt
-  };
-  float qdr_out_2_1 = M_PI / 3. - atan2(u_y, u_x);
+    struct point l1_c1 = { WaypointX(l2) + radius * -u_y,
+               WaypointY(l2) + radius * u_x,
+               alt
+    };
+    struct point l1_c2 = { WaypointX(l2) + 1.732 * radius * -u_x,
+               WaypointY(l2) + 1.732 * radius * -u_y,
+               alt
+    };
+    struct point l1_c3 = { WaypointX(l2) + radius * u_y,
+               WaypointY(l2) + radius * -u_x,
+               alt
+    };
+    float qdr_out_2_1 = M_PI / 3. - atan2(u_y, u_x);
 
-  float qdr_out_2_2 = -M_PI / 3. - atan2(u_y, u_x);
-  float qdr_out_2_3 = M_PI - atan2(u_y, u_x);
+    float qdr_out_2_2 = -M_PI / 3. - atan2(u_y, u_x);
+    float qdr_out_2_3 = M_PI - atan2(u_y, u_x);
 
-  /* Vertical target */
-  NavVerticalAutoThrottleMode(0); /* No pitch */
-  NavVerticalAltitudeMode(WaypointAlt(l1), 0.);
+    /* Vertical target */
+    NavVerticalAutoThrottleMode(0); /* No pitch */
+    NavVerticalAltitudeMode(WaypointAlt(l1), 0.);
 
-  switch (line_status) {
+    switch (line_status)
+    {
     case LR12: /* From wp l2 to wp l1 */
-      NavSegment(l2, l1);
-      if (NavApproachingFrom(l1, l2, CARROT)) {
-        line_status = LQC21;
-        waypoints[l1].a = waypoints[l1].a + AltSweep;
-        nav_init_stage();
-      }
-      break;
+        NavSegment(l2, l1);
+        if (NavApproachingFrom(l1, l2, CARROT))
+        {
+            line_status = LQC21;
+            waypoints[l1].a = waypoints[l1].a + AltSweep;
+            nav_init_stage();
+        }
+        break;
     case LQC21:
-      nav_circle_XY(l2_c1.x, l2_c1.y, radius);
-      if (NavQdrCloseTo(DegOfRad(qdr_out_2_1) - 10)) {
-        line_status = LTC2;
-        nav_init_stage();
-      }
-      break;
+        nav_circle_XY(l2_c1.x, l2_c1.y, radius);
+        if (NavQdrCloseTo(DegOfRad(qdr_out_2_1) - 10))
+        {
+            line_status = LTC2;
+            nav_init_stage();
+        }
+        break;
     case LTC2:
-      nav_circle_XY(l2_c2.x, l2_c2.y, -radius);
-      if (NavQdrCloseTo(DegOfRad(qdr_out_2_2) + 10) && stateGetPositionUtm_f()->alt >= (waypoints[l1].a - 10)) {
-        line_status = LQC22;
-        nav_init_stage();
-      }
-      break;
+        nav_circle_XY(l2_c2.x, l2_c2.y, -radius);
+        if (NavQdrCloseTo(DegOfRad(qdr_out_2_2) + 10) && stateGetPositionUtm_f()->alt >= (waypoints[l1].a - 10))
+        {
+            line_status = LQC22;
+            nav_init_stage();
+        }
+        break;
     case LQC22:
-      nav_circle_XY(l2_c3.x, l2_c3.y, radius);
-      if (NavQdrCloseTo(DegOfRad(qdr_out_2_3) - 10)) {
-        line_status = LR21;
-        nav_init_stage();
-      }
-      break;
+        nav_circle_XY(l2_c3.x, l2_c3.y, radius);
+        if (NavQdrCloseTo(DegOfRad(qdr_out_2_3) - 10))
+        {
+            line_status = LR21;
+            nav_init_stage();
+        }
+        break;
     case LR21: /* From wp l1 to wp l2 */
-      NavSegment(l1, l2);
-      if (NavApproachingFrom(l2, l1, CARROT)) {
-        line_status = LQC12;
-        waypoints[l1].a = waypoints[l1].a + AltSweep;
-        nav_init_stage();
-      }
-      break;
+        NavSegment(l1, l2);
+        if (NavApproachingFrom(l2, l1, CARROT))
+        {
+            line_status = LQC12;
+            waypoints[l1].a = waypoints[l1].a + AltSweep;
+            nav_init_stage();
+        }
+        break;
     case LQC12:
-      nav_circle_XY(l1_c1.x, l1_c1.y, radius);
-      if (NavQdrCloseTo(DegOfRad(qdr_out_2_1 + M_PI) - 10)) {
-        line_status = LTC1;
-        nav_init_stage();
-      }
-      break;
+        nav_circle_XY(l1_c1.x, l1_c1.y, radius);
+        if (NavQdrCloseTo(DegOfRad(qdr_out_2_1 + M_PI) - 10))
+        {
+            line_status = LTC1;
+            nav_init_stage();
+        }
+        break;
     case LTC1:
-      nav_circle_XY(l1_c2.x, l1_c2.y, -radius);
-      if (NavQdrCloseTo(DegOfRad(qdr_out_2_2 + M_PI) + 10) && stateGetPositionUtm_f()->alt >= (waypoints[l1].a - 5)) {
-        line_status = LQC11;
-        nav_init_stage();
-      }
-      break;
+        nav_circle_XY(l1_c2.x, l1_c2.y, -radius);
+        if (NavQdrCloseTo(DegOfRad(qdr_out_2_2 + M_PI) + 10) && stateGetPositionUtm_f()->alt >= (waypoints[l1].a - 5))
+        {
+            line_status = LQC11;
+            nav_init_stage();
+        }
+        break;
     case LQC11:
-      nav_circle_XY(l1_c3.x, l1_c3.y, radius);
-      if (NavQdrCloseTo(DegOfRad(qdr_out_2_3 + M_PI) - 10)) {
-        line_status = LR12;
-        nav_init_stage();
-      }
+        nav_circle_XY(l1_c3.x, l1_c3.y, radius);
+        if (NavQdrCloseTo(DegOfRad(qdr_out_2_3 + M_PI) - 10))
+        {
+            line_status = LR12;
+            nav_init_stage();
+        }
     default:
-      break;
-  }
-  return TRUE; /* This pattern never ends */
+        break;
+    }
+    return TRUE; /* This pattern never ends */
 }

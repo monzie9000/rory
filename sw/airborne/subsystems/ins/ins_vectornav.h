@@ -68,57 +68,58 @@
 
 
 // Ins implementation state (fixed point)
-struct InsVectornav {
-  struct LtpDef_i  ltp_def; // initial position
-  bool_t           ltp_initialized; // status indicator
+struct InsVectornav
+{
+    struct LtpDef_i  ltp_def; // initial position
+    bool_t           ltp_initialized; // status indicator
 
-  // output LTP NED for telemetry messages
-  struct NedCoor_i ltp_pos_i;
-  struct NedCoor_i ltp_speed_i;
-  struct NedCoor_i ltp_accel_i;
+    // output LTP NED for telemetry messages
+    struct NedCoor_i ltp_pos_i;
+    struct NedCoor_i ltp_speed_i;
+    struct NedCoor_i ltp_accel_i;
 
-  struct LlaCoor_f lla_pos;
+    struct LlaCoor_f lla_pos;
 
-  struct NedCoor_f ltp_accel_f;
+    struct NedCoor_f ltp_accel_f;
 
-  // baro [height above ground]
-  float baro_z;  ///< z-position calculated from baro in meters (z-down)
-  float qfe;
+    // baro [height above ground]
+    float baro_z;  ///< z-position calculated from baro in meters (z-down)
+    float qfe;
 
-  // Packet data
-  struct VNPacket vn_packet;///< Packet struct
-  enum VNStatus vn_status;  ///< VN status
-  float vn_freq;            ///< data frequency
-  uint16_t vn_chksm;         ///< aux variable for checksum
-  uint32_t vn_time;          ///< VN time stamp
-  uint32_t vn_ltime;         ///< aux time stamp
+    // Packet data
+    struct VNPacket vn_packet;///< Packet struct
+    enum VNStatus vn_status;  ///< VN status
+    float vn_freq;            ///< data frequency
+    uint16_t vn_chksm;         ///< aux variable for checksum
+    uint32_t vn_time;          ///< VN time stamp
+    uint32_t vn_ltime;         ///< aux time stamp
 
-  // Auxilliary data fields
-  float timestamp; ///< System time [s]
-  struct FloatEulers attitude; ///< Attitude, float, [degrees], yaw, pitch, roll
-  // rates -> imu
-  double pos_lla[3]; // Lla [deg, deg, m above elipsoid]
-  struct NedCoor_f vel_ned; ///< The estimated velocity in the North East Down (NED) frame, given in m/s.
-  // accel -> imu
-  // num sats -> GPS
-  // GPS fix -> GPS
-  float pos_u[3]; ///< The current GPS position uncertainty in the North East Down (NED) coordinate frame, given in meters.
-  float vel_u; ///< NED velocity uncertainty [m/s]
-  struct FloatVect3 lin_accel; ///< Linear acceleration in imu frame [m/s^2]
-  struct FloatEulers ypr_u; ///< Attitude uncertainty, 1sigma, float, [degrees], yaw, pitch, roll
-  uint16_t ins_status; ///< see page 122 of VN-200 datasheet
-  uint8_t mode; ///< 0-not tracking, 1 - poor performance, 2- OK
-  uint8_t err; ///< see page 122 of VN-200 datasheet
-  struct FloatVect3 vel_body; ///< The estimated velocity in the imu frame, given in m/s.
-  struct FloatVect3 accel; ///< Acceleration in the imu frame, m/s
-  struct FloatRates gyro; ///< Rates in the imu frame m/s
+    // Auxilliary data fields
+    float timestamp; ///< System time [s]
+    struct FloatEulers attitude; ///< Attitude, float, [degrees], yaw, pitch, roll
+    // rates -> imu
+    double pos_lla[3]; // Lla [deg, deg, m above elipsoid]
+    struct NedCoor_f vel_ned; ///< The estimated velocity in the North East Down (NED) frame, given in m/s.
+    // accel -> imu
+    // num sats -> GPS
+    // GPS fix -> GPS
+    float pos_u[3]; ///< The current GPS position uncertainty in the North East Down (NED) coordinate frame, given in meters.
+    float vel_u; ///< NED velocity uncertainty [m/s]
+    struct FloatVect3 lin_accel; ///< Linear acceleration in imu frame [m/s^2]
+    struct FloatEulers ypr_u; ///< Attitude uncertainty, 1sigma, float, [degrees], yaw, pitch, roll
+    uint16_t ins_status; ///< see page 122 of VN-200 datasheet
+    uint8_t mode; ///< 0-not tracking, 1 - poor performance, 2- OK
+    uint8_t err; ///< see page 122 of VN-200 datasheet
+    struct FloatVect3 vel_body; ///< The estimated velocity in the imu frame, given in m/s.
+    struct FloatVect3 accel; ///< Acceleration in the imu frame, m/s
+    struct FloatRates gyro; ///< Rates in the imu frame m/s
 
-  // in fixed point for sending as ABI and telemetry msgs
-  struct Int32Vect3 accel_i;
-  struct Int32Rates gyro_i;
+    // in fixed point for sending as ABI and telemetry msgs
+    struct Int32Vect3 accel_i;
+    struct Int32Rates gyro_i;
 
-  /** body_to_imu rotation */
-  struct OrientationReps body_to_imu;
+    /** body_to_imu rotation */
+    struct OrientationReps body_to_imu;
 };
 
 

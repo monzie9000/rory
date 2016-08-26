@@ -25,18 +25,20 @@
 #include "std.h"
 
 
-enum fms_ts_mode {
-  STEP_ROLL,
-  STEP_PITCH,
-  STEP_YAW,
-  STEP_VERT
+enum fms_ts_mode
+{
+    STEP_ROLL,
+    STEP_PITCH,
+    STEP_YAW,
+    STEP_VERT
 };
 
-struct BoozFmsTestSignal {
-  enum fms_ts_mode mode;
-  uint32_t period;
-  uint32_t amplitude;
-  uint32_t counter;
+struct BoozFmsTestSignal
+{
+    enum fms_ts_mode mode;
+    uint32_t period;
+    uint32_t amplitude;
+    uint32_t counter;
 };
 
 extern struct BoozFmsTestSignal fms_test_signal;

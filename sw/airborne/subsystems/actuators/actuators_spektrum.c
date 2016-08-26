@@ -50,10 +50,10 @@ static inline void actuators_spektrum_send(struct link_device *dev);
  */
 void actuators_spektrum_init(void)
 {
-  actuators_spektrum.device = &((ACTUATORS_SPEKTRUM_DEV).device);
+    actuators_spektrum.device = &((ACTUATORS_SPEKTRUM_DEV).device);
 
 #ifdef ACTUATORS_SPEKTRUM_DEV2
-  actuators_spektrum.device2 = &((ACTUATORS_SPEKTRUM_DEV2).device);
+    actuators_spektrum.device2 = &((ACTUATORS_SPEKTRUM_DEV2).device);
 #endif
 }
 
@@ -62,19 +62,20 @@ void actuators_spektrum_init(void)
  */
 void actuators_spektrum_set(void)
 {
-  static uint8_t cnt = 0;
+    static uint8_t cnt = 0;
 
-  // Only send every 11 ms
-  cnt++;
-  if (cnt == freq_trig) {
-    actuators_spektrum_send(actuators_spektrum.device);
+    // Only send every 11 ms
+    cnt++;
+    if (cnt == freq_trig)
+    {
+        actuators_spektrum_send(actuators_spektrum.device);
 
 #ifdef ACTUATORS_SPEKTRUM_DEV2
-    actuators_spektrum_send(actuators_spektrum.device2);
+        actuators_spektrum_send(actuators_spektrum.device2);
 #endif
 
-    cnt = 0;
-  }
+        cnt = 0;
+    }
 }
 
 /*
@@ -82,13 +83,14 @@ void actuators_spektrum_set(void)
  */
 static inline void actuators_spektrum_send(struct link_device *dev)
 {
-  uint8_t i = 0;
-  dev->put_byte(dev->periph, 0x00); // number missed frames
-  dev->put_byte(dev->periph, 0x12); // 7 channels, 11 bit, 11ms
+    uint8_t i = 0;
+    dev->put_byte(dev->periph, 0x00); // number missed frames
+    dev->put_byte(dev->periph, 0x12); // 7 channels, 11 bit, 11ms
 
-  /* Transmit all channels */
-  for (i = 0; i < ACTUATORS_SPEKTRUM_MAX_NB; i++) {
-    dev->put_byte(dev->periph, i << 3 | actuators_spektrum.cmds[i] >> 8);
-    dev->put_byte(dev->periph, actuators_spektrum.cmds[i] & 0xFF);
-  }
+    /* Transmit all channels */
+    for (i = 0; i < ACTUATORS_SPEKTRUM_MAX_NB; i++)
+    {
+        dev->put_byte(dev->periph, i << 3 | actuators_spektrum.cmds[i] >> 8);
+        dev->put_byte(dev->periph, actuators_spektrum.cmds[i] & 0xFF);
+    }
 }

@@ -62,55 +62,61 @@
  */
 void pprz_polyfit_float(float *x, float *y, int n, int p, float *c)
 {
-  int i, j, k;
+    int i, j, k;
 
-  // Instead of solving directly (X'X)^-1 X' y
-  // let's build the matrices (X'X) and (X'y)
-  // Then element ij in (X'X) matrix is sum_{k=0,n-1} x_k^(i+j)
-  // and element i in (X'y) vector is sum_{k=0,n-1} x_k^i * y_k
-  // Finally we can solve the linear system (X'X).c = (X'y) using SVD decomposition
+    // Instead of solving directly (X'X)^-1 X' y
+    // let's build the matrices (X'X) and (X'y)
+    // Then element ij in (X'X) matrix is sum_{k=0,n-1} x_k^(i+j)
+    // and element i in (X'y) vector is sum_{k=0,n-1} x_k^i * y_k
+    // Finally we can solve the linear system (X'X).c = (X'y) using SVD decomposition
 
-  // First build a table of element S_i = sum_{k=0,n-1} x_k^i of dimension 2*p+1
-  float S[2 * p + 1];
-  float_vect_zero(S, 2 * p + 1);
-  // and a table of element T_i = sum_{k=0,n-1} x_k^i*y_k of dimension p+1
-  // make it a matrix for later use
-  float _T[p + 1][1];
-  MAKE_MATRIX_PTR(T, _T, p + 1);
-  float_mat_zero(T, p + 1, 1);
-  S[0] = n; // S_0 is always the number of input measurements
-  for (k = 0; k < n; k++) {
-    float x_tmp = x[k];
-    T[0][0] += y[k];
-    for (i = 1; i < 2 * p + 1; i++) {
-      S[i] += x_tmp; // add element to S_i
-      if (i < p + 1) {
-        T[i][0] += x_tmp * y[k];  // add element to T_i if i < p+1
-      }
-      x_tmp *= x[k]; // multiply x_tmp by current value of x
+    // First build a table of element S_i = sum_{k=0,n-1} x_k^i of dimension 2*p+1
+    float S[2 * p + 1];
+    float_vect_zero(S, 2 * p + 1);
+    // and a table of element T_i = sum_{k=0,n-1} x_k^i*y_k of dimension p+1
+    // make it a matrix for later use
+    float _T[p + 1][1];
+    MAKE_MATRIX_PTR(T, _T, p + 1);
+    float_mat_zero(T, p + 1, 1);
+    S[0] = n; // S_0 is always the number of input measurements
+    for (k = 0; k < n; k++)
+    {
+        float x_tmp = x[k];
+        T[0][0] += y[k];
+        for (i = 1; i < 2 * p + 1; i++)
+        {
+            S[i] += x_tmp; // add element to S_i
+            if (i < p + 1)
+            {
+                T[i][0] += x_tmp * y[k];  // add element to T_i if i < p+1
+            }
+            x_tmp *= x[k]; // multiply x_tmp by current value of x
+        }
     }
-  }
-  // Then build a [p+1 x p+1] matrix corresponding to (X'X) based on the S_i
-  // element ij of (X'X) is S_(i+j)
-  float _XtX[p + 1][p + 1];
-  MAKE_MATRIX_PTR(XtX, _XtX, p + 1);
-  for (i = 0; i < p + 1; i++) {
-    for (j = 0; j < p + 1; j++) {
-      XtX[i][j] = S[i + j];
+    // Then build a [p+1 x p+1] matrix corresponding to (X'X) based on the S_i
+    // element ij of (X'X) is S_(i+j)
+    float _XtX[p + 1][p + 1];
+    MAKE_MATRIX_PTR(XtX, _XtX, p + 1);
+    for (i = 0; i < p + 1; i++)
+    {
+        for (j = 0; j < p + 1; j++)
+        {
+            XtX[i][j] = S[i + j];
+        }
     }
-  }
-  // Solve linear system XtX.c = T after performing a SVD decomposition of XtX
-  // which is probably a bit overkill but looks really cool
-  float w[p + 1], _v[p + 1][p + 1];
-  MAKE_MATRIX_PTR(v, _v, p + 1);
-  pprz_svd_float(XtX, w, v, p + 1, p + 1);
-  float _c[p + 1][1];
-  MAKE_MATRIX_PTR(c_tmp, _c, p + 1);
-  pprz_svd_solve_float(c_tmp, XtX, w, v, T, p + 1, p + 1, 1);
-  // set output vector
-  for (i = 0; i < p + 1; i++) {
-    c[i] = c_tmp[i][0];
-  }
+    // Solve linear system XtX.c = T after performing a SVD decomposition of XtX
+    // which is probably a bit overkill but looks really cool
+    float w[p + 1], _v[p + 1][p + 1];
+    MAKE_MATRIX_PTR(v, _v, p + 1);
+    pprz_svd_float(XtX, w, v, p + 1, p + 1);
+    float _c[p + 1][1];
+    MAKE_MATRIX_PTR(c_tmp, _c, p + 1);
+    pprz_svd_solve_float(c_tmp, XtX, w, v, T, p + 1, p + 1, 1);
+    // set output vector
+    for (i = 0; i < p + 1; i++)
+    {
+        c[i] = c_tmp[i][0];
+    }
 
 }
 

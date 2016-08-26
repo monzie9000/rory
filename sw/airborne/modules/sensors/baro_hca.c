@@ -61,53 +61,60 @@ struct i2c_transaction baro_hca_i2c_trans;
 
 void baro_hca_init(void)
 {
-  pBaroRaw = 0;
-  baro_hca_valid = TRUE;
-  baro_hca_i2c_trans.status = I2CTransDone;
+    pBaroRaw = 0;
+    baro_hca_valid = TRUE;
+    baro_hca_i2c_trans.status = I2CTransDone;
 }
 
 
 void baro_hca_read_periodic(void)
 {
-  if (baro_hca_i2c_trans.status == I2CTransDone) {
-    i2c_receive(&BARO_HCA_I2C_DEV, &baro_hca_i2c_trans, BARO_HCA_ADDR, 2);
-  }
+    if (baro_hca_i2c_trans.status == I2CTransDone)
+    {
+        i2c_receive(&BARO_HCA_I2C_DEV, &baro_hca_i2c_trans, BARO_HCA_ADDR, 2);
+    }
 }
 
 
 void baro_hca_read_event(void)
 {
-  pBaroRaw = 0;
-  // Get raw altimeter from buffer
-  pBaroRaw = ((uint16_t)baro_hca_i2c_trans.buf[0] << 8) | baro_hca_i2c_trans.buf[1];
+    pBaroRaw = 0;
+    // Get raw altimeter from buffer
+    pBaroRaw = ((uint16_t)baro_hca_i2c_trans.buf[0] << 8) | baro_hca_i2c_trans.buf[1];
 
-  if (pBaroRaw == 0) {
-    baro_hca_valid = FALSE;
-  } else {
-    baro_hca_valid = TRUE;
-  }
-
-
-  if (baro_hca_valid) {
-    //Cut RAW Min and Max
-    if (pBaroRaw < BARO_HCA_MIN_OUT) {
-      pBaroRaw = BARO_HCA_MIN_OUT;
+    if (pBaroRaw == 0)
+    {
+        baro_hca_valid = FALSE;
     }
-    if (pBaroRaw > BARO_HCA_MAX_OUT) {
-      pBaroRaw = BARO_HCA_MAX_OUT;
+    else
+    {
+        baro_hca_valid = TRUE;
     }
 
-    float pressure = BARO_HCA_SCALE * (float)pBaroRaw + BARO_HCA_PRESSURE_OFFSET;
-    AbiSendMsgBARO_ABS(BARO_HCA_SENDER_ID, pressure);
-  }
-  baro_hca_i2c_trans.status = I2CTransDone;
 
-  uint16_t foo = 0;
-  float bar = 0;
+    if (baro_hca_valid)
+    {
+        //Cut RAW Min and Max
+        if (pBaroRaw < BARO_HCA_MIN_OUT)
+        {
+            pBaroRaw = BARO_HCA_MIN_OUT;
+        }
+        if (pBaroRaw > BARO_HCA_MAX_OUT)
+        {
+            pBaroRaw = BARO_HCA_MAX_OUT;
+        }
+
+        float pressure = BARO_HCA_SCALE * (float)pBaroRaw + BARO_HCA_PRESSURE_OFFSET;
+        AbiSendMsgBARO_ABS(BARO_HCA_SENDER_ID, pressure);
+    }
+    baro_hca_i2c_trans.status = I2CTransDone;
+
+    uint16_t foo = 0;
+    float bar = 0;
 #ifdef SENSOR_SYNC_SEND
-  DOWNLINK_SEND_BARO_ETS(DefaultChannel, DefaultDevice, &pBaroRaw, &foo, &bar)
+    DOWNLINK_SEND_BARO_ETS(DefaultChannel, DefaultDevice, &pBaroRaw, &foo, &bar)
 #else
-  RunOnceEvery(10, DOWNLINK_SEND_BARO_ETS(DefaultChannel, DefaultDevice, &pBaroRaw, &foo, &bar));
+    RunOnceEvery(10, DOWNLINK_SEND_BARO_ETS(DefaultChannel, DefaultDevice, &pBaroRaw, &foo, &bar));
 #endif
 
 }

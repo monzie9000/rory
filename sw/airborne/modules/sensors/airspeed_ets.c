@@ -104,123 +104,149 @@ bool_t   airspeed_ets_delay_done;
 
 void airspeed_ets_init(void)
 {
-  int n;
-  airspeed_ets_raw = 0;
-  airspeed_ets = 0.0;
-  airspeed_ets_offset = 0;
-  airspeed_ets_offset_tmp = 0;
-  airspeed_ets_i2c_done = TRUE;
-  airspeed_ets_valid = FALSE;
-  airspeed_ets_offset_init = FALSE;
-  airspeed_ets_cnt = AIRSPEED_ETS_OFFSET_NBSAMPLES_INIT + AIRSPEED_ETS_OFFSET_NBSAMPLES_AVRG;
+    int n;
+    airspeed_ets_raw = 0;
+    airspeed_ets = 0.0;
+    airspeed_ets_offset = 0;
+    airspeed_ets_offset_tmp = 0;
+    airspeed_ets_i2c_done = TRUE;
+    airspeed_ets_valid = FALSE;
+    airspeed_ets_offset_init = FALSE;
+    airspeed_ets_cnt = AIRSPEED_ETS_OFFSET_NBSAMPLES_INIT + AIRSPEED_ETS_OFFSET_NBSAMPLES_AVRG;
 
-  airspeed_ets_buffer_idx = 0;
-  for (n = 0; n < AIRSPEED_ETS_NBSAMPLES_AVRG; ++n) {
-    airspeed_ets_buffer[n] = 0.0;
-  }
+    airspeed_ets_buffer_idx = 0;
+    for (n = 0; n < AIRSPEED_ETS_NBSAMPLES_AVRG; ++n)
+    {
+        airspeed_ets_buffer[n] = 0.0;
+    }
 
-  airspeed_ets_i2c_trans.status = I2CTransDone;
+    airspeed_ets_i2c_trans.status = I2CTransDone;
 
-  airspeed_ets_delay_done = FALSE;
-  SysTimeTimerStart(airspeed_ets_delay_time);
+    airspeed_ets_delay_done = FALSE;
+    SysTimeTimerStart(airspeed_ets_delay_time);
 }
 
 void airspeed_ets_read_periodic(void)
 {
 #ifndef SITL
-  if (!airspeed_ets_delay_done) {
-    if (SysTimeTimer(airspeed_ets_delay_time) < USEC_OF_SEC(AIRSPEED_ETS_START_DELAY)) { return; }
-    else { airspeed_ets_delay_done = TRUE; }
-  }
-  if (airspeed_ets_i2c_trans.status == I2CTransDone) {
-    i2c_receive(&AIRSPEED_ETS_I2C_DEV, &airspeed_ets_i2c_trans, AIRSPEED_ETS_ADDR, 2);
-  }
+    if (!airspeed_ets_delay_done)
+    {
+        if (SysTimeTimer(airspeed_ets_delay_time) < USEC_OF_SEC(AIRSPEED_ETS_START_DELAY))
+        {
+            return;
+        }
+        else
+        {
+            airspeed_ets_delay_done = TRUE;
+        }
+    }
+    if (airspeed_ets_i2c_trans.status == I2CTransDone)
+    {
+        i2c_receive(&AIRSPEED_ETS_I2C_DEV, &airspeed_ets_i2c_trans, AIRSPEED_ETS_ADDR, 2);
+    }
 #elif !defined USE_NPS
-  extern float sim_air_speed;
-  stateSetAirspeed_f(sim_air_speed);
+    extern float sim_air_speed;
+    stateSetAirspeed_f(sim_air_speed);
 #endif //SITL
 }
 
 void airspeed_ets_read_event(void)
 {
-  int n;
-  float airspeed_tmp = 0.0;
+    int n;
+    float airspeed_tmp = 0.0;
 
-  // Get raw airspeed from buffer
-  airspeed_ets_raw = ((uint16_t)(airspeed_ets_i2c_trans.buf[1]) << 8) | (uint16_t)(airspeed_ets_i2c_trans.buf[0]);
-  // Check if this is valid airspeed
-  if (airspeed_ets_raw == 0) {
-    airspeed_ets_valid = FALSE;
-  } else {
-    airspeed_ets_valid = TRUE;
-  }
+    // Get raw airspeed from buffer
+    airspeed_ets_raw = ((uint16_t)(airspeed_ets_i2c_trans.buf[1]) << 8) | (uint16_t)(airspeed_ets_i2c_trans.buf[0]);
+    // Check if this is valid airspeed
+    if (airspeed_ets_raw == 0)
+    {
+        airspeed_ets_valid = FALSE;
+    }
+    else
+    {
+        airspeed_ets_valid = TRUE;
+    }
 
-  // Continue only if a new airspeed value was received
-  if (airspeed_ets_valid) {
+    // Continue only if a new airspeed value was received
+    if (airspeed_ets_valid)
+    {
 #if !AIRSPEED_ETS_3RD_PARTY_MODE
-    // Calculate offset average if not done already
-    if (!airspeed_ets_offset_init) {
-      --airspeed_ets_cnt;
-      // Check if averaging completed
-      if (airspeed_ets_cnt == 0) {
-        // Calculate average
-        airspeed_ets_offset = (uint16_t)(airspeed_ets_offset_tmp / AIRSPEED_ETS_OFFSET_NBSAMPLES_AVRG);
-        // Limit offset
-        if (airspeed_ets_offset < AIRSPEED_ETS_OFFSET_MIN) {
-          airspeed_ets_offset = AIRSPEED_ETS_OFFSET_MIN;
+        // Calculate offset average if not done already
+        if (!airspeed_ets_offset_init)
+        {
+            --airspeed_ets_cnt;
+            // Check if averaging completed
+            if (airspeed_ets_cnt == 0)
+            {
+                // Calculate average
+                airspeed_ets_offset = (uint16_t)(airspeed_ets_offset_tmp / AIRSPEED_ETS_OFFSET_NBSAMPLES_AVRG);
+                // Limit offset
+                if (airspeed_ets_offset < AIRSPEED_ETS_OFFSET_MIN)
+                {
+                    airspeed_ets_offset = AIRSPEED_ETS_OFFSET_MIN;
+                }
+                if (airspeed_ets_offset > AIRSPEED_ETS_OFFSET_MAX)
+                {
+                    airspeed_ets_offset = AIRSPEED_ETS_OFFSET_MAX;
+                }
+                airspeed_ets_offset_init = TRUE;
+            }
+            // Check if averaging needs to continue
+            else if (airspeed_ets_cnt <= AIRSPEED_ETS_OFFSET_NBSAMPLES_AVRG)
+            {
+                airspeed_ets_offset_tmp += airspeed_ets_raw;
+            }
         }
-        if (airspeed_ets_offset > AIRSPEED_ETS_OFFSET_MAX) {
-          airspeed_ets_offset = AIRSPEED_ETS_OFFSET_MAX;
-        }
-        airspeed_ets_offset_init = TRUE;
-      }
-      // Check if averaging needs to continue
-      else if (airspeed_ets_cnt <= AIRSPEED_ETS_OFFSET_NBSAMPLES_AVRG) {
-        airspeed_ets_offset_tmp += airspeed_ets_raw;
-      }
-    }
-    // Convert raw to m/s
+        // Convert raw to m/s
 #ifdef AIRSPEED_ETS_REVERSE
-    if (airspeed_ets_offset_init && airspeed_ets_raw < airspeed_ets_offset) {
-      airspeed_tmp = AIRSPEED_ETS_SCALE * sqrtf((float)(airspeed_ets_offset - airspeed_ets_raw)) - AIRSPEED_ETS_OFFSET;
-    }
+        if (airspeed_ets_offset_init && airspeed_ets_raw < airspeed_ets_offset)
+        {
+            airspeed_tmp = AIRSPEED_ETS_SCALE * sqrtf((float)(airspeed_ets_offset - airspeed_ets_raw)) - AIRSPEED_ETS_OFFSET;
+        }
 #else
-    if (airspeed_ets_offset_init && airspeed_ets_raw > airspeed_ets_offset) {
-      airspeed_tmp = AIRSPEED_ETS_SCALE * sqrtf((float)(airspeed_ets_raw - airspeed_ets_offset)) - AIRSPEED_ETS_OFFSET;
-    }
+        if (airspeed_ets_offset_init && airspeed_ets_raw > airspeed_ets_offset)
+        {
+            airspeed_tmp = AIRSPEED_ETS_SCALE * sqrtf((float)(airspeed_ets_raw - airspeed_ets_offset)) - AIRSPEED_ETS_OFFSET;
+        }
 #endif
-    else {
-      airspeed_tmp = 0.0;
-    }
+        else
+        {
+            airspeed_tmp = 0.0;
+        }
 //use raw value for sensor set to third-party mode
 #else
-    airspeed_tmp = airspeed_ets_raw;
+        airspeed_tmp = airspeed_ets_raw;
 #endif    //AIRSPEED_ETS_3RD_PARTY_MODE
 
-    // Airspeed should always be positive
-    if (airspeed_tmp < 0.0) {
-      airspeed_tmp = 0.0;
-    }
-    // Moving average
-    airspeed_ets_buffer[airspeed_ets_buffer_idx++] = airspeed_tmp;
-    if (airspeed_ets_buffer_idx >= AIRSPEED_ETS_NBSAMPLES_AVRG) {
-      airspeed_ets_buffer_idx = 0;
-    }
-    airspeed_ets = 0.0;
-    for (n = 0; n < AIRSPEED_ETS_NBSAMPLES_AVRG; ++n) {
-      airspeed_ets += airspeed_ets_buffer[n];
-    }
-    airspeed_ets = airspeed_ets / (float)AIRSPEED_ETS_NBSAMPLES_AVRG;
+        // Airspeed should always be positive
+        if (airspeed_tmp < 0.0)
+        {
+            airspeed_tmp = 0.0;
+        }
+        // Moving average
+        airspeed_ets_buffer[airspeed_ets_buffer_idx++] = airspeed_tmp;
+        if (airspeed_ets_buffer_idx >= AIRSPEED_ETS_NBSAMPLES_AVRG)
+        {
+            airspeed_ets_buffer_idx = 0;
+        }
+        airspeed_ets = 0.0;
+        for (n = 0; n < AIRSPEED_ETS_NBSAMPLES_AVRG; ++n)
+        {
+            airspeed_ets += airspeed_ets_buffer[n];
+        }
+        airspeed_ets = airspeed_ets / (float)AIRSPEED_ETS_NBSAMPLES_AVRG;
 #if USE_AIRSPEED_ETS
-    stateSetAirspeed_f(airspeed_ets);
+        stateSetAirspeed_f(airspeed_ets);
 #endif
 #if AIRSPEED_ETS_SYNC_SEND
-    DOWNLINK_SEND_AIRSPEED_ETS(DefaultChannel, DefaultDevice, &airspeed_ets_raw, &airspeed_ets_offset, &airspeed_ets);
+        DOWNLINK_SEND_AIRSPEED_ETS(DefaultChannel, DefaultDevice, &airspeed_ets_raw, &airspeed_ets_offset, &airspeed_ets);
 #endif
-  } else {
-    airspeed_ets = 0.0;
-  }
+    }
+    else
+    {
+        airspeed_ets = 0.0;
+    }
 
-  // Transaction has been read
-  airspeed_ets_i2c_trans.status = I2CTransDone;
+    // Transaction has been read
+    airspeed_ets_i2c_trans.status = I2CTransDone;
 }

@@ -34,46 +34,47 @@ static void high_speed_logger_spi_link_trans_cb(struct spi_transaction *trans);
 
 void high_speed_logger_spi_link_init(void)
 {
-  high_speed_logger_spi_link_data.id = 0;
+    high_speed_logger_spi_link_data.id = 0;
 
-  high_speed_logger_spi_link_transaction.select        = SPISelectUnselect;
-  high_speed_logger_spi_link_transaction.cpol          = SPICpolIdleHigh;
-  high_speed_logger_spi_link_transaction.cpha          = SPICphaEdge2;
-  high_speed_logger_spi_link_transaction.dss           = SPIDss8bit;
-  high_speed_logger_spi_link_transaction.bitorder      = SPIMSBFirst;
-  high_speed_logger_spi_link_transaction.cdiv          = SPIDiv64;
-  high_speed_logger_spi_link_transaction.slave_idx     = HIGH_SPEED_LOGGER_SPI_LINK_SLAVE_NUMBER;
-  high_speed_logger_spi_link_transaction.output_length = sizeof(high_speed_logger_spi_link_data);
-  high_speed_logger_spi_link_transaction.output_buf    = (uint8_t *) &high_speed_logger_spi_link_data;
-  high_speed_logger_spi_link_transaction.input_length  = 0;
-  high_speed_logger_spi_link_transaction.input_buf     = NULL;
-  high_speed_logger_spi_link_transaction.after_cb      = high_speed_logger_spi_link_trans_cb;
+    high_speed_logger_spi_link_transaction.select        = SPISelectUnselect;
+    high_speed_logger_spi_link_transaction.cpol          = SPICpolIdleHigh;
+    high_speed_logger_spi_link_transaction.cpha          = SPICphaEdge2;
+    high_speed_logger_spi_link_transaction.dss           = SPIDss8bit;
+    high_speed_logger_spi_link_transaction.bitorder      = SPIMSBFirst;
+    high_speed_logger_spi_link_transaction.cdiv          = SPIDiv64;
+    high_speed_logger_spi_link_transaction.slave_idx     = HIGH_SPEED_LOGGER_SPI_LINK_SLAVE_NUMBER;
+    high_speed_logger_spi_link_transaction.output_length = sizeof(high_speed_logger_spi_link_data);
+    high_speed_logger_spi_link_transaction.output_buf    = (uint8_t *) &high_speed_logger_spi_link_data;
+    high_speed_logger_spi_link_transaction.input_length  = 0;
+    high_speed_logger_spi_link_transaction.input_buf     = NULL;
+    high_speed_logger_spi_link_transaction.after_cb      = high_speed_logger_spi_link_trans_cb;
 }
 
 
 void high_speed_logger_spi_link_periodic(void)
 {
-  if (high_speed_logger_spi_link_ready) {
-    high_speed_logger_spi_link_ready = FALSE;
-    high_speed_logger_spi_link_data.gyro_p     = imu.gyro_unscaled.p;
-    high_speed_logger_spi_link_data.gyro_q     = imu.gyro_unscaled.q;
-    high_speed_logger_spi_link_data.gyro_r     = imu.gyro_unscaled.r;
-    high_speed_logger_spi_link_data.acc_x      = imu.accel_unscaled.x;
-    high_speed_logger_spi_link_data.acc_y      = imu.accel_unscaled.y;
-    high_speed_logger_spi_link_data.acc_z      = imu.accel_unscaled.z;
-    high_speed_logger_spi_link_data.mag_x      = imu.mag_unscaled.x;
-    high_speed_logger_spi_link_data.mag_y      = imu.mag_unscaled.y;
-    high_speed_logger_spi_link_data.mag_z      = imu.mag_unscaled.z;
+    if (high_speed_logger_spi_link_ready)
+    {
+        high_speed_logger_spi_link_ready = FALSE;
+        high_speed_logger_spi_link_data.gyro_p     = imu.gyro_unscaled.p;
+        high_speed_logger_spi_link_data.gyro_q     = imu.gyro_unscaled.q;
+        high_speed_logger_spi_link_data.gyro_r     = imu.gyro_unscaled.r;
+        high_speed_logger_spi_link_data.acc_x      = imu.accel_unscaled.x;
+        high_speed_logger_spi_link_data.acc_y      = imu.accel_unscaled.y;
+        high_speed_logger_spi_link_data.acc_z      = imu.accel_unscaled.z;
+        high_speed_logger_spi_link_data.mag_x      = imu.mag_unscaled.x;
+        high_speed_logger_spi_link_data.mag_y      = imu.mag_unscaled.y;
+        high_speed_logger_spi_link_data.mag_z      = imu.mag_unscaled.z;
 
-    spi_submit(&(HIGH_SPEED_LOGGER_SPI_LINK_DEVICE), &high_speed_logger_spi_link_transaction);
-  }
+        spi_submit(&(HIGH_SPEED_LOGGER_SPI_LINK_DEVICE), &high_speed_logger_spi_link_transaction);
+    }
 
-  high_speed_logger_spi_link_data.id++;
+    high_speed_logger_spi_link_data.id++;
 }
 
 static void high_speed_logger_spi_link_trans_cb(struct spi_transaction *trans __attribute__((unused)))
 {
-  high_speed_logger_spi_link_ready = TRUE;
+    high_speed_logger_spi_link_ready = TRUE;
 }
 
 

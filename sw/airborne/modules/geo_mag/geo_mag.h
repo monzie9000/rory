@@ -32,10 +32,11 @@
 #include "std.h"
 #include "math/pprz_algebra_double.h"
 
-struct GeoMag {
-  struct DoubleVect3 vect;
-  bool_t calc_once;
-  bool_t ready;
+struct GeoMag
+{
+    struct DoubleVect3 vect;
+    bool_t calc_once;
+    bool_t ready;
 };
 
 extern void geo_mag_init(void);

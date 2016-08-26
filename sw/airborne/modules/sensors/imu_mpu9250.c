@@ -36,17 +36,17 @@ struct Mpu9250_I2c mpu9250;
 
 void imu_mpu9250_init(void)
 {
-  mpu9250_i2c_init(&mpu9250, &(IMU_MPU9250_I2C_DEV), IMU_MPU9250_ADDR);
+    mpu9250_i2c_init(&mpu9250, &(IMU_MPU9250_I2C_DEV), IMU_MPU9250_ADDR);
 }
 
 void imu_mpu9250_periodic(void)
 {
-  mpu9250_i2c_periodic(&mpu9250);
+    mpu9250_i2c_periodic(&mpu9250);
 }
 
 void imu_mpu9250_event(void)
 {
-  mpu9250_i2c_event(&mpu9250);
+    mpu9250_i2c_event(&mpu9250);
 }
 
 #include "math/pprz_algebra_int.h"
@@ -54,25 +54,28 @@ void imu_mpu9250_event(void)
 
 void imu_mpu9250_report(void)
 {
-  struct Int32Vect3 accel = {
-    (int32_t)(mpu9250.data_accel.vect.x),
-    (int32_t)(mpu9250.data_accel.vect.y),
-    (int32_t)(mpu9250.data_accel.vect.z)
-  };
-  DOWNLINK_SEND_IMU_ACCEL_RAW(DefaultChannel, DefaultDevice, &accel.x, &accel.y, &accel.z);
+    struct Int32Vect3 accel =
+    {
+        (int32_t)(mpu9250.data_accel.vect.x),
+        (int32_t)(mpu9250.data_accel.vect.y),
+        (int32_t)(mpu9250.data_accel.vect.z)
+    };
+    DOWNLINK_SEND_IMU_ACCEL_RAW(DefaultChannel, DefaultDevice, &accel.x, &accel.y, &accel.z);
 
-  struct Int32Rates rates = {
-    (int32_t)(mpu9250.data_rates.rates.p),
-    (int32_t)(mpu9250.data_rates.rates.q),
-    (int32_t)(mpu9250.data_rates.rates.r)
-  };
-  DOWNLINK_SEND_IMU_GYRO_RAW(DefaultChannel, DefaultDevice, &rates.p, &rates.q, &rates.r);
+    struct Int32Rates rates =
+    {
+        (int32_t)(mpu9250.data_rates.rates.p),
+        (int32_t)(mpu9250.data_rates.rates.q),
+        (int32_t)(mpu9250.data_rates.rates.r)
+    };
+    DOWNLINK_SEND_IMU_GYRO_RAW(DefaultChannel, DefaultDevice, &rates.p, &rates.q, &rates.r);
 
-  struct Int32Vect3 mag = {
-    (int32_t)(mpu9250.akm.data.vect.x),
-    (int32_t)(mpu9250.akm.data.vect.y),
-    (int32_t)(mpu9250.akm.data.vect.z)
-  };
-  DOWNLINK_SEND_IMU_MAG_RAW(DefaultChannel, DefaultDevice, &mag.x, &mag.y, &mag.z);
+    struct Int32Vect3 mag =
+    {
+        (int32_t)(mpu9250.akm.data.vect.x),
+        (int32_t)(mpu9250.akm.data.vect.y),
+        (int32_t)(mpu9250.akm.data.vect.z)
+    };
+    DOWNLINK_SEND_IMU_MAG_RAW(DefaultChannel, DefaultDevice, &mag.x, &mag.y, &mag.z);
 }
 

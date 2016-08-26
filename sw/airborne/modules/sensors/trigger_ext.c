@@ -40,25 +40,26 @@
 
 void trigger_ext_init(void)
 {
-  trig_ext_init();
+    trig_ext_init();
 }
 
 void trigger_ext_periodic(void)
 {
-  if (trig_ext_valid == TRUE) {
-    uint8_t ac_id = 0;
-    uint8_t turb_id = TURBINE_ID;
-    uint32_t sync_itow, cycle_time;
+    if (trig_ext_valid == TRUE)
+    {
+        uint8_t ac_id = 0;
+        uint8_t turb_id = TURBINE_ID;
+        uint32_t sync_itow, cycle_time;
 
-    sync_itow = gps_tow_from_sys_ticks(trigger_t0);
-    cycle_time = msec_of_sys_time_ticks(delta_t0);
+        sync_itow = gps_tow_from_sys_ticks(trigger_t0);
+        cycle_time = msec_of_sys_time_ticks(delta_t0);
 
-    DOWNLINK_SEND_WINDTURBINE_STATUS_(DefaultChannel, DefaultDevice,
-                                      &ac_id,
-                                      &turb_id,
-                                      &sync_itow,
-                                      &cycle_time);
-    trig_ext_valid = FALSE;
-  }
+        DOWNLINK_SEND_WINDTURBINE_STATUS_(DefaultChannel, DefaultDevice,
+                                          &ac_id,
+                                          &turb_id,
+                                          &sync_itow,
+                                          &cycle_time);
+        trig_ext_valid = FALSE;
+    }
 }
 

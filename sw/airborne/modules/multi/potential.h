@@ -10,12 +10,13 @@
 #include "firmwares/fixedwing/nav.h"
 #include "subsystems/navigation/traffic_info.h"
 
-struct force_ {
-  float east;
-  float north;
-  float alt;
-  float speed;
-  float climb;
+struct force_
+{
+    float east;
+    float north;
+    float alt;
+    float speed;
+    float climb;
 };
 
 extern struct force_ potential_force;

@@ -45,11 +45,12 @@
 #define ACTUATORS_BEBOP_GET_INFO      0xA0    ///< Get version information
 
 
-struct ActuatorsBebop {
-  struct i2c_transaction i2c_trans;   ///< I2C transaction for communicating with the bebop BLDC driver
-  uint16_t rpm_ref[4];                ///< Reference RPM
-  uint16_t rpm_obs[4];                ///< Observed RPM
-  uint8_t led;                        ///< Current led status
+struct ActuatorsBebop
+{
+    struct i2c_transaction i2c_trans;   ///< I2C transaction for communicating with the bebop BLDC driver
+    uint16_t rpm_ref[4];                ///< Reference RPM
+    uint16_t rpm_obs[4];                ///< Observed RPM
+    uint8_t led;                        ///< Current led status
 };
 
 #define ActuatorsBebopSet(_i, _v) { actuators_bebop.rpm_ref[_i] = _v; }

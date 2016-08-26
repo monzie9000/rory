@@ -71,8 +71,9 @@
 #endif
 
 
-struct ImuMpu9250 {
-  struct Mpu9250_I2c mpu;
+struct ImuMpu9250
+{
+    struct Mpu9250_I2c mpu;
 };
 
 extern struct ImuMpu9250 imu_mpu9250;

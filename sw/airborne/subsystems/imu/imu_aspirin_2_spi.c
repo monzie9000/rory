@@ -105,152 +105,153 @@ bool_t imu_aspirin2_configure_mag_slave(Mpu60x0ConfigSet mpu_set, void *mpu);
 
 void imu_impl_init(void)
 {
-  mpu60x0_spi_init(&imu_aspirin2.mpu, &(ASPIRIN_2_SPI_DEV), ASPIRIN_2_SPI_SLAVE_IDX);
-  // change the default configuration
-  imu_aspirin2.mpu.config.smplrt_div = ASPIRIN_2_SMPLRT_DIV;
-  imu_aspirin2.mpu.config.dlpf_cfg = ASPIRIN_2_LOWPASS_FILTER;
-  imu_aspirin2.mpu.config.gyro_range = ASPIRIN_2_GYRO_RANGE;
-  imu_aspirin2.mpu.config.accel_range = ASPIRIN_2_ACCEL_RANGE;
+    mpu60x0_spi_init(&imu_aspirin2.mpu, &(ASPIRIN_2_SPI_DEV), ASPIRIN_2_SPI_SLAVE_IDX);
+    // change the default configuration
+    imu_aspirin2.mpu.config.smplrt_div = ASPIRIN_2_SMPLRT_DIV;
+    imu_aspirin2.mpu.config.dlpf_cfg = ASPIRIN_2_LOWPASS_FILTER;
+    imu_aspirin2.mpu.config.gyro_range = ASPIRIN_2_GYRO_RANGE;
+    imu_aspirin2.mpu.config.accel_range = ASPIRIN_2_ACCEL_RANGE;
 
-  /* read 15 bytes for status, accel, gyro + 6 bytes for mag slave */
-  imu_aspirin2.mpu.config.nb_bytes = 21;
+    /* read 15 bytes for status, accel, gyro + 6 bytes for mag slave */
+    imu_aspirin2.mpu.config.nb_bytes = 21;
 
-  /* use mag if not disabled */
+    /* use mag if not disabled */
 #if !ASPIRIN_2_DISABLE_MAG
-  /* HMC5883 magnetometer as I2C slave */
-  imu_aspirin2.mpu.config.nb_slaves = 1;
+    /* HMC5883 magnetometer as I2C slave */
+    imu_aspirin2.mpu.config.nb_slaves = 1;
 
-  /* set function to configure mag */
-  imu_aspirin2.mpu.config.slaves[0].configure = &imu_aspirin2_configure_mag_slave;
+    /* set function to configure mag */
+    imu_aspirin2.mpu.config.slaves[0].configure = &imu_aspirin2_configure_mag_slave;
 
-  /* Set MPU I2C master clock */
-  imu_aspirin2.mpu.config.i2c_mst_clk = MPU60X0_MST_CLK_400KHZ;
-  /* Enable I2C slave0 delayed sample rate */
-  imu_aspirin2.mpu.config.i2c_mst_delay = 1;
+    /* Set MPU I2C master clock */
+    imu_aspirin2.mpu.config.i2c_mst_clk = MPU60X0_MST_CLK_400KHZ;
+    /* Enable I2C slave0 delayed sample rate */
+    imu_aspirin2.mpu.config.i2c_mst_delay = 1;
 
 
-  /* configure spi transaction for wait_slave4 */
-  imu_aspirin2.wait_slave4_trans.cpol = SPICpolIdleHigh;
-  imu_aspirin2.wait_slave4_trans.cpha = SPICphaEdge2;
-  imu_aspirin2.wait_slave4_trans.dss = SPIDss8bit;
-  imu_aspirin2.wait_slave4_trans.bitorder = SPIMSBFirst;
-  imu_aspirin2.wait_slave4_trans.cdiv = SPIDiv64;
+    /* configure spi transaction for wait_slave4 */
+    imu_aspirin2.wait_slave4_trans.cpol = SPICpolIdleHigh;
+    imu_aspirin2.wait_slave4_trans.cpha = SPICphaEdge2;
+    imu_aspirin2.wait_slave4_trans.dss = SPIDss8bit;
+    imu_aspirin2.wait_slave4_trans.bitorder = SPIMSBFirst;
+    imu_aspirin2.wait_slave4_trans.cdiv = SPIDiv64;
 
-  imu_aspirin2.wait_slave4_trans.select = SPISelectUnselect;
-  imu_aspirin2.wait_slave4_trans.slave_idx = ASPIRIN_2_SPI_SLAVE_IDX;
-  imu_aspirin2.wait_slave4_trans.output_length = 1;
-  imu_aspirin2.wait_slave4_trans.input_length = 2;
-  imu_aspirin2.wait_slave4_trans.before_cb = NULL;
-  imu_aspirin2.wait_slave4_trans.after_cb = mpu_wait_slave4_ready_cb;
-  imu_aspirin2.wait_slave4_trans.input_buf = &(imu_aspirin2.wait_slave4_rx_buf[0]);
-  imu_aspirin2.wait_slave4_trans.output_buf = &(imu_aspirin2.wait_slave4_tx_buf[0]);
+    imu_aspirin2.wait_slave4_trans.select = SPISelectUnselect;
+    imu_aspirin2.wait_slave4_trans.slave_idx = ASPIRIN_2_SPI_SLAVE_IDX;
+    imu_aspirin2.wait_slave4_trans.output_length = 1;
+    imu_aspirin2.wait_slave4_trans.input_length = 2;
+    imu_aspirin2.wait_slave4_trans.before_cb = NULL;
+    imu_aspirin2.wait_slave4_trans.after_cb = mpu_wait_slave4_ready_cb;
+    imu_aspirin2.wait_slave4_trans.input_buf = &(imu_aspirin2.wait_slave4_rx_buf[0]);
+    imu_aspirin2.wait_slave4_trans.output_buf = &(imu_aspirin2.wait_slave4_tx_buf[0]);
 
-  imu_aspirin2.wait_slave4_trans.status = SPITransDone;
-  imu_aspirin2.slave4_ready = FALSE;
+    imu_aspirin2.wait_slave4_trans.status = SPITransDone;
+    imu_aspirin2.slave4_ready = FALSE;
 #endif
 }
 
 
 void imu_periodic(void)
 {
-  mpu60x0_spi_periodic(&imu_aspirin2.mpu);
+    mpu60x0_spi_periodic(&imu_aspirin2.mpu);
 }
 
 #define Int16FromBuf(_buf,_idx) ((int16_t)((_buf[_idx]<<8) | _buf[_idx+1]))
 
 void imu_aspirin2_event(void)
 {
-  uint32_t now_ts = get_sys_time_usec();
+    uint32_t now_ts = get_sys_time_usec();
 
-  mpu60x0_spi_event(&imu_aspirin2.mpu);
-  if (imu_aspirin2.mpu.data_available) {
+    mpu60x0_spi_event(&imu_aspirin2.mpu);
+    if (imu_aspirin2.mpu.data_available)
+    {
 #if !ASPIRIN_2_DISABLE_MAG
-    /* HMC5883 has xzy order of axes in returned data */
-    struct Int32Vect3 mag;
-    mag.x = Int16FromBuf(imu_aspirin2.mpu.data_ext, 0);
-    mag.z = Int16FromBuf(imu_aspirin2.mpu.data_ext, 2);
-    mag.y = Int16FromBuf(imu_aspirin2.mpu.data_ext, 4);
+        /* HMC5883 has xzy order of axes in returned data */
+        struct Int32Vect3 mag;
+        mag.x = Int16FromBuf(imu_aspirin2.mpu.data_ext, 0);
+        mag.z = Int16FromBuf(imu_aspirin2.mpu.data_ext, 2);
+        mag.y = Int16FromBuf(imu_aspirin2.mpu.data_ext, 4);
 #endif
 
-    /* Handle axis assignement for Lisa/S integrated Aspirin like IMU. */
+        /* Handle axis assignement for Lisa/S integrated Aspirin like IMU. */
 #ifdef LISA_S
 #ifdef LISA_S_UPSIDE_DOWN
-    RATES_ASSIGN(imu.gyro_unscaled,
-                 imu_aspirin2.mpu.data_rates.rates.p,
-                 -imu_aspirin2.mpu.data_rates.rates.q,
-                 -imu_aspirin2.mpu.data_rates.rates.r);
-    VECT3_ASSIGN(imu.accel_unscaled,
-                 imu_aspirin2.mpu.data_accel.vect.x,
-                 -imu_aspirin2.mpu.data_accel.vect.y,
-                 -imu_aspirin2.mpu.data_accel.vect.z);
-    VECT3_ASSIGN(imu.mag_unscaled, mag.x, -mag.y, -mag.z);
+        RATES_ASSIGN(imu.gyro_unscaled,
+                     imu_aspirin2.mpu.data_rates.rates.p,
+                     -imu_aspirin2.mpu.data_rates.rates.q,
+                     -imu_aspirin2.mpu.data_rates.rates.r);
+        VECT3_ASSIGN(imu.accel_unscaled,
+                     imu_aspirin2.mpu.data_accel.vect.x,
+                     -imu_aspirin2.mpu.data_accel.vect.y,
+                     -imu_aspirin2.mpu.data_accel.vect.z);
+        VECT3_ASSIGN(imu.mag_unscaled, mag.x, -mag.y, -mag.z);
 #else
-    RATES_COPY(imu.gyro_unscaled, imu_aspirin2.mpu.data_rates.rates);
-    VECT3_COPY(imu.accel_unscaled, imu_aspirin2.mpu.data_accel.vect);
+        RATES_COPY(imu.gyro_unscaled, imu_aspirin2.mpu.data_rates.rates);
+        VECT3_COPY(imu.accel_unscaled, imu_aspirin2.mpu.data_accel.vect);
 #if !ASPIRIN_2_DISABLE_MAG
-    VECT3_COPY(imu.mag_unscaled, mag);
+        VECT3_COPY(imu.mag_unscaled, mag);
 #endif
 #endif
 #else
 
-    /* Handle axis assignement for Lisa/M or Lisa/MX V2.1 integrated Aspirin like
-     * IMU.
-     */
+        /* Handle axis assignement for Lisa/M or Lisa/MX V2.1 integrated Aspirin like
+         * IMU.
+         */
 #ifdef LISA_M_OR_MX_21
-    RATES_ASSIGN(imu.gyro_unscaled,
-                 -imu_aspirin2.mpu.data_rates.rates.q,
-                 imu_aspirin2.mpu.data_rates.rates.p,
-                 imu_aspirin2.mpu.data_rates.rates.r);
-    VECT3_ASSIGN(imu.accel_unscaled,
-                 -imu_aspirin2.mpu.data_accel.vect.y,
-                 imu_aspirin2.mpu.data_accel.vect.x,
-                 imu_aspirin2.mpu.data_accel.vect.z);
+        RATES_ASSIGN(imu.gyro_unscaled,
+                     -imu_aspirin2.mpu.data_rates.rates.q,
+                     imu_aspirin2.mpu.data_rates.rates.p,
+                     imu_aspirin2.mpu.data_rates.rates.r);
+        VECT3_ASSIGN(imu.accel_unscaled,
+                     -imu_aspirin2.mpu.data_accel.vect.y,
+                     imu_aspirin2.mpu.data_accel.vect.x,
+                     imu_aspirin2.mpu.data_accel.vect.z);
 #if !ASPIRIN_2_DISABLE_MAG
-    VECT3_ASSIGN(imu.mag_unscaled, -mag.y, mag.x, mag.z);
+        VECT3_ASSIGN(imu.mag_unscaled, -mag.y, mag.x, mag.z);
 #endif
 #else
 
-    /* Handle real Aspirin IMU axis assignement. */
+        /* Handle real Aspirin IMU axis assignement. */
 #ifdef LISA_M_LONGITUDINAL_X
-    RATES_ASSIGN(imu.gyro_unscaled,
-                 imu_aspirin2.mpu.data_rates.rates.q,
-                 -imu_aspirin2.mpu.data_rates.rates.p,
-                 imu_aspirin2.mpu.data_rates.rates.r);
-    VECT3_ASSIGN(imu.accel_unscaled,
-                 imu_aspirin2.mpu.data_accel.vect.y,
-                 -imu_aspirin2.mpu.data_accel.vect.x,
-                 imu_aspirin2.mpu.data_accel.vect.z);
+        RATES_ASSIGN(imu.gyro_unscaled,
+                     imu_aspirin2.mpu.data_rates.rates.q,
+                     -imu_aspirin2.mpu.data_rates.rates.p,
+                     imu_aspirin2.mpu.data_rates.rates.r);
+        VECT3_ASSIGN(imu.accel_unscaled,
+                     imu_aspirin2.mpu.data_accel.vect.y,
+                     -imu_aspirin2.mpu.data_accel.vect.x,
+                     imu_aspirin2.mpu.data_accel.vect.z);
 #if !ASPIRIN_2_DISABLE_MAG
-    VECT3_ASSIGN(imu.mag_unscaled, -mag.x, -mag.y, mag.z);
+        VECT3_ASSIGN(imu.mag_unscaled, -mag.x, -mag.y, mag.z);
 #endif
 #else
-    RATES_COPY(imu.gyro_unscaled, imu_aspirin2.mpu.data_rates.rates);
-    VECT3_COPY(imu.accel_unscaled, imu_aspirin2.mpu.data_accel.vect);
+        RATES_COPY(imu.gyro_unscaled, imu_aspirin2.mpu.data_rates.rates);
+        VECT3_COPY(imu.accel_unscaled, imu_aspirin2.mpu.data_accel.vect);
 #if !ASPIRIN_2_DISABLE_MAG
-    VECT3_ASSIGN(imu.mag_unscaled, mag.y, -mag.x, mag.z)
+        VECT3_ASSIGN(imu.mag_unscaled, mag.y, -mag.x, mag.z)
 #endif
 #endif
 #endif
 #endif
 
-    imu_aspirin2.mpu.data_available = FALSE;
+        imu_aspirin2.mpu.data_available = FALSE;
 
-    imu_scale_gyro(&imu);
-    imu_scale_accel(&imu);
-    AbiSendMsgIMU_GYRO_INT32(IMU_ASPIRIN2_ID, now_ts, &imu.gyro);
-    AbiSendMsgIMU_ACCEL_INT32(IMU_ASPIRIN2_ID, now_ts, &imu.accel);
+        imu_scale_gyro(&imu);
+        imu_scale_accel(&imu);
+        AbiSendMsgIMU_GYRO_INT32(IMU_ASPIRIN2_ID, now_ts, &imu.gyro);
+        AbiSendMsgIMU_ACCEL_INT32(IMU_ASPIRIN2_ID, now_ts, &imu.accel);
 #if !ASPIRIN_2_DISABLE_MAG
-    imu_scale_mag(&imu);
-    AbiSendMsgIMU_MAG_INT32(IMU_ASPIRIN2_ID, now_ts, &imu.mag);
+        imu_scale_mag(&imu);
+        AbiSendMsgIMU_MAG_INT32(IMU_ASPIRIN2_ID, now_ts, &imu.mag);
 #endif
-  }
+    }
 }
 
 // hack with waiting to avoid creating another event loop to check the mag config status
 static inline void mpu_set_and_wait(Mpu60x0ConfigSet mpu_set, void *mpu, uint8_t _reg, uint8_t _val)
 {
-  mpu_set(mpu, _reg, _val);
-  while (imu_aspirin2.mpu.spi_trans.status != SPITransSuccess);
+    mpu_set(mpu, _reg, _val);
+    while (imu_aspirin2.mpu.spi_trans.status != SPITransSuccess);
 }
 
 /** function to configure hmc5883 mag
@@ -258,57 +259,63 @@ static inline void mpu_set_and_wait(Mpu60x0ConfigSet mpu_set, void *mpu, uint8_t
  */
 bool_t imu_aspirin2_configure_mag_slave(Mpu60x0ConfigSet mpu_set, void *mpu)
 {
-  // wait before starting the configuration of the HMC58xx mag
-  // doing to early may void the mode configuration
-  if (get_sys_time_float() < ASPIRIN_2_MAG_STARTUP_DELAY) {
-    return FALSE;
-  }
+    // wait before starting the configuration of the HMC58xx mag
+    // doing to early may void the mode configuration
+    if (get_sys_time_float() < ASPIRIN_2_MAG_STARTUP_DELAY)
+    {
+        return FALSE;
+    }
 
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_ADDR, (HMC58XX_ADDR >> 1));
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_REG, HMC58XX_REG_CFGA);
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_DO, HMC58XX_CRA);
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_CTRL, (1 << 7)); // Slave 4 enable
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_ADDR, (HMC58XX_ADDR >> 1));
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_REG, HMC58XX_REG_CFGA);
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_DO, HMC58XX_CRA);
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_CTRL, (1 << 7)); // Slave 4 enable
 
-  mpu_wait_slave4_ready();
+    mpu_wait_slave4_ready();
 
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_ADDR, (HMC58XX_ADDR >> 1));
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_REG, HMC58XX_REG_CFGB);
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_DO, HMC58XX_CRB);
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_CTRL, (1 << 7)); // Slave 4 enable
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_ADDR, (HMC58XX_ADDR >> 1));
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_REG, HMC58XX_REG_CFGB);
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_DO, HMC58XX_CRB);
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_CTRL, (1 << 7)); // Slave 4 enable
 
-  mpu_wait_slave4_ready();
+    mpu_wait_slave4_ready();
 
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_ADDR, (HMC58XX_ADDR >> 1));
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_REG, HMC58XX_REG_MODE);
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_DO, HMC58XX_MD);
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_CTRL, (1 << 7)); // Slave 4 enable
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_ADDR, (HMC58XX_ADDR >> 1));
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_REG, HMC58XX_REG_MODE);
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_DO, HMC58XX_MD);
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV4_CTRL, (1 << 7)); // Slave 4 enable
 
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV0_ADDR, (HMC58XX_ADDR >> 1) | MPU60X0_SPI_READ);
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV0_REG, HMC58XX_REG_DATXM);
-  // Put the enable command as last.
-  mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV0_CTRL,
-                   (1 << 7) |    // Slave 0 enable
-                   (6 << 0));    // Read 6 bytes
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV0_ADDR, (HMC58XX_ADDR >> 1) | MPU60X0_SPI_READ);
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV0_REG, HMC58XX_REG_DATXM);
+    // Put the enable command as last.
+    mpu_set_and_wait(mpu_set, mpu, MPU60X0_REG_I2C_SLV0_CTRL,
+                     (1 << 7) |    // Slave 0 enable
+                     (6 << 0));    // Read 6 bytes
 
-  return TRUE;
+    return TRUE;
 }
 
 void mpu_wait_slave4_ready(void)
 {
-  while (!imu_aspirin2.slave4_ready) {
-    if (imu_aspirin2.wait_slave4_trans.status == SPITransDone) {
-      imu_aspirin2.wait_slave4_tx_buf[0] = MPU60X0_REG_I2C_MST_STATUS | MPU60X0_SPI_READ;
-      spi_submit(imu_aspirin2.mpu.spi_p, &(imu_aspirin2.wait_slave4_trans));
+    while (!imu_aspirin2.slave4_ready)
+    {
+        if (imu_aspirin2.wait_slave4_trans.status == SPITransDone)
+        {
+            imu_aspirin2.wait_slave4_tx_buf[0] = MPU60X0_REG_I2C_MST_STATUS | MPU60X0_SPI_READ;
+            spi_submit(imu_aspirin2.mpu.spi_p, &(imu_aspirin2.wait_slave4_trans));
+        }
     }
-  }
 }
 
 void mpu_wait_slave4_ready_cb(struct spi_transaction *t)
 {
-  if (bit_is_set(t->input_buf[1], MPU60X0_I2C_SLV4_DONE)) {
-    imu_aspirin2.slave4_ready = TRUE;
-  } else {
-    imu_aspirin2.slave4_ready = FALSE;
-  }
-  t->status = SPITransDone;
+    if (bit_is_set(t->input_buf[1], MPU60X0_I2C_SLV4_DONE))
+    {
+        imu_aspirin2.slave4_ready = TRUE;
+    }
+    else
+    {
+        imu_aspirin2.slave4_ready = FALSE;
+    }
+    t->status = SPITransDone;
 }

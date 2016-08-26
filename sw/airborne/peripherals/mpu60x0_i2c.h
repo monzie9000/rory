@@ -38,35 +38,39 @@
 
 #define MPU60X0_BUFFER_EXT_LEN 16
 
-enum Mpu60x0I2cSlaveInitStatus {
-  MPU60X0_I2C_CONF_UNINIT,
-  MPU60X0_I2C_CONF_I2C_MST_DIS,
-  MPU60X0_I2C_CONF_I2C_BYPASS_EN,
-  MPU60X0_I2C_CONF_SLAVES_CONFIGURE,
-  MPU60X0_I2C_CONF_I2C_BYPASS_DIS,
-  MPU60X0_I2C_CONF_I2C_MST_CLK,
-  MPU60X0_I2C_CONF_I2C_MST_DELAY,
-  MPU60X0_I2C_CONF_I2C_SMPLRT,
-  MPU60X0_I2C_CONF_I2C_MST_EN,
-  MPU60X0_I2C_CONF_DONE
+enum Mpu60x0I2cSlaveInitStatus
+{
+    MPU60X0_I2C_CONF_UNINIT,
+    MPU60X0_I2C_CONF_I2C_MST_DIS,
+    MPU60X0_I2C_CONF_I2C_BYPASS_EN,
+    MPU60X0_I2C_CONF_SLAVES_CONFIGURE,
+    MPU60X0_I2C_CONF_I2C_BYPASS_DIS,
+    MPU60X0_I2C_CONF_I2C_MST_CLK,
+    MPU60X0_I2C_CONF_I2C_MST_DELAY,
+    MPU60X0_I2C_CONF_I2C_SMPLRT,
+    MPU60X0_I2C_CONF_I2C_MST_EN,
+    MPU60X0_I2C_CONF_DONE
 };
 
-struct Mpu60x0_I2c {
-  struct i2c_periph *i2c_p;
-  struct i2c_transaction i2c_trans;
-  volatile bool_t data_available;     ///< data ready flag
-  union {
-    struct Int16Vect3 vect;           ///< accel data vector in accel coordinate system
-    int16_t value[3];                 ///< accel data values accessible by channel index
-  } data_accel;
-  union {
-    struct Int16Rates rates;          ///< rates data as angular rates in gyro coordinate system
-    int16_t value[3];                 ///< rates data values accessible by channel index
-  } data_rates;
-  float temp;                         ///< temperature in degrees Celcius
-  uint8_t data_ext[MPU60X0_BUFFER_EXT_LEN];
-  struct Mpu60x0Config config;
-  enum Mpu60x0I2cSlaveInitStatus slave_init_status;
+struct Mpu60x0_I2c
+{
+    struct i2c_periph *i2c_p;
+    struct i2c_transaction i2c_trans;
+    volatile bool_t data_available;     ///< data ready flag
+    union
+    {
+        struct Int16Vect3 vect;           ///< accel data vector in accel coordinate system
+        int16_t value[3];                 ///< accel data values accessible by channel index
+    } data_accel;
+    union
+    {
+        struct Int16Rates rates;          ///< rates data as angular rates in gyro coordinate system
+        int16_t value[3];                 ///< rates data values accessible by channel index
+    } data_rates;
+    float temp;                         ///< temperature in degrees Celcius
+    uint8_t data_ext[MPU60X0_BUFFER_EXT_LEN];
+    struct Mpu60x0Config config;
+    enum Mpu60x0I2cSlaveInitStatus slave_init_status;
 };
 
 // Functions
@@ -78,11 +82,14 @@ extern void mpu60x0_i2c_event(struct Mpu60x0_I2c *mpu);
 /// convenience function: read or start configuration if not already initialized
 static inline void mpu60x0_i2c_periodic(struct Mpu60x0_I2c *mpu)
 {
-  if (mpu->config.initialized) {
-    mpu60x0_i2c_read(mpu);
-  } else {
-    mpu60x0_i2c_start_configure(mpu);
-  }
+    if (mpu->config.initialized)
+    {
+        mpu60x0_i2c_read(mpu);
+    }
+    else
+    {
+        mpu60x0_i2c_start_configure(mpu);
+    }
 }
 
 #endif // MPU60X0_I2C_H

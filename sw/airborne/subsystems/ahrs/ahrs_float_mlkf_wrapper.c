@@ -48,38 +48,44 @@ static void set_body_state_from_quat(void);
 
 static void send_euler(struct transport_tx *trans, struct link_device *dev)
 {
-  struct FloatEulers ltp_to_imu_euler;
-  float_eulers_of_quat(&ltp_to_imu_euler, &ahrs_mlkf.ltp_to_imu_quat);
-  pprz_msg_send_AHRS_EULER(trans, dev, AC_ID,
-                           &ltp_to_imu_euler.phi,
-                           &ltp_to_imu_euler.theta,
-                           &ltp_to_imu_euler.psi,
-                           &ahrs_mlkf_id);
+    struct FloatEulers ltp_to_imu_euler;
+    float_eulers_of_quat(&ltp_to_imu_euler, &ahrs_mlkf.ltp_to_imu_quat);
+    pprz_msg_send_AHRS_EULER(trans, dev, AC_ID,
+                             &ltp_to_imu_euler.phi,
+                             &ltp_to_imu_euler.theta,
+                             &ltp_to_imu_euler.psi,
+                             &ahrs_mlkf_id);
 }
 
 static void send_bias(struct transport_tx *trans, struct link_device *dev)
 {
-  struct Int32Rates gyro_bias;
-  RATES_BFP_OF_REAL(gyro_bias, ahrs_mlkf.gyro_bias);
-  pprz_msg_send_AHRS_GYRO_BIAS_INT(trans, dev, AC_ID,
-                                   &gyro_bias.p, &gyro_bias.q, &gyro_bias.r, &ahrs_mlkf_id);
+    struct Int32Rates gyro_bias;
+    RATES_BFP_OF_REAL(gyro_bias, ahrs_mlkf.gyro_bias);
+    pprz_msg_send_AHRS_GYRO_BIAS_INT(trans, dev, AC_ID,
+                                     &gyro_bias.p, &gyro_bias.q, &gyro_bias.r, &ahrs_mlkf_id);
 }
 
 static void send_geo_mag(struct transport_tx *trans, struct link_device *dev)
 {
-  pprz_msg_send_GEO_MAG(trans, dev, AC_ID,
-                        &ahrs_mlkf.mag_h.x, &ahrs_mlkf.mag_h.y, &ahrs_mlkf.mag_h.z, &ahrs_mlkf_id);
+    pprz_msg_send_GEO_MAG(trans, dev, AC_ID,
+                          &ahrs_mlkf.mag_h.x, &ahrs_mlkf.mag_h.y, &ahrs_mlkf.mag_h.z, &ahrs_mlkf_id);
 }
 
 static void send_filter_status(struct transport_tx *trans, struct link_device *dev)
 {
-  uint8_t mde = 3;
-  uint16_t val = 0;
-  if (!ahrs_mlkf.is_aligned) { mde = 2; }
-  uint32_t t_diff = get_sys_time_usec() - ahrs_mlkf_last_stamp;
-  /* set lost if no new gyro measurements for 50ms */
-  if (t_diff > 50000) { mde = 5; }
-  pprz_msg_send_STATE_FILTER_STATUS(trans, dev, AC_ID, &ahrs_mlkf_id, &mde, &val);
+    uint8_t mde = 3;
+    uint16_t val = 0;
+    if (!ahrs_mlkf.is_aligned)
+    {
+        mde = 2;
+    }
+    uint32_t t_diff = get_sys_time_usec() - ahrs_mlkf_last_stamp;
+    /* set lost if no new gyro measurements for 50ms */
+    if (t_diff > 50000)
+    {
+        mde = 5;
+    }
+    pprz_msg_send_STATE_FILTER_STATUS(trans, dev, AC_ID, &ahrs_mlkf_id, &mde, &val);
 }
 #endif
 
@@ -109,26 +115,28 @@ static abi_event geo_mag_ev;
 static void gyro_cb(uint8_t __attribute__((unused)) sender_id,
                     uint32_t stamp, struct Int32Rates *gyro)
 {
-  ahrs_mlkf_last_stamp = stamp;
+    ahrs_mlkf_last_stamp = stamp;
 #if USE_AUTO_AHRS_FREQ || !defined(AHRS_PROPAGATE_FREQUENCY)
-  PRINT_CONFIG_MSG("Calculating dt for AHRS_MLKF propagation.")
-  /* timestamp in usec when last callback was received */
-  static uint32_t last_stamp = 0;
+    PRINT_CONFIG_MSG("Calculating dt for AHRS_MLKF propagation.")
+    /* timestamp in usec when last callback was received */
+    static uint32_t last_stamp = 0;
 
-  if (last_stamp > 0 && ahrs_mlkf.is_aligned) {
-    float dt = (float)(stamp - last_stamp) * 1e-6;
-    ahrs_mlkf_propagate(gyro, dt);
-    set_body_state_from_quat();
-  }
-  last_stamp = stamp;
+    if (last_stamp > 0 && ahrs_mlkf.is_aligned)
+    {
+        float dt = (float)(stamp - last_stamp) * 1e-6;
+        ahrs_mlkf_propagate(gyro, dt);
+        set_body_state_from_quat();
+    }
+    last_stamp = stamp;
 #else
-  PRINT_CONFIG_MSG("Using fixed AHRS_PROPAGATE_FREQUENCY for AHRS_MLKF propagation.")
-  PRINT_CONFIG_VAR(AHRS_PROPAGATE_FREQUENCY)
-  if (ahrs_mlkf.status == AHRS_MLKF_RUNNING) {
-    const float dt = 1. / (AHRS_PROPAGATE_FREQUENCY);
-    ahrs_mlkf_propagate(gyro, dt);
-    set_body_state_from_quat();
-  }
+    PRINT_CONFIG_MSG("Using fixed AHRS_PROPAGATE_FREQUENCY for AHRS_MLKF propagation.")
+    PRINT_CONFIG_VAR(AHRS_PROPAGATE_FREQUENCY)
+    if (ahrs_mlkf.status == AHRS_MLKF_RUNNING)
+    {
+        const float dt = 1. / (AHRS_PROPAGATE_FREQUENCY);
+        ahrs_mlkf_propagate(gyro, dt);
+        set_body_state_from_quat();
+    }
 #endif
 }
 
@@ -136,20 +144,22 @@ static void accel_cb(uint8_t sender_id __attribute__((unused)),
                      uint32_t stamp __attribute__((unused)),
                      struct Int32Vect3 *accel)
 {
-  if (ahrs_mlkf.is_aligned) {
-    ahrs_mlkf_update_accel(accel);
-    set_body_state_from_quat();
-  }
+    if (ahrs_mlkf.is_aligned)
+    {
+        ahrs_mlkf_update_accel(accel);
+        set_body_state_from_quat();
+    }
 }
 
 static void mag_cb(uint8_t sender_id __attribute__((unused)),
                    uint32_t stamp __attribute__((unused)),
                    struct Int32Vect3 *mag)
 {
-  if (ahrs_mlkf.is_aligned) {
-    ahrs_mlkf_update_mag(mag);
-    set_body_state_from_quat();
-  }
+    if (ahrs_mlkf.is_aligned)
+    {
+        ahrs_mlkf_update_mag(mag);
+        set_body_state_from_quat();
+    }
 }
 
 static void aligner_cb(uint8_t __attribute__((unused)) sender_id,
@@ -157,29 +167,31 @@ static void aligner_cb(uint8_t __attribute__((unused)) sender_id,
                        struct Int32Rates *lp_gyro, struct Int32Vect3 *lp_accel,
                        struct Int32Vect3 *lp_mag)
 {
-  if (!ahrs_mlkf.is_aligned) {
-    /* set initial body orientation in state interface if alignment was successful */
-    if (ahrs_mlkf_align(lp_gyro, lp_accel, lp_mag)) {
-      set_body_state_from_quat();
+    if (!ahrs_mlkf.is_aligned)
+    {
+        /* set initial body orientation in state interface if alignment was successful */
+        if (ahrs_mlkf_align(lp_gyro, lp_accel, lp_mag))
+        {
+            set_body_state_from_quat();
+        }
     }
-  }
 }
 
 static void body_to_imu_cb(uint8_t sender_id __attribute__((unused)),
                            struct FloatQuat *q_b2i_f)
 {
-  ahrs_mlkf_set_body_to_imu_quat(q_b2i_f);
+    ahrs_mlkf_set_body_to_imu_quat(q_b2i_f);
 }
 
 static void geo_mag_cb(uint8_t sender_id __attribute__((unused)), struct FloatVect3 *h)
 {
-  ahrs_mlkf.mag_h = *h;
+    ahrs_mlkf.mag_h = *h;
 }
 
 static bool_t ahrs_mlkf_enable_output(bool_t enable)
 {
-  ahrs_mlkf_output_enabled = enable;
-  return ahrs_mlkf_output_enabled;
+    ahrs_mlkf_output_enabled = enable;
+    return ahrs_mlkf_output_enabled;
 }
 
 /**
@@ -187,45 +199,46 @@ static bool_t ahrs_mlkf_enable_output(bool_t enable)
  */
 static void set_body_state_from_quat(void)
 {
-  if (ahrs_mlkf_output_enabled) {
-    struct FloatQuat *body_to_imu_quat = orientationGetQuat_f(&ahrs_mlkf.body_to_imu);
-    struct FloatRMat *body_to_imu_rmat = orientationGetRMat_f(&ahrs_mlkf.body_to_imu);
+    if (ahrs_mlkf_output_enabled)
+    {
+        struct FloatQuat *body_to_imu_quat = orientationGetQuat_f(&ahrs_mlkf.body_to_imu);
+        struct FloatRMat *body_to_imu_rmat = orientationGetRMat_f(&ahrs_mlkf.body_to_imu);
 
-    /* Compute LTP to BODY quaternion */
-    struct FloatQuat ltp_to_body_quat;
-    float_quat_comp_inv(&ltp_to_body_quat, &ahrs_mlkf.ltp_to_imu_quat, body_to_imu_quat);
-    /* Set in state interface */
-    stateSetNedToBodyQuat_f(&ltp_to_body_quat);
+        /* Compute LTP to BODY quaternion */
+        struct FloatQuat ltp_to_body_quat;
+        float_quat_comp_inv(&ltp_to_body_quat, &ahrs_mlkf.ltp_to_imu_quat, body_to_imu_quat);
+        /* Set in state interface */
+        stateSetNedToBodyQuat_f(&ltp_to_body_quat);
 
-    /* compute body rates */
-    struct FloatRates body_rate;
-    float_rmat_transp_ratemult(&body_rate, body_to_imu_rmat, &ahrs_mlkf.imu_rate);
-    /* Set state */
-    stateSetBodyRates_f(&body_rate);
-  }
+        /* compute body rates */
+        struct FloatRates body_rate;
+        float_rmat_transp_ratemult(&body_rate, body_to_imu_rmat, &ahrs_mlkf.imu_rate);
+        /* Set state */
+        stateSetBodyRates_f(&body_rate);
+    }
 }
 
 void ahrs_mlkf_register(void)
 {
-  ahrs_mlkf_output_enabled = AHRS_MLKF_OUTPUT_ENABLED;
-  ahrs_mlkf_init();
-  ahrs_register_impl(ahrs_mlkf_enable_output);
+    ahrs_mlkf_output_enabled = AHRS_MLKF_OUTPUT_ENABLED;
+    ahrs_mlkf_init();
+    ahrs_register_impl(ahrs_mlkf_enable_output);
 
-  /*
-   * Subscribe to scaled IMU measurements and attach callbacks
-   */
-  AbiBindMsgIMU_GYRO_INT32(AHRS_MLKF_IMU_ID, &gyro_ev, gyro_cb);
-  AbiBindMsgIMU_ACCEL_INT32(AHRS_MLKF_IMU_ID, &accel_ev, accel_cb);
-  AbiBindMsgIMU_MAG_INT32(AHRS_MLKF_MAG_ID, &mag_ev, mag_cb);
-  AbiBindMsgIMU_LOWPASSED(ABI_BROADCAST, &aligner_ev, aligner_cb);
-  AbiBindMsgBODY_TO_IMU_QUAT(ABI_BROADCAST, &body_to_imu_ev, body_to_imu_cb);
-  AbiBindMsgGEO_MAG(ABI_BROADCAST, &geo_mag_ev, geo_mag_cb);
+    /*
+     * Subscribe to scaled IMU measurements and attach callbacks
+     */
+    AbiBindMsgIMU_GYRO_INT32(AHRS_MLKF_IMU_ID, &gyro_ev, gyro_cb);
+    AbiBindMsgIMU_ACCEL_INT32(AHRS_MLKF_IMU_ID, &accel_ev, accel_cb);
+    AbiBindMsgIMU_MAG_INT32(AHRS_MLKF_MAG_ID, &mag_ev, mag_cb);
+    AbiBindMsgIMU_LOWPASSED(ABI_BROADCAST, &aligner_ev, aligner_cb);
+    AbiBindMsgBODY_TO_IMU_QUAT(ABI_BROADCAST, &body_to_imu_ev, body_to_imu_cb);
+    AbiBindMsgGEO_MAG(ABI_BROADCAST, &geo_mag_ev, geo_mag_cb);
 
 #if PERIODIC_TELEMETRY
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AHRS_EULER, send_euler);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AHRS_GYRO_BIAS_INT, send_bias);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_GEO_MAG, send_geo_mag);
-  register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_STATE_FILTER_STATUS, send_filter_status);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AHRS_EULER, send_euler);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_AHRS_GYRO_BIAS_INT, send_bias);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_GEO_MAG, send_geo_mag);
+    register_periodic_telemetry(DefaultPeriodic, PPRZ_MSG_ID_STATE_FILTER_STATUS, send_filter_status);
 #endif
 }
 

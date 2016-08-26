@@ -36,33 +36,37 @@
 #include "peripherals/ak8963_regs.h"
 
 /** Config status states */
-enum Ak8963ConfStatus {
-  AK_CONF_UNINIT,
-  AK_CONF_MODE,
-  AK_CONF_DONE
+enum Ak8963ConfStatus
+{
+    AK_CONF_UNINIT,
+    AK_CONF_MODE,
+    AK_CONF_DONE
 };
 
 /** Normal status states */
-enum Ak8963Status {
-  AK_STATUS_IDLE,
-  AK_STATUS_READ,
-  AK_STATUS_DONE
+enum Ak8963Status
+{
+    AK_STATUS_IDLE,
+    AK_STATUS_READ,
+    AK_STATUS_DONE
 };
 
 /** Default Ak8963 structure */
-struct Ak8963 {
-  struct i2c_periph *i2c_p;           ///< peripheral used for communcation
-  struct i2c_transaction i2c_trans;   ///< i2c transaction used for communication with the ak8936
-  bool_t initialized;                 ///< config done flag
+struct Ak8963
+{
+    struct i2c_periph *i2c_p;           ///< peripheral used for communcation
+    struct i2c_transaction i2c_trans;   ///< i2c transaction used for communication with the ak8936
+    bool_t initialized;                 ///< config done flag
 
-  enum Ak8963Status status;           ///< main status
-  enum Ak8963ConfStatus init_status;  ///< init status
+    enum Ak8963Status status;           ///< main status
+    enum Ak8963ConfStatus init_status;  ///< init status
 
-  volatile bool_t data_available;     ///< data ready flag
-  union {
-    struct Int16Vect3 vect;           ///< data vector in mag coordinate system
-    int16_t value[3];                 ///< data values accessible by channel index
-  } data;
+    volatile bool_t data_available;     ///< data ready flag
+    union
+    {
+        struct Int16Vect3 vect;           ///< data vector in mag coordinate system
+        int16_t value[3];                 ///< data values accessible by channel index
+    } data;
 };
 
 // Functions
@@ -74,11 +78,14 @@ extern void ak8963_read(struct Ak8963 *ak);
 /// convenience function: read or start configuration if not already initialized
 static inline void ak8963_periodic(struct Ak8963 *ak)
 {
-  if (ak->initialized) {
-    ak8963_read(ak);
-  } else {
-    ak8963_configure(ak);
-  }
+    if (ak->initialized)
+    {
+        ak8963_read(ak);
+    }
+    else
+    {
+        ak8963_configure(ak);
+    }
 }
 
 #endif /* AK8963_H */

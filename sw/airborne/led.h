@@ -36,63 +36,63 @@
 static inline void led_init(void)
 {
 #if USE_LED_1
-  LED_INIT(1);
-  LED_OFF(1);
+    LED_INIT(1);
+    LED_OFF(1);
 #endif /* LED_1 */
 
 #if USE_LED_2
-  LED_INIT(2);
-  LED_OFF(2);
+    LED_INIT(2);
+    LED_OFF(2);
 #endif /* LED_2 */
 
 #if USE_LED_3
-  LED_INIT(3);
-  LED_OFF(3);
+    LED_INIT(3);
+    LED_OFF(3);
 #endif /* LED_3 */
 
 #if USE_LED_4
-  LED_INIT(4);
-  LED_OFF(4);
+    LED_INIT(4);
+    LED_OFF(4);
 #endif /* LED_4 */
 
 #if USE_LED_5
-  LED_INIT(5);
-  LED_OFF(5);
+    LED_INIT(5);
+    LED_OFF(5);
 #endif /* LED_5 */
 
 #if USE_LED_6
-  LED_INIT(6);
-  LED_OFF(6);
+    LED_INIT(6);
+    LED_OFF(6);
 #endif /* LED_6 */
 
 #if USE_LED_7
-  LED_INIT(7);
-  LED_OFF(7);
+    LED_INIT(7);
+    LED_OFF(7);
 #endif /* LED_7 */
 
 #if USE_LED_8
-  LED_INIT(8);
-  LED_OFF(8);
+    LED_INIT(8);
+    LED_OFF(8);
 #endif /* LED_8 */
 
 #if USE_LED_9
-  LED_INIT(9);
-  LED_OFF(9);
+    LED_INIT(9);
+    LED_OFF(9);
 #endif /* LED_9 */
 
 #if USE_LED_10
-  LED_INIT(10);
-  LED_OFF(10);
+    LED_INIT(10);
+    LED_OFF(10);
 #endif /* LED_10 */
 
 #ifdef USE_LED_BODY
-  LED_INIT(BODY);
-  LED_OFF(BODY);
+    LED_INIT(BODY);
+    LED_OFF(BODY);
 #endif /* LED_BODY */
 
 #if USE_LED_12
-  LED_INIT(12);
-  LED_OFF(12);
+    LED_INIT(12);
+    LED_OFF(12);
 #endif /* LED_12 */
 }
 

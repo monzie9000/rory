@@ -39,7 +39,7 @@ uint8_t mavlink_crc_extra[256] = {50, 124, 137, 0, 237, 217, 104, 119, 0, 0, 0, 
 
 void mavlink_send_debug(struct mavlink_transport *t)
 {
-  DOWNLINK_SEND_DEBUG(DefaultChannel, DefaultDevice, t->trans.payload_len, t->trans.payload);
+    DOWNLINK_SEND_DEBUG(DefaultChannel, DefaultDevice, t->trans.payload_len, t->trans.payload);
 }
 #endif
 

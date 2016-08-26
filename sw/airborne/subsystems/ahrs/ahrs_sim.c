@@ -52,17 +52,17 @@ float ins_pitch_neutral = INS_PITCH_NEUTRAL_DEFAULT;
 void update_ahrs_from_sim(void)
 {
 
-  struct FloatEulers ltp_to_imu_euler = { sim_phi, sim_theta, sim_psi };
-  struct FloatRates imu_rate = { sim_p, sim_q, sim_r };
-  /* set ltp_to_body to same as ltp_to_imu, currently no difference simulated */
-  stateSetNedToBodyEulers_f(&ltp_to_imu_euler);
-  stateSetBodyRates_f(&imu_rate);
+    struct FloatEulers ltp_to_imu_euler = { sim_phi, sim_theta, sim_psi };
+    struct FloatRates imu_rate = { sim_p, sim_q, sim_r };
+    /* set ltp_to_body to same as ltp_to_imu, currently no difference simulated */
+    stateSetNedToBodyEulers_f(&ltp_to_imu_euler);
+    stateSetBodyRates_f(&imu_rate);
 
 }
 
 
 void ahrs_sim_register(void)
 {
-  // dummy, simple ocaml sim only supports one basic fake AHRS anyway
-  ahrs_register_impl(NULL);
+    // dummy, simple ocaml sim only supports one basic fake AHRS anyway
+    ahrs_register_impl(NULL);
 }

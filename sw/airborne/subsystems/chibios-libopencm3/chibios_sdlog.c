@@ -58,98 +58,102 @@ static WORKING_AREA(waThdBatterySurvey, 4096);
 static void launchBatterySurveyThread (void)
 {
 
-  chThdCreateStatic (waThdBatterySurvey, sizeof(waThdBatterySurvey),
-      NORMALPRIO+2, batterySurveyThd, NULL);
+    chThdCreateStatic (waThdBatterySurvey, sizeof(waThdBatterySurvey),
+                       NORMALPRIO+2, batterySurveyThd, NULL);
 
 }
 
 // Functions for the generic device API
 static int sdlog_check_free_space(struct chibios_sdlog* p __attribute__((unused)), uint8_t len __attribute__((unused)))
 {
-  return TRUE;
+    return TRUE;
 }
 
 static void sdlog_transmit(struct chibios_sdlog* p, uint8_t byte)
 {
-  sdLogWriteByte(*p->file, byte);
+    sdLogWriteByte(*p->file, byte);
 }
 
 static void sdlog_send(struct chibios_sdlog* p __attribute__((unused))) { }
 
-static int null_function(struct chibios_sdlog *p __attribute__((unused))) { return 0; }
+static int null_function(struct chibios_sdlog *p __attribute__((unused)))
+{
+    return 0;
+}
 
 void chibios_sdlog_init(struct chibios_sdlog *sdlog, FileDes *file)
 {
-  // Store file descriptor
-  sdlog->file = file;
-  // Configure generic device
-  sdlog->device.periph = (void *)(sdlog);
-  sdlog->device.check_free_space = (check_free_space_t) sdlog_check_free_space;
-  sdlog->device.put_byte = (put_byte_t) sdlog_transmit;
-  sdlog->device.send_message = (send_message_t) sdlog_send;
-  sdlog->device.char_available = (char_available_t) null_function; // write only
-  sdlog->device.get_byte = (get_byte_t) null_function; // write only
+    // Store file descriptor
+    sdlog->file = file;
+    // Configure generic device
+    sdlog->device.periph = (void *)(sdlog);
+    sdlog->device.check_free_space = (check_free_space_t) sdlog_check_free_space;
+    sdlog->device.put_byte = (put_byte_t) sdlog_transmit;
+    sdlog->device.send_message = (send_message_t) sdlog_send;
+    sdlog->device.char_available = (char_available_t) null_function; // write only
+    sdlog->device.get_byte = (get_byte_t) null_function; // write only
 
 }
 
 bool_t chibios_logInit(void)
 {
-  nvicSetSystemHandlerPriority(HANDLER_PENDSV,
-             CORTEX_PRIORITY_MASK(15));
+    nvicSetSystemHandlerPriority(HANDLER_PENDSV,
+                                 CORTEX_PRIORITY_MASK(15));
 
-  // Init sdlog struct
-  chibios_sdlog_init(&chibios_sdlog, &pprzLogFile);
+    // Init sdlog struct
+    chibios_sdlog_init(&chibios_sdlog, &pprzLogFile);
 
-  if (sdLogInit (NULL) != SDLOG_OK)
-    goto error;
+    if (sdLogInit (NULL) != SDLOG_OK)
+        goto error;
 
-  if (sdLogOpenLog (&pprzLogFile, PPRZ_LOG_DIR, PPRZ_LOG_NAME, TRUE) != SDLOG_OK)
-    goto error;
+    if (sdLogOpenLog (&pprzLogFile, PPRZ_LOG_DIR, PPRZ_LOG_NAME, TRUE) != SDLOG_OK)
+        goto error;
 
 #if FLIGHTRECORDER_SDLOG
-  if (sdLogOpenLog (&flightRecorderLogFile, FR_LOG_DIR, FLIGHTRECORDER_LOG_NAME, FALSE) != SDLOG_OK)
-    goto error;
+    if (sdLogOpenLog (&flightRecorderLogFile, FR_LOG_DIR, FLIGHTRECORDER_LOG_NAME, FALSE) != SDLOG_OK)
+        goto error;
 #endif
 
-  chEvtInit (&powerOutageSource);
+    chEvtInit (&powerOutageSource);
 
-  launchBatterySurveyThread ();
+    launchBatterySurveyThread ();
 
-  return TRUE;
+    return TRUE;
 
 error:
-  return FALSE;
+    return FALSE;
 }
 
 
 void chibios_logFinish(bool_t flush)
 {
-  if (pprzLogFile != -1) {
-    sdLogCloseAllLogs(flush);
-    sdLogFinish ();
-    pprzLogFile = 0;
+    if (pprzLogFile != -1)
+    {
+        sdLogCloseAllLogs(flush);
+        sdLogFinish ();
+        pprzLogFile = 0;
 #if FLIGHTRECORDER_SDLOG
-    flightRecorderLogFile = 0;
+        flightRecorderLogFile = 0;
 #endif
-  }
+    }
 }
 
 
 static msg_t batterySurveyThd(void *arg)
 {
-  (void)arg;
-  chRegSetThreadName ("battery survey");
-  chEvtRegister(&powerOutageSource, &powerOutageListener, 1);
-  chThdSleepMilliseconds (2000);
+    (void)arg;
+    chRegSetThreadName ("battery survey");
+    chEvtRegister(&powerOutageSource, &powerOutageListener, 1);
+    chThdSleepMilliseconds (2000);
 
-  register_adc_watchdog((uint32_t) ADC1, 4,
-      V_ALERT, 0xfff, &powerOutageIsr);
+    register_adc_watchdog((uint32_t) ADC1, 4,
+                          V_ALERT, 0xfff, &powerOutageIsr);
 
-  chEvtWaitOne(EVENT_MASK(1));
-  chibios_logFinish (false);
-  chThdExit(0);
-  systemDeepSleep();
-  return 0;
+    chEvtWaitOne(EVENT_MASK(1));
+    chibios_logFinish (false);
+    chThdExit(0);
+    systemDeepSleep();
+    return 0;
 }
 
 
@@ -166,22 +170,23 @@ static msg_t batterySurveyThd(void *arg)
  */
 static void  powerOutageIsr (void)
 {
-  // trigger PendSVVector isr
-  SCB_ICSR = ICSR_PENDSVSET;
+    // trigger PendSVVector isr
+    SCB_ICSR = ICSR_PENDSVSET;
 }
 
-CH_IRQ_HANDLER(PendSVVector) {
-  CH_IRQ_PROLOGUE();
-  chSysLockFromIsr();
-  chEvtBroadcastI(&powerOutageSource);
-  chSysUnlockFromIsr();
-  CH_IRQ_EPILOGUE();
+CH_IRQ_HANDLER(PendSVVector)
+{
+    CH_IRQ_PROLOGUE();
+    chSysLockFromIsr();
+    chEvtBroadcastI(&powerOutageSource);
+    chSysUnlockFromIsr();
+    CH_IRQ_EPILOGUE();
 }
 
 static void systemDeepSleep (void)
 {
-  chSysLock();
-  SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
-  PWR->CR |= (PWR_CR_PDDS | PWR_CR_LPDS | PWR_CR_CSBF | PWR_CR_CWUF);
-  __WFE();
+    chSysLock();
+    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+    PWR->CR |= (PWR_CR_PDDS | PWR_CR_LPDS | PWR_CR_CSBF | PWR_CR_CWUF);
+    __WFE();
 }

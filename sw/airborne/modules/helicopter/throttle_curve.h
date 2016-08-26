@@ -32,20 +32,22 @@
 #include "generated/airframe.h"
 
 /* Throttle and collective curve */
-struct curve_t {
-  uint8_t nb_points;                          ///< The number of points in the curve
-  uint16_t throttle[THROTTLE_POINTS_NB];      ///< Throttle points in the curve
-  int16_t collective[THROTTLE_POINTS_NB];     ///< The collective points in the curve
+struct curve_t
+{
+    uint8_t nb_points;                          ///< The number of points in the curve
+    uint16_t throttle[THROTTLE_POINTS_NB];      ///< Throttle points in the curve
+    int16_t collective[THROTTLE_POINTS_NB];     ///< The collective points in the curve
 };
 
 /* Main throttle curve structure */
-struct throttle_curve_t {
-  uint8_t mode;                               ///< Flight mode
-  uint8_t nb_curves;                          ///< The number of throttle/pitch curves
-  struct curve_t curves[THROTTLE_CURVES_NB];  ///< Throttle/pitch curves
+struct throttle_curve_t
+{
+    uint8_t mode;                               ///< Flight mode
+    uint8_t nb_curves;                          ///< The number of throttle/pitch curves
+    struct curve_t curves[THROTTLE_CURVES_NB];  ///< Throttle/pitch curves
 
-  uint16_t throttle;                          ///< Output thrust(throttle) of the throttle curve
-  int16_t collective;                         ///< Output collective of the throttle curve
+    uint16_t throttle;                          ///< Output thrust(throttle) of the throttle curve
+    int16_t collective;                         ///< Output collective of the throttle curve
 };
 extern struct throttle_curve_t throttle_curve;
 

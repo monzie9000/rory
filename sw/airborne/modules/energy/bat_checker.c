@@ -40,19 +40,24 @@
 
 void init_bat_checker(void)
 {
-  LED_INIT(BAT_CHECKER_LED);
-  LED_OFF(BAT_CHECKER_LED);
+    LED_INIT(BAT_CHECKER_LED);
+    LED_OFF(BAT_CHECKER_LED);
 }
 
 void bat_checker_periodic(void)
 {
 
-  if (electrical.bat_critical) {
-    LED_ON(BAT_CHECKER_LED);
-  } else if (electrical.bat_low) {
-    LED_TOGGLE(BAT_CHECKER_LED);
-  } else {
-    LED_OFF(BAT_CHECKER_LED);
-  }
+    if (electrical.bat_critical)
+    {
+        LED_ON(BAT_CHECKER_LED);
+    }
+    else if (electrical.bat_low)
+    {
+        LED_TOGGLE(BAT_CHECKER_LED);
+    }
+    else
+    {
+        LED_OFF(BAT_CHECKER_LED);
+    }
 
 }

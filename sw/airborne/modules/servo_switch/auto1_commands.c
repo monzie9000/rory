@@ -27,25 +27,26 @@
 
 void periodic_auto1_commands(void)
 {
-  // Copy Radio commands in AUTO1
-  if (pprz_mode == PPRZ_MODE_AUTO1) {
+    // Copy Radio commands in AUTO1
+    if (pprz_mode == PPRZ_MODE_AUTO1)
+    {
 #ifdef COMMAND_HATCH
 #ifndef RADIO_HATCH
 #error auto1_commands COMMAND_HATCH needs RADIO_HATCH channel
 #endif
-    ap_state->commands[COMMAND_HATCH] = fbw_state->channels[RADIO_HATCH];
+        ap_state->commands[COMMAND_HATCH] = fbw_state->channels[RADIO_HATCH];
 #endif
 #ifdef COMMAND_BRAKE
 #ifndef RADIO_BRAKE
 #error auto1_commands COMMAND_BRAKE needs RADIO_BRAKE channel
 #endif
-    ap_state->commands[COMMAND_BRAKE] = fbw_state->channels[RADIO_BRAKE];
+        ap_state->commands[COMMAND_BRAKE] = fbw_state->channels[RADIO_BRAKE];
 #endif
 #ifdef COMMAND_FLAPS
 #ifndef RADIO_FLAPS
 #error auto1_commands COMMAND_FLAPS needs RADIO_FLAPS channel
 #endif
-    ap_state->commands[COMMAND_FLAPS] = fbw_state->channels[RADIO_FLAPS];
+        ap_state->commands[COMMAND_FLAPS] = fbw_state->channels[RADIO_FLAPS];
 #endif
-  }
+    }
 }

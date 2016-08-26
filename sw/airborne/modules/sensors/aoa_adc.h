@@ -36,18 +36,19 @@
 
 /** Angle of Attack sensor via ADC.
  */
-struct Aoa_Adc {
-  struct adc_buf buf;
-  uint32_t raw; ///< raw ADC value
-  float angle;  ///< Angle of attack in radians
-  float offset; ///< Angle of attack offset in radians
-  float sens;   ///< sensitiviy, i.e. scale to conver raw to angle
+struct Aoa_Adc
+{
+    struct adc_buf buf;
+    uint32_t raw; ///< raw ADC value
+    float angle;  ///< Angle of attack in radians
+    float offset; ///< Angle of attack offset in radians
+    float sens;   ///< sensitiviy, i.e. scale to conver raw to angle
 
-  /** Filtering value [0-1]
-   * 0: no filtering
-   * 1: output is a constant value
-   */
-  float filter;
+    /** Filtering value [0-1]
+     * 0: no filtering
+     * 1: output is a constant value
+     */
+    float filter;
 };
 
 extern struct Aoa_Adc aoa_adc;

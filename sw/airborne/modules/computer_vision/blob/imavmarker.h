@@ -28,10 +28,11 @@
 #include "modules/computer_vision/lib/vision/image.h"
 
 
-struct marker_deviation_t {
-  int32_t x;
-  int32_t y;
-  uint16_t inlier;
+struct marker_deviation_t
+{
+    int32_t x;
+    int32_t y;
+    uint16_t inlier;
 };
 
 

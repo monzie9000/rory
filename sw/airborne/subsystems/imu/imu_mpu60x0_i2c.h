@@ -35,8 +35,9 @@
 #include "peripherals/mpu60x0_i2c.h"
 
 
-struct ImuMpu60x0 {
-  struct Mpu60x0_I2c mpu;
+struct ImuMpu60x0
+{
+    struct Mpu60x0_I2c mpu;
 };
 
 extern struct ImuMpu60x0 imu_mpu_i2c;

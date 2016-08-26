@@ -12,31 +12,34 @@
 #define Sc18Is600_I2CAdr   0x05
 
 
-enum Sc18Is600Status {
-  Sc18Is600Idle,
-  Sc18Is600SendingRequest,
-  Sc18Is600WaitingForI2C,
-  Sc18Is600ReadingI2CStat,
-  Sc18Is600ReadingBuffer,
-  Sc18Is600TransactionComplete,
+enum Sc18Is600Status
+{
+    Sc18Is600Idle,
+    Sc18Is600SendingRequest,
+    Sc18Is600WaitingForI2C,
+    Sc18Is600ReadingI2CStat,
+    Sc18Is600ReadingBuffer,
+    Sc18Is600TransactionComplete,
 };
 
-enum Sc18Is600Transaction {
-  Sc18Is600Transmit,
-  Sc18Is600Receive,
-  Sc18Is600Transcieve,
-  Sc18Is600ReadRegister,
-  Sc18Is600WriteRegister,
+enum Sc18Is600Transaction
+{
+    Sc18Is600Transmit,
+    Sc18Is600Receive,
+    Sc18Is600Transcieve,
+    Sc18Is600ReadRegister,
+    Sc18Is600WriteRegister,
 };
 #define SC18IS600_BUF_LEN 96
 
-struct Sc18Is600 {
-  enum Sc18Is600Status status;
-  enum Sc18Is600Transaction transaction;
-  uint8_t priv_tx_buf[SC18IS600_BUF_LEN];
-  uint8_t priv_rx_buf[SC18IS600_BUF_LEN];
-  uint8_t rx_len;
-  uint8_t i2c_status;
+struct Sc18Is600
+{
+    enum Sc18Is600Status status;
+    enum Sc18Is600Transaction transaction;
+    uint8_t priv_tx_buf[SC18IS600_BUF_LEN];
+    uint8_t priv_rx_buf[SC18IS600_BUF_LEN];
+    uint8_t rx_len;
+    uint8_t i2c_status;
 };
 
 extern struct Sc18Is600 sc18is600;

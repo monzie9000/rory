@@ -40,23 +40,23 @@ static uint32_t sum_n_event;
 
 void init_sysmon(void)
 {
-  sys_mon.cpu_load = 0;
-  sys_mon.periodic_time = 0;
-  sys_mon.periodic_time_min = 0xFFFF;
-  sys_mon.periodic_time_max = 0;
-  sys_mon.periodic_cycle = 0;
-  sys_mon.periodic_cycle_min = 0xFFFF;
-  sys_mon.periodic_cycle_max = 0;
-  sys_mon.event_number = 0;
+    sys_mon.cpu_load = 0;
+    sys_mon.periodic_time = 0;
+    sys_mon.periodic_time_min = 0xFFFF;
+    sys_mon.periodic_time_max = 0;
+    sys_mon.periodic_cycle = 0;
+    sys_mon.periodic_cycle_min = 0xFFFF;
+    sys_mon.periodic_cycle_max = 0;
+    sys_mon.event_number = 0;
 
-  n_periodic = 0;
-  n_event = 0;
-  sum_time_periodic = 0;
-  sum_cycle_periodic = 0;
-  sum_time_event = 0;
-  min_time_event = ~0;
-  sum_n_event = 0;
-  periodic_timer = 0;
+    n_periodic = 0;
+    n_event = 0;
+    sum_time_periodic = 0;
+    sum_cycle_periodic = 0;
+    sum_time_event = 0;
+    min_time_event = ~0;
+    sum_n_event = 0;
+    periodic_timer = 0;
 }
 
 #include "mcu_periph/uart.h"
@@ -65,74 +65,81 @@ void init_sysmon(void)
 
 void periodic_report_sysmon(void)
 {
-  /** Report system status at low frequency */
-  if (n_periodic > 0) {
-    sys_mon.periodic_time = Max(sum_time_periodic / n_periodic, 1);
-    sys_mon.periodic_cycle = sum_cycle_periodic / n_periodic;
-    sys_mon.cpu_load = 100 * sys_mon.periodic_cycle / sys_mon.periodic_time;
-    sys_mon.event_number = sum_n_event / n_periodic;
+    /** Report system status at low frequency */
+    if (n_periodic > 0)
+    {
+        sys_mon.periodic_time = Max(sum_time_periodic / n_periodic, 1);
+        sys_mon.periodic_cycle = sum_cycle_periodic / n_periodic;
+        sys_mon.cpu_load = 100 * sys_mon.periodic_cycle / sys_mon.periodic_time;
+        sys_mon.event_number = sum_n_event / n_periodic;
 
-    DOWNLINK_SEND_SYS_MON(DefaultChannel, DefaultDevice, &sys_mon.periodic_time,
-                          &sys_mon.periodic_time_min, &sys_mon.periodic_time_max,
-                          &sys_mon.periodic_cycle, &sys_mon.periodic_cycle_min,
-                          &sys_mon.periodic_cycle_max, &sys_mon.event_number,
-                          &sys_mon.cpu_load);
-  }
+        DOWNLINK_SEND_SYS_MON(DefaultChannel, DefaultDevice, &sys_mon.periodic_time,
+                              &sys_mon.periodic_time_min, &sys_mon.periodic_time_max,
+                              &sys_mon.periodic_cycle, &sys_mon.periodic_cycle_min,
+                              &sys_mon.periodic_cycle_max, &sys_mon.event_number,
+                              &sys_mon.cpu_load);
+    }
 
-  n_periodic = 0;
-  sum_time_periodic = 0;
-  sum_cycle_periodic = 0;
-  sum_n_event = 0;
-  sys_mon.periodic_time_min = 0xFFFF;
-  sys_mon.periodic_time_max = 0;
-  sys_mon.periodic_cycle_min = 0xFFFF;
-  sys_mon.periodic_cycle_max = 0;
+    n_periodic = 0;
+    sum_time_periodic = 0;
+    sum_cycle_periodic = 0;
+    sum_n_event = 0;
+    sys_mon.periodic_time_min = 0xFFFF;
+    sys_mon.periodic_time_max = 0;
+    sys_mon.periodic_cycle_min = 0xFFFF;
+    sys_mon.periodic_cycle_max = 0;
 }
 
 void periodic_sysmon(void)
 {
-  /** Estimate periodic task cycle time */
-  uint32_t periodic_usec = SysTimeTimer(periodic_timer);
-  SysTimeTimerStart(periodic_timer);
-  sum_time_periodic += periodic_usec;
+    /** Estimate periodic task cycle time */
+    uint32_t periodic_usec = SysTimeTimer(periodic_timer);
+    SysTimeTimerStart(periodic_timer);
+    sum_time_periodic += periodic_usec;
 
-  /* only periodic cycle : periodic_cycle = periodic_usec - sum_time_event; */
-  periodic_cycle = periodic_usec - n_event * min_time_event;
-  sum_cycle_periodic += periodic_cycle;
+    /* only periodic cycle : periodic_cycle = periodic_usec - sum_time_event; */
+    periodic_cycle = periodic_usec - n_event * min_time_event;
+    sum_cycle_periodic += periodic_cycle;
 
-  /* remember min and max periodic times */
-  if (periodic_usec < sys_mon.periodic_time_min) {
-    sys_mon.periodic_time_min = periodic_usec;
-  }
-  if (periodic_usec > sys_mon.periodic_time_max) {
-    sys_mon.periodic_time_max = periodic_usec;
-  }
+    /* remember min and max periodic times */
+    if (periodic_usec < sys_mon.periodic_time_min)
+    {
+        sys_mon.periodic_time_min = periodic_usec;
+    }
+    if (periodic_usec > sys_mon.periodic_time_max)
+    {
+        sys_mon.periodic_time_max = periodic_usec;
+    }
 
-  /* remember min and max periodic cycle times */
-  if (periodic_cycle < sys_mon.periodic_cycle_min) {
-    sys_mon.periodic_cycle_min = periodic_cycle;
-  }
-  if (periodic_cycle > sys_mon.periodic_cycle_max) {
-    sys_mon.periodic_cycle_max = periodic_cycle;
-  }
+    /* remember min and max periodic cycle times */
+    if (periodic_cycle < sys_mon.periodic_cycle_min)
+    {
+        sys_mon.periodic_cycle_min = periodic_cycle;
+    }
+    if (periodic_cycle > sys_mon.periodic_cycle_max)
+    {
+        sys_mon.periodic_cycle_max = periodic_cycle;
+    }
 
-  n_periodic++;
-  sum_n_event += n_event;
-  n_event = 0;
-  sum_time_event = 0;
+    n_periodic++;
+    sum_n_event += n_event;
+    n_event = 0;
+    sum_time_event = 0;
 }
 
 void event_sysmon(void)
 {
-  /** Store event calls total time and number of calls between two periodic calls */
-  if (n_event > 0) {
-    uint32_t t = SysTimeTimer(event_timer);
-    if (t < min_time_event) {
-      min_time_event = t;
+    /** Store event calls total time and number of calls between two periodic calls */
+    if (n_event > 0)
+    {
+        uint32_t t = SysTimeTimer(event_timer);
+        if (t < min_time_event)
+        {
+            min_time_event = t;
+        }
+        sum_time_event += t;
     }
-    sum_time_event += t;
-  }
-  SysTimeTimerStart(event_timer);
-  n_event++;
+    SysTimeTimerStart(event_timer);
+    n_event++;
 }
 

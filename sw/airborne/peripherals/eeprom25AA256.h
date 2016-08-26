@@ -54,12 +54,13 @@
 
 /** 25AA256 eeprom structure
  */
-struct Eeprom25AA256 {
-  struct spi_periph *spi_p;                     ///< spi peripheral
-  struct spi_transaction spi_trans;             ///< spi transaction
-  volatile uint8_t tx_buf[E25_OUT_BUFFER_LEN];  ///< transmit buffer
-  volatile uint8_t rx_buf[E25_IN_BUFFER_LEN];   ///< receive buffer
-  bool_t data_available;                        ///< data read flag
+struct Eeprom25AA256
+{
+    struct spi_periph *spi_p;                     ///< spi peripheral
+    struct spi_transaction spi_trans;             ///< spi transaction
+    volatile uint8_t tx_buf[E25_OUT_BUFFER_LEN];  ///< transmit buffer
+    volatile uint8_t rx_buf[E25_IN_BUFFER_LEN];   ///< receive buffer
+    bool_t data_available;                        ///< data read flag
 };
 
 /** Init function

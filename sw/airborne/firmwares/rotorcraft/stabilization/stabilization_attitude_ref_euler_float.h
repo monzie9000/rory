@@ -26,18 +26,20 @@
 #include "attitude_ref_saturate_naive.h"
 
 /** Attitude reference model parameters (float) */
-struct FloatRefModel {
-  struct FloatRates omega;
-  struct FloatRates zeta;
+struct FloatRefModel
+{
+    struct FloatRates omega;
+    struct FloatRates zeta;
 };
 
 /** Attitude reference state/output (euler float) */
-struct AttRefEulerFloat {
-  struct FloatEulers euler;
-  struct FloatRates  rate;
-  struct FloatRates  accel;
-  struct FloatRefSat saturation;
-  struct FloatRefModel model;
+struct AttRefEulerFloat
+{
+    struct FloatEulers euler;
+    struct FloatRates  rate;
+    struct FloatRates  accel;
+    struct FloatRefSat saturation;
+    struct FloatRefModel model;
 };
 
 extern void attitude_ref_euler_float_init(struct AttRefEulerFloat *ref);

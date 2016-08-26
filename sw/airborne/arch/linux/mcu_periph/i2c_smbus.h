@@ -37,17 +37,18 @@
 /*
  * I2C Message - used for pure i2c transaction, also from /dev interface
  */
-struct i2c_msg {
-  __u16 addr;  /* slave address      */
-  unsigned short flags;
+struct i2c_msg
+{
+    __u16 addr;  /* slave address      */
+    unsigned short flags;
 #define I2C_M_TEN           0x10  /* we have a ten bit chip address  */
 #define I2C_M_RD            0x01
 #define I2C_M_NOSTART       0x4000
 #define I2C_M_REV_DIR_ADDR  0x2000
 #define I2C_M_IGNORE_NAK    0x1000
 #define I2C_M_NO_RD_ACK     0x0800
-  short len;    /* msg length        */
-  char *buf;    /* pointer to msg data      */
+    short len;    /* msg length        */
+    char *buf;    /* pointer to msg data      */
 };
 
 /* To determine what functionality is present */
@@ -89,11 +90,12 @@ struct i2c_msg {
  */
 #define I2C_SMBUS_BLOCK_MAX  32  /* As specified in SMBus standard */
 #define I2C_SMBUS_I2C_BLOCK_MAX  32  /* Not specified but we use same structure */
-union i2c_smbus_data {
-  __u8 byte;
-  __u16 word;
-  __u8 block[I2C_SMBUS_BLOCK_MAX + 2]; /* block[0] is used for length */
-  /* and one more for PEC */
+union i2c_smbus_data
+{
+    __u8 byte;
+    __u16 word;
+    __u8 block[I2C_SMBUS_BLOCK_MAX + 2]; /* block[0] is used for length */
+    /* and one more for PEC */
 };
 
 /* smbus_access read or write markers */
@@ -149,121 +151,139 @@ union i2c_smbus_data {
 static inline __s32 i2c_smbus_access(int file, char read_write, __u8 command,
                                      int size, union i2c_smbus_data *data)
 {
-  struct i2c_smbus_ioctl_data args;
+    struct i2c_smbus_ioctl_data args;
 
-  args.read_write = read_write;
-  args.command = command;
-  args.size = size;
-  args.data = data;
-  return ioctl(file, I2C_SMBUS, &args);
+    args.read_write = read_write;
+    args.command = command;
+    args.size = size;
+    args.data = data;
+    return ioctl(file, I2C_SMBUS, &args);
 }
 
 
 static inline __s32 i2c_smbus_write_quick(int file, __u8 value)
 {
-  return i2c_smbus_access(file, value, 0, I2C_SMBUS_QUICK, NULL);
+    return i2c_smbus_access(file, value, 0, I2C_SMBUS_QUICK, NULL);
 }
 
 static inline __s32 i2c_smbus_read_byte(int file)
 {
-  union i2c_smbus_data data;
-  if (i2c_smbus_access(file, I2C_SMBUS_READ, 0, I2C_SMBUS_BYTE, &data)) {
-    return -1;
-  } else {
-    return 0x0FF & data.byte;
-  }
+    union i2c_smbus_data data;
+    if (i2c_smbus_access(file, I2C_SMBUS_READ, 0, I2C_SMBUS_BYTE, &data))
+    {
+        return -1;
+    }
+    else
+    {
+        return 0x0FF & data.byte;
+    }
 }
 
 static inline __s32 i2c_smbus_write_byte(int file, __u8 value)
 {
-  return i2c_smbus_access(file, I2C_SMBUS_WRITE, value,
-                          I2C_SMBUS_BYTE, NULL);
+    return i2c_smbus_access(file, I2C_SMBUS_WRITE, value,
+                            I2C_SMBUS_BYTE, NULL);
 }
 
 static inline __s32 i2c_smbus_read_byte_data(int file, __u8 command)
 {
-  union i2c_smbus_data data;
-  if (i2c_smbus_access(file, I2C_SMBUS_READ, command,
-                       I2C_SMBUS_BYTE_DATA, &data)) {
-    return -1;
-  } else {
-    return 0x0FF & data.byte;
-  }
+    union i2c_smbus_data data;
+    if (i2c_smbus_access(file, I2C_SMBUS_READ, command,
+                         I2C_SMBUS_BYTE_DATA, &data))
+    {
+        return -1;
+    }
+    else
+    {
+        return 0x0FF & data.byte;
+    }
 }
 
 static inline __s32 i2c_smbus_write_byte_data(int file, __u8 command,
-    __u8 value)
+        __u8 value)
 {
-  union i2c_smbus_data data;
-  data.byte = value;
-  return i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
-                          I2C_SMBUS_BYTE_DATA, &data);
+    union i2c_smbus_data data;
+    data.byte = value;
+    return i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
+                            I2C_SMBUS_BYTE_DATA, &data);
 }
 
 static inline __s32 i2c_smbus_read_word_data(int file, __u8 command)
 {
-  union i2c_smbus_data data;
-  if (i2c_smbus_access(file, I2C_SMBUS_READ, command,
-                       I2C_SMBUS_WORD_DATA, &data)) {
-    return -1;
-  } else {
-    return 0x0FFFF & data.word;
-  }
+    union i2c_smbus_data data;
+    if (i2c_smbus_access(file, I2C_SMBUS_READ, command,
+                         I2C_SMBUS_WORD_DATA, &data))
+    {
+        return -1;
+    }
+    else
+    {
+        return 0x0FFFF & data.word;
+    }
 }
 
 static inline __s32 i2c_smbus_write_word_data(int file, __u8 command,
-    __u16 value)
+        __u16 value)
 {
-  union i2c_smbus_data data;
-  data.word = value;
-  return i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
-                          I2C_SMBUS_WORD_DATA, &data);
+    union i2c_smbus_data data;
+    data.word = value;
+    return i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
+                            I2C_SMBUS_WORD_DATA, &data);
 }
 
 static inline __s32 i2c_smbus_process_call(int file, __u8 command, __u16 value)
 {
-  union i2c_smbus_data data;
-  data.word = value;
-  if (i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
-                       I2C_SMBUS_PROC_CALL, &data)) {
-    return -1;
-  } else {
-    return 0x0FFFF & data.word;
-  }
+    union i2c_smbus_data data;
+    data.word = value;
+    if (i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
+                         I2C_SMBUS_PROC_CALL, &data))
+    {
+        return -1;
+    }
+    else
+    {
+        return 0x0FFFF & data.word;
+    }
 }
 
 
 /* Returns the number of read bytes */
 static inline __s32 i2c_smbus_read_block_data(int file, __u8 command,
-    __u8 *values)
+        __u8 *values)
 {
-  union i2c_smbus_data data;
-  int i;
-  if (i2c_smbus_access(file, I2C_SMBUS_READ, command,
-                       I2C_SMBUS_BLOCK_DATA, &data)) {
-    return -1;
-  } else {
-    for (i = 1; i <= data.block[0]; i++) {
-      values[i - 1] = data.block[i];
+    union i2c_smbus_data data;
+    int i;
+    if (i2c_smbus_access(file, I2C_SMBUS_READ, command,
+                         I2C_SMBUS_BLOCK_DATA, &data))
+    {
+        return -1;
     }
-    return data.block[0];
-  }
+    else
+    {
+        for (i = 1; i <= data.block[0]; i++)
+        {
+            values[i - 1] = data.block[i];
+        }
+        return data.block[0];
+    }
 }
 
 static inline __s32 i2c_smbus_write_block_data(int file, __u8 command,
-    __u8 length, __u8 *values)
+        __u8 length, __u8 *values)
 {
-  union i2c_smbus_data data;
-  int i;
-  if (length > 32) {
-    length = 32;
-  }
-  for (i = 1; i <= length; i++) {
-    data.block[i] = values[i - 1];
-  }
-  data.block[0] = length;
-  return i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
-                          I2C_SMBUS_BLOCK_DATA, &data);
+    union i2c_smbus_data data;
+    int i;
+    if (length > 32)
+    {
+        length = 32;
+    }
+    for (i = 1; i <= length; i++)
+    {
+        data.block[i] = values[i - 1];
+    }
+    data.block[0] = length;
+    return i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
+                            I2C_SMBUS_BLOCK_DATA, &data);
 }
 
 /* Returns the number of read bytes */
@@ -271,65 +291,78 @@ static inline __s32 i2c_smbus_write_block_data(int file, __u8 command,
    ask for less than 32 bytes, your code will only work with kernels
    2.6.23 and later. */
 static inline __s32 i2c_smbus_read_i2c_block_data(int file, __u8 command,
-    __u8 length, __u8 *values)
+        __u8 length, __u8 *values)
 {
-  union i2c_smbus_data data;
-  int i;
+    union i2c_smbus_data data;
+    int i;
 
-  if (length > 32) {
-    length = 32;
-  }
-  data.block[0] = length;
-  if (i2c_smbus_access(file, I2C_SMBUS_READ, command,
-                       length == 32 ? I2C_SMBUS_I2C_BLOCK_BROKEN :
-                       I2C_SMBUS_I2C_BLOCK_DATA, &data)) {
-    return -1;
-  } else {
-    for (i = 1; i <= data.block[0]; i++) {
-      values[i - 1] = data.block[i];
+    if (length > 32)
+    {
+        length = 32;
     }
-    return data.block[0];
-  }
+    data.block[0] = length;
+    if (i2c_smbus_access(file, I2C_SMBUS_READ, command,
+                         length == 32 ? I2C_SMBUS_I2C_BLOCK_BROKEN :
+                         I2C_SMBUS_I2C_BLOCK_DATA, &data))
+    {
+        return -1;
+    }
+    else
+    {
+        for (i = 1; i <= data.block[0]; i++)
+        {
+            values[i - 1] = data.block[i];
+        }
+        return data.block[0];
+    }
 }
 
 static inline __s32 i2c_smbus_write_i2c_block_data(int file, __u8 command,
-    __u8 length, __u8 *values)
+        __u8 length, __u8 *values)
 {
-  union i2c_smbus_data data;
-  int i;
-  if (length > 32) {
-    length = 32;
-  }
-  for (i = 1; i <= length; i++) {
-    data.block[i] = values[i - 1];
-  }
-  data.block[0] = length;
-  return i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
-                          I2C_SMBUS_I2C_BLOCK_BROKEN, &data);
+    union i2c_smbus_data data;
+    int i;
+    if (length > 32)
+    {
+        length = 32;
+    }
+    for (i = 1; i <= length; i++)
+    {
+        data.block[i] = values[i - 1];
+    }
+    data.block[0] = length;
+    return i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
+                            I2C_SMBUS_I2C_BLOCK_BROKEN, &data);
 }
 
 /* Returns the number of read bytes */
 static inline __s32 i2c_smbus_block_process_call(int file, __u8 command,
-    __u8 length, __u8 *values)
+        __u8 length, __u8 *values)
 {
-  union i2c_smbus_data data;
-  int i;
-  if (length > 32) {
-    length = 32;
-  }
-  for (i = 1; i <= length; i++) {
-    data.block[i] = values[i - 1];
-  }
-  data.block[0] = length;
-  if (i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
-                       I2C_SMBUS_BLOCK_PROC_CALL, &data)) {
-    return -1;
-  } else {
-    for (i = 1; i <= data.block[0]; i++) {
-      values[i - 1] = data.block[i];
+    union i2c_smbus_data data;
+    int i;
+    if (length > 32)
+    {
+        length = 32;
     }
-    return data.block[0];
-  }
+    for (i = 1; i <= length; i++)
+    {
+        data.block[i] = values[i - 1];
+    }
+    data.block[0] = length;
+    if (i2c_smbus_access(file, I2C_SMBUS_WRITE, command,
+                         I2C_SMBUS_BLOCK_PROC_CALL, &data))
+    {
+        return -1;
+    }
+    else
+    {
+        for (i = 1; i <= data.block[0]; i++)
+        {
+            values[i - 1] = data.block[i];
+        }
+        return data.block[0];
+    }
 }
 
 

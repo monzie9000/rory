@@ -30,32 +30,34 @@
 #define _INTER_THREAD_DATA_H
 
 /* The result calculated from the opticflow */
-struct opticflow_result_t {
-  float fps;              ///< Frames per second of the optical flow calculation
-  uint16_t corner_cnt;    ///< The amount of coners found by FAST9
-  uint16_t tracked_cnt;   ///< The amount of tracked corners
+struct opticflow_result_t
+{
+    float fps;              ///< Frames per second of the optical flow calculation
+    uint16_t corner_cnt;    ///< The amount of coners found by FAST9
+    uint16_t tracked_cnt;   ///< The amount of tracked corners
 
-  int16_t flow_x;         ///< Flow in x direction from the camera (in subpixels)
-  int16_t flow_y;         ///< Flow in y direction from the camera (in subpixels)
-  int16_t flow_der_x;     ///< The derotated flow calculation in the x direction (in subpixels)
-  int16_t flow_der_y;     ///< The derotated flow calculation in the y direction (in subpixels)
+    int16_t flow_x;         ///< Flow in x direction from the camera (in subpixels)
+    int16_t flow_y;         ///< Flow in y direction from the camera (in subpixels)
+    int16_t flow_der_x;     ///< The derotated flow calculation in the x direction (in subpixels)
+    int16_t flow_der_y;     ///< The derotated flow calculation in the y direction (in subpixels)
 
-  float vel_x;            ///< The velocity in the x direction
-  float vel_y;            ///< The velocity in the y direction
+    float vel_x;            ///< The velocity in the x direction
+    float vel_y;            ///< The velocity in the y direction
 
-  float div_size;         ///< Divergence as determined with the size_divergence script
+    float div_size;         ///< Divergence as determined with the size_divergence script
 
-  float surface_roughness; ///< Surface roughness as determined with a linear optical flow fit
-  float divergence;       ///< Divergence as determined with a linear flow fit
+    float surface_roughness; ///< Surface roughness as determined with a linear optical flow fit
+    float divergence;       ///< Divergence as determined with a linear flow fit
 
-  float noise_measurement;  ///< noise of measurement, for state filter
+    float noise_measurement;  ///< noise of measurement, for state filter
 };
 
 /* The state of the drone when it took an image */
-struct opticflow_state_t {
-  float phi;      ///< roll [rad]
-  float theta;    ///< pitch [rad]
-  float agl;      ///< height above ground [m]
+struct opticflow_state_t
+{
+    float phi;      ///< roll [rad]
+    float theta;    ///< pitch [rad]
+    float agl;      ///< height above ground [m]
 };
 
 #endif
