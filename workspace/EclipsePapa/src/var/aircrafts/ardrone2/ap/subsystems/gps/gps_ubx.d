@@ -1,0 +1,30 @@
+/home/rc/rory/var/aircrafts/ardrone2/ap/subsystems/gps/gps_ubx.o: \
+ subsystems/gps/gps_ubx.c /home/rc/rory/sw/airborne/subsystems/gps.h \
+ /home/rc/rory/sw/include/std.h \
+ /home/rc/rory/sw/include/message_pragmas.h \
+ /home/rc/rory/sw/airborne/math/pprz_geodetic_int.h \
+ /home/rc/rory/sw/airborne/math/pprz_geodetic.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra.h \
+ /home/rc/rory/sw/airborne/math/pprz_trig_int.h \
+ /home/rc/rory/sw/airborne/mcu_periph/sys_time.h \
+ /home/rc/rory/sw/airborne/boards/ardrone2.h \
+ /home/rc/rory/sw/airborne/peripherals/video_device.h \
+ /home/rc/rory/sw/airborne/modules/computer_vision/lib/v4l/v4l2.h \
+ /home/rc/rory/sw/airborne/modules/computer_vision/lib/vision/image.h \
+ /home/rc/rory/sw/airborne/arch/linux/mcu_periph/sys_time_arch.h \
+ /home/rc/rory/sw/airborne/subsystems/gps/gps_ubx.h \
+ /home/rc/rory/sw/airborne/mcu_periph/uart.h \
+ /home/rc/rory/sw/airborne/arch/linux/mcu_periph/uart_arch.h \
+ /home/rc/rory/sw/airborne/mcu_periph/link_device.h \
+ /home/rc/rory/sw/airborne/subsystems/abi.h \
+ /home/rc/rory/var/include/abi_messages.h \
+ /home/rc/rory/sw/airborne/subsystems/abi_common.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra_float.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra.h \
+ /home/rc/rory/sw/airborne/subsystems/abi_sender_ids.h \
+ /home/rc/rory/sw/airborne/led.h \
+ /home/rc/rory/sw/airborne/arch/linux/led_hw.h \
+ /home/rc/rory/var/include/ubx_protocol.h \
+ /home/rc/rory/sw/airborne/modules/gps/gps_ubx_ucenter.h
