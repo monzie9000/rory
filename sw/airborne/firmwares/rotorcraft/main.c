@@ -122,7 +122,7 @@ tid_t baro_tid;          ///< id for baro_periodic() timer
 #ifndef SITL
 int main(void)
 {
-  main_init();
+	main_init();
 
 #if LIMIT_EVENT_POLLING
   /* Limit main loop frequency to 1kHz.

@@ -58,7 +58,7 @@ ifneq ($(MAKECMDGOALS),clean)
   $(TARGET).CFLAGS += -DPPRZ_VER_MINOR=$(PPRZ_VER_MINOR)
   $(TARGET).CFLAGS += -DPPRZ_VER_PATCH=$(PPRZ_VER_PATCH)
   $(TARGET).CFLAGS += -DPRINT_CONFIG
-  $(TARGET).CFLAGS += -v
+  #$(TARGET).CFLAGS += -v
 
 
   # sort cflags and sources to throw out duplicates

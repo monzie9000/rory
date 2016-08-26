@@ -1,11 +1,12 @@
 #!/bin/bash
+clear
 DIRNAME=`pwd`
 if [[ "$DIRNAME" =~ ([^/]+/+[^/]+)/*$ ]]; then
         echo "Last two: ${BASH_REMATCH[1]}"
     else
             echo "No match"
         fi
-        exit
+#       exit
 #SELINUX_INIT=YES
 #DESKTOP_SESSION=ubuntu
 export PAPARAZZI_HOME=$HOME/rory
@@ -73,4 +74,6 @@ export PPRZ_VER_MAJOR=5
 #TERM=xterm
 #MAKELEVEL=2
 rm ../../var/aircrafts/ardrone2/ap/ap.elf
+find ../../var/aircrafts/ardrone2 -name *.d -exec rm {} +
+find ../../var/aircrafts/ardrone2 -name *.o -exec rm {} +
 make -j1 all

@@ -1,29 +1,29 @@
-/home/rc/papa/var/aircrafts/ardrone2/ap/boards/ardrone/baro_board.o: \
+/home/rc/rory/var/aircrafts/ardrone2/ap/boards/ardrone/baro_board.o: \
  boards/ardrone/baro_board.c \
- /home/rc/papa/sw/airborne/subsystems/sensors/baro.h \
- /home/rc/papa/sw/airborne/boards/ardrone2.h \
- /home/rc/papa/sw/airborne/peripherals/video_device.h \
- /home/rc/papa/sw/include/std.h \
- /home/rc/papa/sw/include/message_pragmas.h \
- /home/rc/papa/sw/airborne/modules/computer_vision/lib/v4l/v4l2.h \
- /home/rc/papa/sw/airborne/modules/computer_vision/lib/vision/image.h \
- boards/ardrone/baro_board.h /home/rc/papa/sw/airborne/subsystems/abi.h \
- /home/rc/papa/var/include/abi_messages.h \
- /home/rc/papa/sw/airborne/subsystems/abi_common.h \
- /home/rc/papa/sw/airborne/math/pprz_algebra_int.h \
- /home/rc/papa/sw/airborne/math/pprz_algebra.h \
- /home/rc/papa/sw/airborne/math/pprz_trig_int.h \
- /home/rc/papa/sw/airborne/math/pprz_algebra_float.h \
- /home/rc/papa/sw/airborne/math/pprz_algebra.h \
- /home/rc/papa/sw/airborne/subsystems/gps.h \
- /home/rc/papa/sw/airborne/math/pprz_geodetic_int.h \
- /home/rc/papa/sw/airborne/math/pprz_geodetic.h \
- /home/rc/papa/sw/airborne/math/pprz_algebra_int.h \
- /home/rc/papa/sw/airborne/mcu_periph/sys_time.h \
- /home/rc/papa/sw/airborne/arch/linux/mcu_periph/sys_time_arch.h \
- /home/rc/papa/sw/airborne/subsystems/gps/gps_ubx.h \
- /home/rc/papa/sw/airborne/mcu_periph/uart.h \
- /home/rc/papa/sw/airborne/arch/linux/mcu_periph/uart_arch.h \
- /home/rc/papa/sw/airborne/mcu_periph/link_device.h \
- /home/rc/papa/sw/airborne/subsystems/abi_sender_ids.h \
+ /home/rc/rory/sw/airborne/subsystems/sensors/baro.h \
+ /home/rc/rory/sw/airborne/boards/ardrone2.h \
+ /home/rc/rory/sw/airborne/peripherals/video_device.h \
+ /home/rc/rory/sw/include/std.h \
+ /home/rc/rory/sw/include/message_pragmas.h \
+ /home/rc/rory/sw/airborne/modules/computer_vision/lib/v4l/v4l2.h \
+ /home/rc/rory/sw/airborne/modules/computer_vision/lib/vision/image.h \
+ boards/ardrone/baro_board.h /home/rc/rory/sw/airborne/subsystems/abi.h \
+ /home/rc/rory/var/include/abi_messages.h \
+ /home/rc/rory/sw/airborne/subsystems/abi_common.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra.h \
+ /home/rc/rory/sw/airborne/math/pprz_trig_int.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra_float.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra.h \
+ /home/rc/rory/sw/airborne/subsystems/gps.h \
+ /home/rc/rory/sw/airborne/math/pprz_geodetic_int.h \
+ /home/rc/rory/sw/airborne/math/pprz_geodetic.h \
+ /home/rc/rory/sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/rory/sw/airborne/mcu_periph/sys_time.h \
+ /home/rc/rory/sw/airborne/arch/linux/mcu_periph/sys_time_arch.h \
+ /home/rc/rory/sw/airborne/subsystems/gps/gps_ubx.h \
+ /home/rc/rory/sw/airborne/mcu_periph/uart.h \
+ /home/rc/rory/sw/airborne/arch/linux/mcu_periph/uart_arch.h \
+ /home/rc/rory/sw/airborne/mcu_periph/link_device.h \
+ /home/rc/rory/sw/airborne/subsystems/abi_sender_ids.h \
  boards/ardrone/baro_board.h boards/ardrone/navdata.h
