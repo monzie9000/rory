@@ -9,7 +9,7 @@ if [[ "$DIRNAME" =~ ([^/]+/+[^/]+)/*$ ]]; then
 #       exit
 #SELINUX_INIT=YES
 #DESKTOP_SESSION=ubuntu
-export PAPARAZZI_HOME=$HOME/rory
+export PAPARAZZI_HOME=$PWD/../..
 export PPRZ_VER_PATCH=2
 #UPSTART_INSTANCE=
 export TARGET=ap
@@ -47,7 +47,7 @@ export PPRZ_VER_MINOR=8
 #GNOME_DESKTOP_SESSION_ID=this-is-deprecated
 #XDG_VTNR=7
 #COLORTERM=gnome-terminal
-export PAPARAZZI_SRC=$HOME/rory
+export PAPARAZZI_SRC=$PWD/../..
 #QT_IM_MODULE=ibus
 #SHLVL=1
 #MAKEOVERRIDES=${-*-command-variables-*-}
