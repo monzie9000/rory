@@ -1,40 +1,40 @@
-/home/rc/junk/rory/sw/airborne/../../var/aircrafts/ardrone2/ap/firmwares/rotorcraft/guidance/guidance_flip.o: \
+/home/rc/rory/sw/airborne/../../var/aircrafts/ardrone2/ap/firmwares/rotorcraft/guidance/guidance_flip.o: \
  firmwares/rotorcraft/guidance/guidance_flip.c \
  firmwares/rotorcraft/guidance/guidance_flip.h \
  firmwares/rotorcraft/autopilot.h \
- /home/rc/junk/rory/sw/airborne/../../sw/include/std.h \
- /home/rc/junk/rory/sw/airborne/../../sw/include/message_pragmas.h \
- /home/rc/junk/rory/sw/airborne/../../var/aircrafts/ardrone2/ap/generated/airframe.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/subsystems/actuators/actuators_default.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/boards/ardrone2.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/peripherals/video_device.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/modules/computer_vision/lib/v4l/v4l2.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/modules/computer_vision/lib/vision/image.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/boards/ardrone/actuators.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/state.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_int.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_algebra.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_trig_int.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_float.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_algebra.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_geodetic_int.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_geodetic.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_int.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_geodetic_float.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_float.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_orientation_conversion.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_int.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_float.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/subsystems/settings.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/subsystems/datalink/transport.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/mcu_periph/link_device.h \
+ /home/rc/rory/sw/airborne/../../sw/include/std.h \
+ /home/rc/rory/sw/airborne/../../sw/include/message_pragmas.h \
+ /home/rc/rory/sw/airborne/../../var/aircrafts/ardrone2/ap/generated/airframe.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/subsystems/actuators/actuators_default.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/boards/ardrone2.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/peripherals/video_device.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/modules/computer_vision/lib/v4l/v4l2.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/modules/computer_vision/lib/vision/image.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/boards/ardrone/actuators.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/state.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_algebra.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_trig_int.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_float.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_algebra.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_geodetic_int.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_geodetic.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_geodetic_float.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_float.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_orientation_conversion.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_int.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/math/pprz_algebra_float.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/subsystems/settings.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/subsystems/datalink/transport.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/mcu_periph/link_device.h \
  firmwares/rotorcraft/guidance/guidance_h.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/guidance/guidance_h_ref.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/guidance/guidance_h_ref.h \
  firmwares/rotorcraft/stabilization/stabilization_attitude_rc_setpoint.h \
  firmwares/rotorcraft/stabilization/stabilization_attitude.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization.h \
  firmwares/rotorcraft/stabilization/stabilization_attitude_quat_int.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization/stabilization_attitude_common_int.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization/stabilization_attitude_ref_quat_int.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization/stabilization_attitude_ref_int.h \
- /home/rc/junk/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization/attitude_ref_saturate_naive.h
+ /home/rc/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization/stabilization_attitude_common_int.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization/stabilization_attitude_ref_quat_int.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization/stabilization_attitude_ref_int.h \
+ /home/rc/rory/sw/airborne/../../sw/airborne/firmwares/rotorcraft/stabilization/attitude_ref_saturate_naive.h
